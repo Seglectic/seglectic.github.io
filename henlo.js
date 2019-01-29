@@ -38,8 +38,8 @@ msg = function(text){
 			this.dx = Math.random()*canvas.width; 
 			this.dy =  Math.random()*canvas.height;
 		}
-		this.x += (this.dx - this.x)*0.02;
-		this.y += (this.dy - this.y)*0.02;
+		this.x += (this.dx - this.x)*0.05;
+		this.y += (this.dy - this.y)*0.05;
 		this.draw();
 	}
 	//Manages how ent is drawn
@@ -51,8 +51,7 @@ msg = function(text){
 };
 
 
-hi = new msg();
-info = new msg('This is a template for quick app synthesis!');
+henlo = new msg('Henlo!');
 
 
 //Draw background
@@ -64,8 +63,7 @@ bG = function(){
 //Update display
 update = function(){
 	bG();
-	hi.update();
-	info.update();
+	henlo.update();
 };
 
 
