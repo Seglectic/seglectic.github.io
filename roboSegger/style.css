@@ -6,7 +6,7 @@ body{
 	background:rgb(50,50,100);
 	font-family:monospace, courier;
 	color:white;
-	/*background: linear-gradient(to right bottom, #9878f8, #8781f8, #7889f6, #6c8ff2, #6495ed);*/
+	background-image: linear-gradient(to bottom right,#9878f8,CornFlowerBlue);
 	/* background-repeat: no-repeat; */
 	margin: 0;
 	width:100%;

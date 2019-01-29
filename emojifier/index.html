@@ -1,0 +1,107 @@
+<head>
+	<title> Discord Emojifier by Segger</title>
+
+</head>
+
+
+<body>
+<textarea id='translateInput' placeholder="Enter text to convert to Discord emojis."></textarea><br>
+<div id=buttontainer>
+	<button id=tobin onclick="convert('binary')"><b>Convert to Emoji</b></button>
+</div>
+<textarea id='output'> </textarea>
+
+<div id='bicipher'> emojifier v0.8
+	<div id=segFooter><i>Seglectic Softworks 2018</i></div>
+</div>
+
+
+<script>
+
+	function convert(mode) {
+		var output = document.getElementById("output");
+		var input = document.getElementById("translateInput").value;
+		output.innerHTML = "";
+
+		switch(mode){
+			case 'binary':output.innerHTML = ABC.toEmoji(input.toLowerCase()); output.select(); break;
+		};
+	};
+
+
+	var ABC = {
+	  //Does emoji conversion
+	  toEmoji: function(str, spaceSeparatedOctets) {
+	    return str.replace(/[\s\S]/g, function(str) {
+			if(str==' '){return "  "};
+	    	return ":regional_indicator_"+str+": " ;
+	    })
+	  },
+	};
+
+</script>
+
+<style type="text/css">
+	
+body{
+	/*background:rgb(50,50,100);*/
+	background-image: linear-gradient(to bottom right,#9878f8,CornFlowerBlue);
+	font-family:monospace, courier;
+	color:white;
+}
+
+#tobin{
+	margin-left:30%;
+	position: relative;
+
+}
+
+#totext{
+	margin-right:20%;
+	position: absolute;
+}
+
+button{
+	margin:10px;
+	border-radius: 3px;
+	width: 40%;
+	height: 5%;
+}
+
+textarea{
+	margin-top: 3%;
+	margin-left:30%;
+	font-family: monospace;
+	resize: none;
+	width:40%;
+	height:30%;
+	border-radius: 8px;
+}
+
+#bicipher{
+	text-align: right;
+	font-size: 20px;
+	right:0;
+	bottom:0;
+	position: fixed;
+	padding: 10px;
+	width:100%;
+	background-color: #121212;
+}
+
+#segFooter{
+	font-size: 10px;
+	text-align: right;
+}
+
+#segFooter{
+	font-size: 10px;
+	text-align: right;
+
+}
+
+
+
+</style>
+
+</body>
