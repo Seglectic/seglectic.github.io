@@ -2,9 +2,50 @@ body{
 	background:rgb(50,50,100);
 	font-family:monospace, courier;
 	color:white;
+	/*background: linear-gradient(to right bottom, #9878f8, #8781f8, #7889f6, #6c8ff2, #6495ed);*/
+	background-repeat: no-repeat;
+	min-height: 100%;
+
+	margin: auto;
+	width:100%;
+	
+}
+
+header{
+	font-size: 24pt;
+	font-weight: bold;
+	background-color: black;
+	width:100%;
+	text-align: center;
+	padding-top:20pt;
+	padding-bottom:20pt;
 }
 
 canvas{
 	max-width: 98%;
 	max-height: 100%;
+}
+
+#roboIcon{
+	position:absolute;
+	bottom:0;
+	right:0;
+	margin-bottom:0px;
+}
+
+#roboQuote{
+	position:absolute;
+	bottom:49px;
+	right:55px;
+	margin-bottom:0px;
+}
+
+#commands{
+	margin: auto;
+	width:50%;
+}
+
+#subtitle{
+	margin: auto;
+	width:50%;	
 }
