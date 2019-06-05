@@ -28,6 +28,21 @@ canvas{
 	max-height: 100%;
 }
 
+table{
+	width:100%;
+}
+
+td, th {
+	border: 1px solid #dddddd;
+	text-align: left;
+	padding: 8px;
+}
+
+tr:nth-child(even) {
+	background-color: #00000059;
+  }
+  
+
 #roboIcon{
 	position:absolute;
 	bottom:0;
