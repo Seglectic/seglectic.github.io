@@ -1,113 +1,45 @@
 <!DOCTYPE html>
 <head>
-	<link rel="stylesheet" type="text/css" href="style.css"> 
-	<title>roboSeg Command List</title>
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<title>roboSeg Commands</title>
 </head>
 
 
-
 <body>
-	<!-- <script type="text/javascript" src="henlo.js"></script> 9878f8  6495ed -->
-	<header>robo Segger commands version 0.01</header>
+	<header>roboSeg Commands</header>
+
+	<!-- Load live background -->
+	<script type="text/javascript" src="liveBG.js"></script>
 
 	<div id=subtitle>
-
-		<br> This page exists for core functionality and will be made prettier soon™.
-
 	</div>
 
-	<div id=commands>
-
-			<table>
-					<tr>
-						<th>Command</th>
-						<th>Result</th>
-					</tr>
-					<tr>
-						<td> !age </td>
-						<td> Show user age on Twitch.tv </td>
-					</tr>
-					<tr>
-						<td> !discord </td>
-						<td> Display link to Discord channel </td>
-					</tr>
-					<tr>
-						<td> !followage </td>
-						<td> Shows how long you've been following</td>
-					</tr>									
-					<tr>
-						<td> !game </td>
-						<td> Shows current game </td>
-					</tr>					
-					<tr>
-						<td> !uptime </td>
-						<td> Shows how long current stream has been live</td>
-					</tr>					
-					<tr>
-						<td> !playtime </td>
-						<td> Shows how long we've been playing the current game</td>
-					</tr>				
-					<tr>
-						<td> !oof </td>
-						<td> Plays a randomly pitched OOF sound on stream.</td>
-					</tr>					
-					<tr>
-						<td> !meow </td>
-						<td> Plays a randomly pitched meow sound on stream.</td>
-					</tr>					
-					<tr>
-						<td> !bark </td>
-						<td> Plays a randomly pitched bark sound on stream.</td>
-					</tr>		
-					<tr>
-						<td> !sp </td>
-						<td> Shows how many SP (Seglectic Points / Stream Power) you have</td>
-					</tr>	
-					<tr>
-						<th>Moderation</th>
-						<th></th>
-					</tr>
-					<tr>
-						<td> !quote </td>
-						<td> Displays a random quote</td>
-					</tr>						
-					<tr>
-						<td> !quoteadd {text} </td>
-						<td> Adds a new quote, be sure to include "Username: " at the beginning of your quote</td>
-					</tr>
-					<tr>
-						<td> !quotedel {ID} </td>
-						<td> Deletes a quote at the displayed ID</td>
-					</tr>
-				</table>
-
-	
-
-
+	<!-- Main Tables for commands  -->
+	<div id=commandTables>
+		<h2> All Viewers </h2>
+		<div id=viewCommands></div>
+		<h2> Audio </h2>
+		<div id=audioCommands></div>
+		<h2> Robots </h2>
+		<div id=botCommands></div>
+		<h2> Moderators </h2>
+		<div id=moderators></div>
 	</div>
 
+	<!-- Run roboCommand processor script to append data to divs -->
+	<script type="text/javascript" src="roboCommands.js"></script>
 
-
-
-
-
-	<div id=roboQuote>
-		<script type="text/javascript">
-			//Add random quotes later
-			var rQ = document.getElementById('roboQuote');
-			rQ.innerText = "Beep.. boop..Damn..."
-		</script>
-		
+	<div id=roboQuote class="speech-bubble-ds">
+		<div id=roboText></div>
+			<script type="text/javascript">
+				roboRandom(); //Pull random quote
+			</script>
+			<div class="speech-bubble-ds-arrow"></div>
 	</div>
 
-	<script>
-		function vapeComRedir(){
-			window.location.replace("http://192.168.1.164:8080")
-		}
-	</script>
 
 	<div id=roboIcon>
-		<img ondblclick="vapeComRedir()" src="roboSegger.png">
+		<img ondblclick="roboRandom()" src="roboSegger.png">
 	</div>
 
 </body>
