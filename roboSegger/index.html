@@ -1,45 +1,80 @@
 <!DOCTYPE html>
+
+<!-- 
+									roboSeg Command List display
+									page, doubles as a mini game?	
+										
+										-Seglectic Softworks 2019
+ -->
+
 <head>
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<title>roboSeg Commands</title>
+	<title>roboSeg Commands</title>	
 </head>
 
 
-<body>
-	<header>roboSeg Commands</header>
+<!-- Run roboCommand processor script to append data to divs -->
+<script type="text/javascript" src="roboCommands.js"></script>
 
-	<!-- Load live background -->
+
+<!-- Responsive meta tag -->
+<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+
+<body>
+	<header>roboSeg Channel Commands</header>
+
+	<!-- Load active background -->
 	<script type="text/javascript" src="liveBG.js"></script>
 
-	<div id=subtitle>
+
+	<!-- Main div to hold divs of command tables  -->
+	<div id=tableContainer>
+
 	</div>
 
-	<!-- Main Tables for commands  -->
-	<div id=commandTables>
-		<h2> All Viewers </h2>
-		<div id=viewCommands></div>
-		<h2> Audio </h2>
-		<div id=audioCommands></div>
-		<h2> Robots </h2>
-		<div id=botCommands></div>
-		<h2> Moderators </h2>
-		<div id=moderators></div>
-	</div>
+	<!-- Insert table data script -->
+	<script>
 
-	<!-- Run roboCommand processor script to append data to divs -->
-	<script type="text/javascript" src="roboCommands.js"></script>
+		const tableContainer = document.getElementById("tableContainer")
 
+		//Loop over sets of command tables in roboCommands
+		for (const tableType in commandData) {
+			if (!commandData.hasOwnProperty(tableType)) {break;}
+
+			//Create div element to fill with data and set id
+			let tableDiv = document.createElement("div");
+			tableDiv.id = tableType;
+
+			//Create header above div (First array element)
+			let divHeader = document.createElement("H2")
+			//Create text node (header text); remove first array element and place its contents into node
+			let divHeaderText = document.createTextNode(commandData[tableType].shift());
+			divHeader.appendChild(divHeaderText);
+
+			//Place header on page
+			tableContainer.appendChild(divHeader);
+			//Place table in div
+			tableDiv.appendChild(makeTable(commandData[tableType]));
+			//Append div to page
+			tableContainer.appendChild(tableDiv);
+		}
+	</script>
+
+
+	<!--    Render roboSeg in bottom-right corner
+			with speechbubble from stylesheet to
+			display random quote on each page load. 
+	-->
 	<div id=roboQuote class="speech-bubble-ds">
-		<div id=roboText></div>
-			<script type="text/javascript">
-				roboRandom(); //Pull random quote
-			</script>
-			<div class="speech-bubble-ds-arrow"></div>
+		<!-- Pull random roboSeg quote from roboCommands.js -->
+		<script type="text/javascript"> roboRandom(); </script>
+		<!-- Draw speech bubble arrow to roboSeg -->
+		<div class="speech-bubble-ds-arrow"></div>
 	</div>
 
-
+	<!-- Draw roboSeg's roboFace -->
 	<div id=roboIcon>
-		<img ondblclick="roboRandom()" src="roboSegger.png">
+		<img onclick="roboRandom()" src="roboSegger.png">
 	</div>
 
 </body>

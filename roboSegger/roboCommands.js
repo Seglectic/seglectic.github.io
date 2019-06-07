@@ -1,6 +1,14 @@
+/**
+ *                        roboCommands
+ *          Contains command data for roboSeg
+ *          edit these to update available commands
+ *          for roboSeg. Add more segments in index.
+ */
+
 
 var commandData = {
-    viewers:[
+    viewerCommands:[
+        ['All Viewers'],
         ['!sp',"Shows how many SP (Seglectic Points / Stream Power) you have"],
         ['!age','Show user age on Twitch.tv'],
         ['!discord','Display link to Discord channel'],
@@ -10,51 +18,29 @@ var commandData = {
         ['!quote',"Displays a random quote. Add {ID} number to display quote at that ID"],
     ],
     
-    sfx:[
+    audioCommands:[
+        ['Audio'],
         ['!meow',"Plays a randomly pitched meow sound on stream.",'5sP'],
         ['!bark',"Plays a randomly pitched bark sound on stream.",'5sP'],
         ['!oof',"Plays a randomly pitched OOF sound on stream.",'10sP'],
         ['!bigoof',"Plays quite a big oof","80sP"],
     ],
 
-    bot:[
-        ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP, Max 200sP, Min 10sP)"],
-        ['!vape',"Sends vape"],
+    botCommands:[
+        ['Robots'],
+        ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP)","10sP Min / 200sP Max"],
+        ['!vape',"Sends blast of vape smoke at Seg via vapeBot [OFFLINE PENDING REBUILD]","100sP"],
     ],
 
-    mod:[
+    modCommands:[
+        ['Moderators'],
         ["!quoteadd {text}", "Adds new quote, be sure to include 'Username,' at the beginning of your quote"],
         ["!quotedel {ID}", "Deletes a quote at the specified ID"],
         ["!permit {username}", "Permits a twitch viewer to post a link for 60 seconds"],
     ],
-
 }
 
-
-//Creates a table from array data
-function makeTable(array) {
-    var table = document.createElement('table');
-    for (var i = 0; i < array.length; i++) {
-        var row = document.createElement('tr');
-        for (var j = 0; j < array[i].length; j++) {
-            var cell = document.createElement('td');
-            cell.textContent = array[i][j];
-            row.appendChild(cell);
-        }
-        table.appendChild(row);
-    }
-    return table;
-}
-
-
-document.getElementById("viewCommands").appendChild(makeTable(commandData.viewers));
-document.getElementById("audioCommands").appendChild(makeTable(commandData.sfx));
-document.getElementById("botCommands").appendChild(makeTable(commandData.bot));
-document.getElementById("moderators").appendChild(makeTable(commandData.mod));
-
-
-
-roboRandomQuotes = [
+var roboQuotes = [
     'Beep boop wow!',
     'Beep boop meow!',
     'Beep boop!',
@@ -69,9 +55,29 @@ roboRandomQuotes = [
     "bEEP",
     "*beep* Hi!",
     "Waaaaaao",
+    "Neriiite~",
+    "So many knowledges~",
+    "You're the Man Now, Dog!"
 ]
 
+
+//Creates a table from array data
+makeTable = function(array) {
+    var table = document.createElement('table');
+    for (var i = 0; i < array.length; i++) {
+        var row = document.createElement('tr');
+        for (var j = 0; j < array[i].length; j++) {
+            var cell = document.createElement('td');
+            cell.textContent = array[i][j];
+            row.appendChild(cell);
+        }
+        table.appendChild(row);
+    }
+    return table;
+}
+
+// Sets roboQuote element to a random quote from above
 roboRandom = function(){
     var rQuote = document.getElementById('roboQuote');
-    rQuote.innerHTML = roboRandomQuotes[Math.floor(Math.random()*roboRandomQuotes.length)]
+    rQuote.innerHTML = roboQuotes[Math.floor(Math.random()*roboQuotes.length)]
 }

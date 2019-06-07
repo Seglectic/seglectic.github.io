@@ -1,11 +1,16 @@
-html{
+
+/************************** Main Page Styling ******************************/
+
+
+/* Allows canvas to take 100% screen height */
+html{	
 	height: 100%;
 }
 
 body{
-	/* background:rgb(50,50,100); */
 	font-family:monospace, courier;
 	color:white;
+	/* Gradient BG */
 	background-image: linear-gradient(to bottom right,#9878f8,CornFlowerBlue);
 	background-repeat: no-repeat;
 	background-attachment: fixed;
@@ -15,23 +20,24 @@ body{
 }
 
 header{
-	font-size: 24pt;
+	font-size: 32pt;
 	font-weight: bold;
-	background-color: rgba(20,20,20,0.9);
+	background-color: rgba(50,50,50,0.9);
 	width:100%;
 	text-align: center;
 	padding-top:20pt;
 	padding-bottom:20pt;
 	text-shadow:5px 5px #000000;
-	border-bottom: 3px #9878f8;
+	/* Draw groove border under header */
+	border-bottom: 3px #9878f8;  
 	border-bottom-style: groove;
 }
 
-canvas{
-	max-width: 98%;
-	max-height: 100%;
-}
 
+/************************** Small Element Styles ******************************/
+
+
+/******* Table Setup *******/
 table{
 	width:100%;
 	border-collapse: collapse;
@@ -39,26 +45,25 @@ table{
 	background-color:  rgba(20, 20, 20, 0.3);
 }
 
-td, th {
-	/* border: 1px solid #dddddd; */
+/* Table rows and interior cells */
+td {
 	text-align: middle;
 	padding: 5px;
 	border-bottom: 1px solid #dddddd;
-}
-
-th{
-	background-color: black;
 }
 
 tr:nth-child(even) {
 	background-color: #00000059;
 }
 
+/******* Segment headers *******/
 h2 {
 	text-shadow:2px 2px #00000059;
 	margin-bottom: 1px;
 }
 
+
+/******* Div Styles *******/
 
 #liveBG{
 	position: fixed;
@@ -74,18 +79,13 @@ h2 {
 
 #roboQuote{
 	position:fixed;
-	bottom:55px;
-	right:40px;
+	bottom:60px;
+	right:50px;
 	margin-bottom:0px;
+	font-size: 12px;
 }
 
-/* #viewCommands, #audioCommands, #botCommands, #moderators{
-	padding-top: 2%;
-	margin: auto;
-	width:70%;
-} */
-
-#commandTables{
+#tableContainer{
 	padding-top: 2%;
 	margin: auto;
 	width:70%;
@@ -97,7 +97,7 @@ h2 {
 }
 
 
-/************************** Speech bubble for roboSeg */
+/************************** Speech bubble for roboSeg ******************************/
 
 .speech-bubble-ds {
     background: #313131d3;
@@ -110,7 +110,7 @@ h2 {
     line-height: 1.3;
     margin: 0 auto 40px;
     max-width: 400px;
-    padding: 10px;
+    padding: 6px;
     position: relative;
 }
 
@@ -126,7 +126,7 @@ h2 {
     border-top: 20px solid rgba(0, 0, 0, 0.2);
     bottom: -25px;
     position: absolute;
-    right: 15px;
+    right: 2px; 				/*  How far over arrow is  */
 }
 .speech-bubble-ds-arrow::before {
     border-left: 23px solid transparent;

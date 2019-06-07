@@ -1,11 +1,11 @@
 /*****************************************************************************************************************************************************************************************
- * 
- * 												  											liveBG
- * 												  							
- * 												  							This is a live background created for the
- *                                                                          roboSeg command list page.
- * 												  							
- *  											  										  - Seglectic Softworks 2019										
+* 
+* 												  											liveBG
+* 												  							
+* 												  							This is a live background created for the
+*                                                                          roboSeg command list page.
+* 												  							
+*  											  										  - Seglectic Softworks 2019										
  * 
  *****************************************************************************************************************************************************************************************/
 
@@ -17,6 +17,8 @@
  *				Prepares canvas and DOM for use
  *				as dedicated game display unit.
  */
+
+//Setup canvas element
 const canvas = document.createElement("canvas");
 canvas.id = "liveBG";
 canvas.height=window.innerHeight;
@@ -34,24 +36,22 @@ window.addEventListener('resize', resizeHandler);
 
 
 
+/*****************************************************************************************************************************************************************************************
+ * 																	SETUP
+ *												        Initalize object protos etc
+ */
+
+
 /**********************************************************
  * 				Miscellany
- * 		Various functions for inhabitants 
- * 		to use, notably multifunctional 
- * 
+ * 		Various multirole functions 
  */
+
 //Random range from [min] to [max], bool [int] if rounding
 const RNG = function(min,max,int){
 	let RNG = (Math.random()*(max-min))+min;
 	if (int){RNG = Math.floor(RNG);}
 	return RNG;
-};
-
-
-//Clear background transparently
-bG = function(){
-    c.fillStyle= "rgba(10,10,20,1)";
-    c.clearRect(0,0,canvas.width,canvas.height);
 };
 
 
@@ -72,15 +72,15 @@ bitBoi = function(mX,mY){
     this.lastY = this.y;
     this.xVel = RNG(-3,3);
     this.yVel = RNG(-3,3);
-    this.alpha = RNG(0.1,0.3)
-    this.size = 12;
+    this.alpha = RNG(0.07,0.2)
+    this.size = 20;
     //Choose to be a 0 or 1   
     this.char = 0;
     if(Math.random()>=0.5){this.char = 1;}
 
     //Check if collided with side of canvas
     this.collideBorder = function(){
-        if(this.x<this.size||this.y<this.size||this.x>canvas.width-this.size||this.y>canvas.height-this.size){
+        if(this.x<this.size||this.y<0||this.x>canvas.width-this.size||this.y>canvas.height-this.size){
             return true;
         }else{return false;}
     }
@@ -89,14 +89,12 @@ bitBoi = function(mX,mY){
     this.update = function(){
         this.x+=this.xVel;
         this.y+=this.yVel;
-
         if(this.collideBorder()){
             this.x=this.lastX;
             this.y=this.lastY;
             this.xVel = RNG(-5,5);
             this.yVel = RNG(-5,5);
         }
-
         this.lastX = this.x;
         this.lastY = this.y;
         this.draw();
@@ -111,12 +109,21 @@ bitBoi = function(mX,mY){
     bitBois.push(this);
 }
 
+//Clear background with transparency
+bG = function(){
+    c.fillStyle= "rgba(10,10,20,1)";
+    c.clearRect(0,0,canvas.width,canvas.height);
+    //c.fillRect(0,0,canvas.width,canvas.height);
+};
+
+
+/**********************************************************
+ * 				Stage Setup
+ */
+
 for (let i = 0; i < 250; i++) {
     new bitBoi();
 }
-
-
-
 
 
 
@@ -127,16 +134,14 @@ for (let i = 0; i < 250; i++) {
  */
 
 picoLoop = function(){
-	if(document.isHidden){console.log("Skree")};
+    //Draw BG
     bG();
     
-    //Get Mouse Position
-
     //Update all bitbois
     for (let i = 0; i < bitBois.length; i++) {
         bitBois[i].update();
     }
-	//scanLines();
+
 };
 
 
