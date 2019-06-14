@@ -22,7 +22,7 @@
 <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
 
 <body>
-	<header>roboSeg Channel Commands</header>
+	<header>roboSeg Command List</header>
 
 	<!-- Load active background -->
 	<script type="text/javascript" src="perlin.js"></script>
@@ -43,12 +43,16 @@
 		for (const tableType in commandData) {
 			if (!commandData.hasOwnProperty(tableType)) {break;}
 
-			//Create div element to fill with data and set id
+			//Create table div elements to fille with data
+			//setting display:none for jQuery appear anims
 			let tableDiv = document.createElement("div");
+			tableDiv.style = "display:none"
 			tableDiv.id = tableType;
 
 			//Create header above div (First array element)
+			//setting display:none for jQuery appear anims
 			let divHeader = document.createElement("H2")
+			divHeader.style = "display:none"
 			//Create text node (header text); remove first array element and place its contents into node
 			let divHeaderText = document.createTextNode(commandData[tableType].shift());
 			divHeader.appendChild(divHeaderText);
@@ -78,21 +82,42 @@
 
 	<!-- Draw roboSeg's roboFace -->
 	<div id=roboIcon style="display:none">
-		<img onclick="roboRandom()" src="roboSegger.png">
+		<img onclick="infoFadeOut()" src="roboSegger.png">
 	</div>
 
 
 	<!-- 
 				jQuery animations
-	 -->
+	-->
 	 <script>
+		 
+		const infoFadeIn = function(){		
+			$("H2").fadeIn()        //Fade in table headers
+			var tableDelay = 200;   //Animate in table contents
+			for (const tableType in commandData) {
+				$("#"+tableType).delay(tableDelay).slideDown(300);
+				tableDelay+=400
+			}
+			//Pop up roboSeg after other elements
+			$("#roboIcon").delay(tableDelay).slideDown(2000)
+			//Fade in roboQuote Div
+			$("#roboQuote").delay(tableDelay+2000).fadeIn(1000);
+		}
+
+		const infoFadeOut = function(){
+			//Fade out roboQuote Div
+			$("#roboQuote").fadeOut('fast');
+			//Slide roboSeg out of view
+			$("#roboIcon").slideUp(500)
+			var tableDelay = 200;
+			for (const tableType in commandData) {
+				$("#"+tableType).delay(tableDelay).slideUp(200);
+				tableDelay+=400
+			}
+			$("H2").delay(tableDelay-500).fadeOut() 
+		}
 		
-	//Pop up roboSeg
-	$("#roboIcon").slideDown(2000)
-	//Fade in roboQuote Div
-	$("#roboQuote").delay(2000).fadeIn(1000);
-
-
+		infoFadeIn();
 
 	</script>
 </body>

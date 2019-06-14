@@ -68,7 +68,9 @@ var roboQuotes = [
     "So many knowledges~",
     "You're the Man Now, Dog!",
     "Oh my beepness~",
-    "Thanks for reading!"
+    "Thanks for reading!",
+    "Huh.",
+    "So informative..",
 ]
 
 

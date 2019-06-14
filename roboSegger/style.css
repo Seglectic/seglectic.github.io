@@ -7,6 +7,22 @@ html{
 	height: 100%;
 }
 
+header{
+	font-size: 32pt;
+	font-family: "Verdana";
+	font-weight: bold;
+	background-color: rgba(50,50,50,0.9);
+	width:100%;
+	text-align: center;
+	padding-top:8pt;
+	padding-bottom:10pt;
+	text-shadow:7px 7px #000000;
+	/* Draw groove border under header */
+	border-bottom: 3px #9878f8;  
+	border-bottom-style: groove;
+	border-width: 8px;
+}
+
 body{
 	font-family:monospace, courier;
 	color:white;
@@ -19,19 +35,7 @@ body{
 	min-height: 100%;
 }
 
-header{
-	font-size: 32pt;
-	font-weight: bold;
-	background-color: rgba(50,50,50,0.9);
-	width:100%;
-	text-align: center;
-	padding-top:20pt;
-	padding-bottom:20pt;
-	text-shadow:5px 5px #000000;
-	/* Draw groove border under header */
-	border-bottom: 3px #9878f8;  
-	border-bottom-style: groove;
-}
+
 
 
 /************************** Small Element Styles ******************************/
