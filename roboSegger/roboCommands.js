@@ -11,6 +11,9 @@ var commandData = {
         ['All Viewers'],
         ['!sp',"Shows how many SP (Seglectic Points / Stream Power) you have"],
         ['!age','Show user age on Twitch.tv'],
+        ['!uptime','Shows how much time has passed since the current stream started'],
+        ['!title','Shows the current stream title'],
+        ['!game','Shows the current stream category (game, irl, etc)'],
         ['!discord','Display link to Discord channel'],
         ['!followage',"Shows how long you've been following"],
         ['!game',"Shows channel's current game/category"],
@@ -38,6 +41,8 @@ var commandData = {
 
     modCommands:[
         ['Moderators'],
+        ["!settitle {title}","Updates the current stream title"],
+        ['!setgame  {game}',"Updates the current stream category"],
         ["!quoteadd {text}", "Adds new quote, be sure to include 'Username,' at the beginning of your quote"],
         ["!quotedel {ID}", "Deletes a quote at the specified ID"],
         ["!permit {username}", "Permits a twitch viewer to post a link for 60 seconds"],
