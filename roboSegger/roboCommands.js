@@ -61,13 +61,13 @@ var roboQuotes = [
     "BEeEP",
     "BeEeEeP",
     "Bop bip",
-    "bEEP",
+    "bEEp!",
     "*beep* Hi!",
     "Waaaaaao",
     "Neriiite~",
     "So many knowledges~",
     "You're the Man Now, Dog!",
-    "Oh my beep~",
+    "Oh my beepness~",
     "Thanks for reading!"
 ]
 
