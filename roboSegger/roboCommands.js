@@ -16,6 +16,8 @@ var commandData = {
         ['!game',"Shows channel's current game/category"],
         ['!playtime',"Shows how long we've been playing the current game/category"],
         ['!quote',"Displays a random quote. Add {ID} number to display quote at that ID"],
+        ['!lurk',"Notifies chat that you're around but not chatting with a random message"],
+        ['!unlurk/!back',"Notifies chat that you're no longer lurking with a random message"],
     ],
     
     audioCommands:[
@@ -23,13 +25,15 @@ var commandData = {
         ['!meow',"Plays a randomly pitched meow sound on stream.",'5sP'],
         ['!bark',"Plays a randomly pitched bark sound on stream.",'5sP'],
         ['!oof',"Plays a randomly pitched OOF sound on stream.",'10sP'],
-        ['!bigoof',"Plays quite a big oof","80sP"],
+        ['!bigoof',"Plays quite the big oof","80sP"],
     ],
 
     botCommands:[
         ['Robots'],
         ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP)","10sP Min / 200sP Max"],
         ['!vape',"Sends blast of vape smoke at Seg via vapeBot [OFFLINE PENDING REBUILD]","100sP"],
+        ['!hydrate?','Potential bot robot for watering Seg',''],
+        ['!string?','Potential bot for firing silly string at Seg','']
     ],
 
     modCommands:[
@@ -57,7 +61,9 @@ var roboQuotes = [
     "Waaaaaao",
     "Neriiite~",
     "So many knowledges~",
-    "You're the Man Now, Dog!"
+    "You're the Man Now, Dog!",
+    "Oh my beep~",
+    "Thanks for reading!"
 ]
 
 
