@@ -33,7 +33,7 @@ var commandData = {
 
     botCommands:[
         ['Robots'],
-        ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP)","10sP Min / 200sP Max"],
+        ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP)","10-200sP"],
         ['!vape',"Sends blast of vape smoke at Seg via vapeBot [OFFLINE PENDING REBUILD]","100sP"],
         ['!hydrate?','Potential bot robot for watering Seg',''],
         ['!string?','Potential bot for firing silly string at Seg','']

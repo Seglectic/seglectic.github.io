@@ -90,8 +90,10 @@
 				jQuery animations
 	-->
 	 <script>
-		 
-		const infoFadeIn = function(){		
+				 
+		const infoFadeIn = function(){
+			$("header").slideDown(200) //Fade in main page header
+
 			$("H2").fadeIn()        //Fade in table headers
 			var tableDelay = 200;   //Animate in table contents
 			for (const tableType in commandData) {
@@ -115,6 +117,7 @@
 				tableDelay+=400
 			}
 			$("H2").delay(tableDelay-500).fadeOut() 
+			$("header").delay(tableDelay).slideUp(200) // Fade out main page header 
 		}
 		
 		infoFadeIn();
