@@ -21,6 +21,7 @@ var commandData = {
         ['!quote',"Displays a random quote. Add {ID} number to display quote at that ID"],
         ['!lurk',"Notifies chat that you're around but not chatting with a random message"],
         ['!unlurk/!back',"Notifies chat that you're no longer lurking with a random message"],
+        ['!spook',"Sends spooky gif & audio to stream"]
     ],
     
     audioCommands:[

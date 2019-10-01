@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 
 <!-- 
 									roboSeg Command List display
@@ -7,32 +8,63 @@
 										-Seglectic Softworks 2019
  -->
 
-<head>
-	<link rel="stylesheet" type="text/css" href="style.css">
-	<script src="jquery-3.4.1.min.js"></script>
-	<title>roboSeg Commands</title>	
-</head>
+
+ <!---------------------------------------------------------------------------------------------------------
+
+											 HTML
+											 
+---------------------------------------------------------------------------------------------------------->
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script src="jquery-3.4.1.min.js"></script>
+		<title>roboSeg Commands</title>	
+	</head>
 
 
-<!-- Run roboCommand processor script to append data to divs -->
-<script type="text/javascript" src="roboCommands.js"></script>
+	<!-- Run roboCommand processor script to append data to divs -->
+	<script type="text/javascript" src="roboCommands.js"></script>
 
 
-<!-- Responsive meta tag -->
-<!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+	<!-- Responsive meta tag -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<body>
-	<header>roboSeg Command List</header>
+	<body>
+		<header>roboSeg Command List</header>
 
-	<!-- Load active background -->
-	<script type="text/javascript" src="perlin.js"></script>
-	<script type="text/javascript" src="liveBG.js"></script>
+		<!-- Load active background -->
+		<script type="text/javascript" src="perlin.js"></script>
+		<script type="text/javascript" src="liveBG.js"></script>
 
 
-	<!-- Main div to hold divs of command tables  -->
-	<div id=tableContainer>
+		<!-- Main div to hold divs of command tables  -->
+		<div id=tableContainer></div>
 
-	</div>
+
+
+		<!--    Render roboSeg in bottom-right corner
+			with speechbubble from stylesheet to
+			display random quote on each page load. 
+		-->
+		<div id=roboQuote class="speech-bubble-ds" style="display:none">
+			<!-- Pull random roboSeg quote from roboCommands.js -->
+			<script type="text/javascript"> roboRandom(); </script>
+			<!-- Draw speech bubble arrow to roboSeg -->
+			<div class="speech-bubble-ds-arrow"></div>
+		</div>
+
+		<!-- Draw roboSeg's roboFace -->
+		<div id=roboIcon style="display:none">
+			<img onclick="infoFadeOut()" src="roboSegger.png">
+		</div>
+
+	</body>
+
+	 <!---------------------------------------------------------------------------------------------------------
+	
+											 Script
+											 
+	---------------------------------------------------------------------------------------------------------->
 
 	<!-- Insert table data script -->
 	<script>
@@ -43,8 +75,8 @@
 		for (const tableType in commandData) {
 			if (!commandData.hasOwnProperty(tableType)) {break;}
 
-			//Create table div elements to fille with data
-			//setting display:none for jQuery appear anims
+			//Create table div elements to fill with data
+			//	setting display:none for jQuery appear anims
 			let tableDiv = document.createElement("div");
 			tableDiv.style = "display:none"
 			tableDiv.id = tableType;
@@ -66,31 +98,13 @@
 		}
 
 
-	</script>
 
 
-	<!--    Render roboSeg in bottom-right corner
-			with speechbubble from stylesheet to
-			display random quote on each page load. 
-	-->
-	<div id=roboQuote class="speech-bubble-ds" style="display:none">
-		<!-- Pull random roboSeg quote from roboCommands.js -->
-		<script type="text/javascript"> roboRandom(); </script>
-		<!-- Draw speech bubble arrow to roboSeg -->
-		<div class="speech-bubble-ds-arrow"></div>
-	</div>
-
-	<!-- Draw roboSeg's roboFace -->
-	<div id=roboIcon style="display:none">
-		<img onclick="infoFadeOut()" src="roboSegger.png">
-	</div>
 
 
-	<!-- 
-				jQuery animations
-	-->
-	 <script>
-		 
+			//
+			// 			jQuery animations
+			// 
 		const infoFadeIn = function(){		
 			$("H2").fadeIn()        //Fade in table headers
 			var tableDelay = 200;   //Animate in table contents
@@ -120,4 +134,4 @@
 		infoFadeIn();
 
 	</script>
-</body>
+</html>
