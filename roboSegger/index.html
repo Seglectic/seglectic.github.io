@@ -105,7 +105,8 @@
 			//
 			// 			jQuery animations
 			// 
-		const infoFadeIn = function(){		
+		const infoFadeIn = function(){
+			$("header").slideDown("slow");		
 			$("H2").fadeIn()        //Fade in table headers
 			var tableDelay = 200;   //Animate in table contents
 			for (const tableType in commandData) {
