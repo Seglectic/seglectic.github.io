@@ -35,8 +35,9 @@ var commandData = {
         ['Robots'],
         ['!bb/!bubble {sP}',"Deploys bubbles from bubbleBot, charges {sP} for more or less bubbles (Default: 25sP)","10-200sP"],
         ['!vape',"Sends blast of vape smoke at Seg via vapeBot [OFFLINE PENDING REBUILD]","100sP"],
-        ['!hydrate?','Potential bot robot for watering Seg',''],
-        ['!string?','Potential bot for firing silly string at Seg','']
+        ['!pop?','Coming soon(?)',''],
+        ['!hat {color}','Changes color of cat hat eyes (accepts common color names)','30sP'],
+        ['!wiggle','Wiggles cat hat ears','30sP'],
     ],
 
     modCommands:[
