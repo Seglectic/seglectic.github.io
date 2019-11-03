@@ -21,6 +21,7 @@ var commandData = {
         ['!quote',"Displays a random quote. Add {ID} number to display quote at that ID"],
         ['!lurk',"Notifies chat that you're around but not chatting with a random message"],
         ['!unlurk/!back',"Notifies chat that you're no longer lurking with a random message"],
+        ['!spook',"Sends spooky gif & audio to stream"]
     ],
     
     audioCommands:[
@@ -44,8 +45,8 @@ var commandData = {
         ['Moderators'],
         ["!settitle {title}","Updates the current stream title"],
         ['!setgame  {game}',"Updates the current stream category"],
-        ["!quoteadd {text}", "Adds new quote, be sure to include 'Username,' at the beginning of your quote"],
-        ["!quotedel {ID}", "Deletes a quote at the specified ID"],
+        ["!addquote {text}", "Adds new quote, be sure to include 'Username,' at the beginning of your quote"],
+        ["!delquote {ID}", "Deletes a quote at the specified ID"],
         ["!permit {username}", "Permits a twitch viewer to post a link for 60 seconds"],
     ],
 }
