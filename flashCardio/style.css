@@ -1,0 +1,122 @@
+/*
+█▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+█  Flash Cardio Stylesheet  █
+█                           █
+█▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+*/
+
+/* ------------------------------------ Page Header ----------------------------------- */
+#pageHeader{
+	font-size: 50pt;
+	text-align: left;
+	text-shadow: 9px 9px rgb(25, 21, 49)
+}
+
+#subHeader{
+	position: absolute;
+	left:100px;
+	margin:0;
+	padding:0;
+	font-size: 10pt;
+	font-style: italic;
+	text-shadow: 5px 5px rgb(25, 21, 49)
+}
+
+body{
+	background:rgb(50,50,100);
+	background: linear-gradient(162deg, rgba(80,80,130,1) 0%, rgba(50,50,100,1) 76%);
+	font-family:monospace, courier;
+	color:white;
+	text-align: center;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+#wrapper{
+	margin: 0 auto;
+	background: rgba(46, 76, 133,0);
+	border-radius: 10px;
+	padding: 50px;
+	width: 80%;
+}
+
+/* ------------------------------ Main flashcard styling ------------------------------ */
+#card{
+	display: inline-block;  /* This is what centers this ish */
+	width: 540px;
+	height: 200px;
+	position: relative;
+}
+#card .front{
+	background: linear-gradient(162deg, rgba(209,223,182,1) 0%, rgba(139,185,172,1) 100%);
+	box-shadow: 5px 5px rgba(20,20,20,0.5);
+	border-radius: 8px;
+}
+#card .back{
+	background: linear-gradient(162deg, rgba(182,214,223,1) 0%, rgba(139,158,185,1) 100%);
+	box-shadow: 5px 5px rgba(20,20,20,0.5);
+	border-radius: 8px;
+}
+.cardText{
+	vertical-align: center;
+	font-size: 40pt;
+	color: black;
+	text-shadow: 2px 3px rgba(50,50,50,0.5);
+	position: absolute;              
+	top: 50%;
+	left:50%;                        
+	transform: translate(-50%, -50%) ;
+	user-select: none;
+}
+
+/* Simulated light flash when blending between random cards */
+.cardFlash{
+	background: rgb(255,240,153);
+	background: linear-gradient(162deg, rgba(255,246,194,1) 0%, rgba(254,255,248,1) 100%);
+	width:100%;
+	height:100%;
+	position: absolute;
+	z-index: 5;
+	border-radius: 8px;
+}
+
+/* ----------------------------------- Random button ---------------------------------- */
+
+button {
+	background: linear-gradient(162deg, rgba(209,223,182,1) 0%, rgba(139,185,172,1) 100%);
+	-webkit-border-radius: 15;
+	-moz-border-radius: 15;
+	border-radius: 15px;
+	-webkit-box-shadow: 2px 2px 4px #1f1f1f;
+	-moz-box-shadow: 2px 2px 4px #1f1f1f;
+	box-shadow: 2px 2px 4px #1f1f1f;
+	color: #030303;
+	font-size: 24px;
+	padding: 15px 30px 15px 30px;
+	text-decoration: none;
+	outline: none;
+  }
+  
+  button:hover {
+	background: linear-gradient(162deg, rgba(182,214,223,1) 0%, rgba(139,158,185,1) 100%);
+	text-decoration: none;
+  }
+
+
+/* -------------------------------------- Footer -------------------------------------- */
+
+#footerRight{
+	font-size:10pt;
+	position: absolute;
+	bottom:0;
+	right:0;
+	padding-right:10px;
+}
+
+#footerLeft{
+	font-size:10pt;
+	position: absolute;
+	bottom:0;
+	left:0;
+	padding-left:10px;
+}

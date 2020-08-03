@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<!-- 
+    █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀█
+    █                                   █
+    █      Flash Cardio                 █
+    █                                   █
+    █  Kanji Flashcard review system.   █
+    █                                   █
+    █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
+ -->
+
+<head>
+	<title>FlashCardio</title>
+	<!-- Get JSON -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdn.rawgit.com/nnattawat/flip/master/dist/jquery.flip.min.js"></script>
+
+	<!-- https://nnattawat.github.io/flip/ -->
+	
+	<!-- Load Stylesheet -->
+	<link rel="stylesheet" type="text/css" href="style.css"> 
+
+</head>
+
+<body>
+	<!-- Load main page script -->
+	<script type="text/javascript" src="cardio.js"></script>
+
+
+<!-- Page Header -->
+<div id =pageHeader>
+	Flash Cardio<br>
+	<div id=subHeader>
+		Memory Exercise Utility
+	</div>
+		
+</div>
+
+<!-- ------------------------------- Flashcard Wrapper ------------------------------- -->
+	<div id=wrapper>
+
+		<!-- Currently Displayed Flashcard -->
+		<div id=card>
+			
+			<div class="front">
+				<div class=cardFlash hidden=true></div>
+				<div id=cardFront1 class=cardText></div>
+				<div id=cardFront2 class=cardText hidden=true> [No Data] </div>
+			</div>
+			<div class="back">
+				<div class=cardFlash hidden=true></div>
+				<div id=cardBack1 class=cardText></div>
+				<div id=cardBack2 class=cardText hidden=true> [No Data] </div>
+			</div>
+		</div>
+
+		<!-- Random Button -->
+		<br><br><br><br><button id=random onclick="randCard()">Random</button>
+
+	</div>
+
+	<!-- Footer? -->
+	<div id=footerLeft>
+		Spacebar = Random | R / Ctrl = Flip Card
+	</div>	
+	<div id=footerRight hidden=true>
+		
+	</div>
+</body>
