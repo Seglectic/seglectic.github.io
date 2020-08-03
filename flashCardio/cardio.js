@@ -10,16 +10,17 @@
 // 
 // ╭────────────────────────────────────────────╮
 // │  //TODO Should have earliest and last      │
-// │  values to select from as well as ability  │
-// │  to show reverse side instead of front.    │
+// │  values								    │
 // ╰────────────────────────────────────────────╯
 
 /* ------------------------------------ Global vars ----------------------------------- */
+var version     = 0.2;		// System version
 var kanji       = [];		// Raw list of kanji
 var kanjiDeck   = [];		// Array to hold kanji to display
 var discardDeck = [];		// Hold seen kanji here when displayed
 var textIndex   = 2;		// Which text div is currently displayed
-var version     = 0.2;		// System version
+var randomTimer = 0;		// Holds time when we can draw another card
+var randomTime  = 500;		// Interval at which we can draw a card
 
 
 
@@ -27,8 +28,7 @@ var version     = 0.2;		// System version
 /* ---------------------------------- Hotkey Controls --------------------------------- */
 
 function cardKeys(e){ //Keybind to flip card
-	console.log(e.keyCode)
-	
+	// console.log(e.keyCode)
 	if(e.keyCode==82 || e.keyCode==17){
 		$("#card").flip("toggle");
 	}
@@ -36,7 +36,7 @@ function cardKeys(e){ //Keybind to flip card
 		randCard();
 	}
 }
-addEventListener("keyup",cardKeys)
+addEventListener("keydown",cardKeys)
 
 
 function kanjiGet(){ 	//Get kanji list from server
@@ -74,8 +74,17 @@ function randomFlip(){ //Sets cards flip axis randomly
 }
 
 function randCard(){ //Draw random card to display
+
+	if( Date.now()< randomTimer){return;} //Stop if timer isn't ready
+	randomTimer = Date.now()+randomTime
+
+	if(kanjiDeck.length==0){
+		discardDeck.forEach(e => {kanjiDeck.push(e);});
+	}
+
 	$(".cardFlash").fadeIn(20);
-	var newCard = kanjiDeck[Math.floor(Math.random() * kanjiDeck.length)];
+	var cardID = Math.floor(Math.random() * kanjiDeck.length)
+	var newCard = kanjiDeck[cardID];
 	if(textIndex==1){
 		$("#cardFront2").fadeIn(50);
 		$("#cardBack2").fadeIn(50);
@@ -92,7 +101,9 @@ function randCard(){ //Draw random card to display
 	document.getElementById(`cardFront${textIndex}`).innerHTML=newCard.front;
 	document.getElementById(`cardBack${textIndex}`).innerHTML=newCard.back;
 	$(".cardFlash").fadeOut(500);
-	// randomFlip();
+
+	discardDeck.push(newCard);
+	kanjiDeck.splice(cardID,1);
 }
 
 /* ------------------------------ Run when document ready ----------------------------- */
@@ -103,7 +114,6 @@ $( document ).ready(()=>{
 		trigger:"hover"
 	}
 	$("#card").flip({cardSettings}); // Create card object and apply settings object
-	// console.log('meow')
 
 	// Show version in corner
 	// document.getElementById("footerRight")
