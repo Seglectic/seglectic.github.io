@@ -14,7 +14,7 @@
 // ╰────────────────────────────────────────────╯
 
 /* ------------------------------------ Global vars ----------------------------------- */
-var version     = 0.2;		// System version
+var version     = 1.0;		// System version
 var kanji       = [];		// Raw list of kanji
 var kanjiDeck   = [];		// Array to hold kanji to display
 var discardDeck = [];		// Hold seen kanji here when displayed

@@ -5,11 +5,18 @@
 █▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄█
 */
 
+/* ------------------------------------- Font face ------------------------------------ */
+@font-face{
+    font-family: chicago;
+    src:url(Chicago.ttf);
+}	
+
 /* ------------------------------------ Page Header ----------------------------------- */
 #pageHeader{
+	font-family: chicago;
 	font-size: 50pt;
 	text-align: left;
-	text-shadow: 9px 9px rgb(25, 21, 49)
+	text-shadow: 6px 6px rgb(25, 21, 49)
 }
 
 #subHeader{
@@ -71,8 +78,8 @@ body{
 
 /* Simulated light flash when blending between random cards */
 .cardFlash{
-	background: rgb(255,240,153);
-	background: linear-gradient(162deg, rgba(255,246,194,1) 0%, rgba(254,255,248,1) 100%);
+	background: rgb(255,254,246);
+	background: linear-gradient(180deg, rgba(255,254,246,0.9) 0%, rgba(255,246,194,1) 100%);
 	width:100%;
 	height:100%;
 	position: absolute;
@@ -83,10 +90,11 @@ body{
 /* ----------------------------------- Random button ---------------------------------- */
 
 button {
+	font-family: Chicago;
 	background: linear-gradient(162deg, rgba(209,223,182,1) 0%, rgba(139,185,172,1) 100%);
 	-webkit-border-radius: 15;
 	-moz-border-radius: 15;
-	border-radius: 15px;
+	border-radius: 8px;
 	-webkit-box-shadow: 2px 2px 4px #1f1f1f;
 	-moz-box-shadow: 2px 2px 4px #1f1f1f;
 	box-shadow: 2px 2px 4px #1f1f1f;
@@ -106,9 +114,10 @@ button {
 /* -------------------------------------- Footer -------------------------------------- */
 
 #footerRight{
+	font-family: chicago;
 	font-size:10pt;
 	position: absolute;
-	bottom:0;
+	bottom:3px;
 	right:0;
 	padding-right:10px;
 }
@@ -116,7 +125,7 @@ button {
 #footerLeft{
 	font-size:10pt;
 	position: absolute;
-	bottom:0;
+	bottom:3px;
 	left:0;
 	padding-left:10px;
 }
