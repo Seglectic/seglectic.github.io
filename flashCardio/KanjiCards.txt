@@ -23,9 +23,9 @@
 品, Goods
 呂, Spine
 昌, Prosperous
-早
-旭
-世
+早, Early
+旭, Rising Sun
+世, Generation
 胃
 旦
 胆
