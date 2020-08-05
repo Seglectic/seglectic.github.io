@@ -10,8 +10,8 @@
 十, Ten
 口, Mouth
 日, Day
-月, Month [Moon]
-田, Rice Field [Skull]
+月, Month
+田, Rice Field
 目, Eye
 古, Old
 吾, I [Self]
@@ -26,12 +26,12 @@
 早, Early
 旭, Rising Sun
 世, Generation
-胃
-旦
-胆
-亘
-凹
-凸
+胃, Stomach
+旦, Nightbreak
+胆, Gall Bladder
+亘, Span
+凹, Concave
+凸, Convex
 旧
 自
 白
