@@ -32,9 +32,9 @@
 亘, Span
 凹, Concave
 凸, Convex
-旧
-自
-白
+旧, Olden Times
+自, Oneself
+白, White
 百
 中
 千
