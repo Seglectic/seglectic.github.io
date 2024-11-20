@@ -1,5 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seglectic</title>
+</head>
+
 <h1>Uh, Hi.</h1>
-<br>
 <br>
 <br>
 <b>
@@ -11,6 +18,10 @@ Here are some project links.
 <br>
 <br>
 </b>
+
+
+
+
 
 <!-- Lol -->
 
@@ -30,4 +41,28 @@ Here are some project links.
 <br>
 <br>
 <a href="https://seglectic.github.io/Ricoshimbochet/">Ricoshimbochet</a>
+
+<div id="footer" style="margin-top: 50px; font-size: 0.9em; color: gray;">
+  It has been <span id="time-elapsed"></span> since this "temporary" page was last updated.
+</div>
+
+    <script>
+        const calculateTimeElapsed = () => {
+            const lastUpdate = new Date('2021-06-02T11:40:00');
+            const now = new Date();
+            const diff = now - lastUpdate;
+
+            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25));
+            const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 365.25)) / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            return `${years} years, ${days} days, ${hours} hours, and ${minutes} minutes`;
+        };
+
+        document.getElementById('time-elapsed').innerText = calculateTimeElapsed();
+    </script>
+
+</body>
+</html>
 
