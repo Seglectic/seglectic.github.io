@@ -139,13 +139,37 @@ require_gh_auth() {
 }
 
 resolve_gist_id() {
-    local gist_id="${1:-${KCLOUD_GIST_ID:-${KBACK_GIST_ID:-}}}"
-    if [[ -z "$gist_id" ]]; then
+    local gist_ref="${1:-${KCLOUD_GIST_ID:-${KBACK_GIST_ID:-}}}"
+    local match_count
+    local resolved_id
+
+    if [[ -z "$gist_ref" ]]; then
         echo "Error: no gist id provided."
         echo "Pass a gist id, or set KCLOUD_GIST_ID."
         exit 1
     fi
-    printf '%s\n' "$gist_id"
+
+    if [[ "$gist_ref" =~ ^[0-9a-fA-F]{20,}$ ]]; then
+        printf '%s\n' "$gist_ref"
+        return 0
+    fi
+
+    require_command jq
+    require_gh_auth
+
+    match_count="$(gh api gists --paginate | jq --arg description "$gist_ref" '[.[] | select(.description == $description)] | length')"
+    if [[ "$match_count" == "1" ]]; then
+        resolved_id="$(gh api gists --paginate | jq -r --arg description "$gist_ref" '.[] | select(.description == $description) | .id')"
+        printf '%s\n' "$resolved_id"
+        return 0
+    fi
+
+    if [[ "$match_count" == "0" ]]; then
+        echo "Error: no gist found with id or exact description '$gist_ref'."
+    else
+        echo "Error: multiple gists found with description '$gist_ref'. Use the gist id instead."
+    fi
+    exit 1
 }
 
 create_gist() {
@@ -340,6 +364,8 @@ do_backup_gist() {
         gist_id="$(create_gist)"
         echo "Created gist: $gist_id"
         echo "Tip: export KCLOUD_GIST_ID=$gist_id"
+    else
+        gist_id="$(resolve_gist_id "$gist_id")"
     fi
 
     rm -rf "$backup_dir"
