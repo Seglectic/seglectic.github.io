@@ -460,6 +460,12 @@ select_backup_name_interactive() {
     local selected_label
     local idx
 
+    if [[ -r /dev/tty ]]; then
+        printf '%s\n' "Loading KCloud backups..." >/dev/tty
+    else
+        echo "Loading KCloud backups..."
+    fi
+
     backups_json="$(list_kcloud_backups_json)"
     if [[ "$(jq 'length' <<<"$backups_json")" == "0" ]]; then
         echo "No KCloud backups were found in your gists."
@@ -530,16 +536,27 @@ prompt_menu() {
     local choice
 
     while true; do
-        echo "$prompt"
-        for i in "${!options[@]}"; do
-            printf '  %d) %s\n' "$((i + 1))" "${options[$i]}"
-        done
+        if [[ -r /dev/tty ]]; then
+            printf '%s\n' "$prompt" >/dev/tty
+            for i in "${!options[@]}"; do
+                printf '  %d) %s\n' "$((i + 1))" "${options[$i]}" >/dev/tty
+            done
+        else
+            echo "$prompt"
+            for i in "${!options[@]}"; do
+                printf '  %d) %s\n' "$((i + 1))" "${options[$i]}"
+            done
+        fi
         prompt_text "Select an option: " choice
         if [[ "$choice" =~ ^[1-9][0-9]*$ ]] && (( choice >= 1 && choice <= ${#options[@]} )); then
             printf -v "$__var_name" '%s' "${options[$((choice - 1))]}"
             return 0
         fi
-        echo "Please enter a valid number."
+        if [[ -r /dev/tty ]]; then
+            printf '%s\n' "Please enter a valid number." >/dev/tty
+        else
+            echo "Please enter a valid number."
+        fi
     done
 }
 
