@@ -497,10 +497,12 @@ prompt_text() {
     local input
 
     if exec 3</dev/tty 2>/dev/null; then
-        read -r -p "$prompt" input <&3
+        printf '%s' "$prompt" >/dev/tty
+        read -r input <&3
         exec 3<&-
     else
-        read -r -p "$prompt" input
+        printf '%s' "$prompt"
+        read -r input
     fi
 
     printf -v "$__var_name" '%s' "$input"
