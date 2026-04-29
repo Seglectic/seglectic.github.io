@@ -7,7 +7,17 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+resolve_base_dir() {
+    local source_path="${BASH_SOURCE[0]:-}"
+
+    if [[ -n "$source_path" && "$source_path" != "bash" && "$source_path" != "-bash" ]]; then
+        cd "$(dirname "$source_path")" && pwd
+    else
+        pwd
+    fi
+}
+
+SCRIPT_DIR="$(resolve_base_dir)"
 DEFAULT_DEST="$SCRIPT_DIR/backup"
 DEFAULT_GIST_WORKDIR="$SCRIPT_DIR/.kcloud-gist"
 GIST_FILENAME="kcloud-backup.tar.gz.b64"
