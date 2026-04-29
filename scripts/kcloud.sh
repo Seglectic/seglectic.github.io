@@ -2,8 +2,8 @@
 # KDE Plasma settings backup/restore script
 # Usage: ./kcloud.sh --backup [dest_dir]
 #        ./kcloud.sh --restore [src_dir]
-#        ./kcloud.sh --backup-gist [gist_id] [work_dir]
-#        ./kcloud.sh --restore-gist [gist_id] [dest_dir]
+#        ./kcloud.sh --backup-gist [backup_name] [work_dir]
+#        ./kcloud.sh --restore-gist [backup_name] [dest_dir]
 
 set -euo pipefail
 
@@ -27,17 +27,17 @@ README_FILENAME="README.md"
 usage() {
     echo "Usage: $0 --backup [dest_dir]"
     echo "       $0 --restore [src_dir]"
-    echo "       $0 --backup-gist [gist_id] [work_dir]"
-    echo "       $0 --restore-gist [gist_id] [dest_dir]"
+    echo "       $0 --backup-gist [backup_name] [work_dir]"
+    echo "       $0 --restore-gist [backup_name] [dest_dir]"
     echo ""
     echo "Run without arguments for an interactive prompt."
     echo ""
     echo "  --backup   Copy KDE settings into dest_dir (default: ./backup)"
     echo "  --restore  Restore KDE settings from src_dir (default: ./backup)"
     echo "  --backup-gist   Back up locally, tarball it, base64 it, and upload it to a GitHub gist"
-    echo "                  Uses \$KCLOUD_GIST_ID or \$KBACK_GIST_ID, or the provided gist_id"
+    echo "                  Uses the provided backup_name, or \$KCLOUD_GIST_NAME / \$KBACK_GIST_NAME"
     echo "  --restore-gist  Download a gist backup, unpack it into dest_dir, then restore from it"
-    echo "                  Uses \$KCLOUD_GIST_ID or \$KBACK_GIST_ID, or the provided gist_id"
+    echo "                  Uses the provided backup_name, or lists your KCloud backups if omitted"
     exit 1
 }
 
@@ -138,14 +138,61 @@ require_gh_auth() {
     }
 }
 
-resolve_gist_id() {
-    local gist_ref="${1:-${KCLOUD_GIST_ID:-${KBACK_GIST_ID:-}}}"
+kcloud_backup_name_default() {
+    local host_name
+    host_name="$(hostname -s 2>/dev/null || true)"
+    printf '%s\n' "${host_name:-default}"
+}
+
+list_kcloud_backups_json() {
+    require_command jq
+    require_gh_auth
+
+    gh api gists --paginate | jq --arg archive "$GIST_FILENAME" --arg manifest "$MANIFEST_FILENAME" '
+        [
+          .[]
+          | select((.files[$archive] != null) and (.files[$manifest] != null))
+          | {
+              id: .id,
+              name: (if (.description // "") == "" then "(unnamed)" else .description end),
+              description: (.description // ""),
+              updated_at: .updated_at
+            }
+        ]
+    '
+}
+
+list_kcloud_backups() {
+    local backups_json
+    backups_json="$(list_kcloud_backups_json)"
+
+    if [[ "$(jq 'length' <<<"$backups_json")" == "0" ]]; then
+        echo "No KCloud backups were found in your gists."
+        return 1
+    fi
+
+    jq -r '.[] | "\(.name)\t\(.updated_at)\t\(.id)"' <<<"$backups_json"
+}
+
+resolve_backup_name() {
+    local backup_name="${1:-${KCLOUD_GIST_NAME:-${KBACK_GIST_NAME:-}}}"
+
+    if [[ -n "$backup_name" ]]; then
+        printf '%s\n' "$backup_name"
+    else
+        kcloud_backup_name_default
+    fi
+}
+
+resolve_gist_id_by_name() {
+    local gist_ref="$1"
+    local backups_json
     local match_count
     local resolved_id
 
     if [[ -z "$gist_ref" ]]; then
-        echo "Error: no gist id provided."
-        echo "Pass a gist id, or set KCLOUD_GIST_ID."
+        echo "Error: no backup name provided."
+        echo "Pass a backup name, or set KCLOUD_GIST_NAME."
         exit 1
     fi
 
@@ -154,30 +201,34 @@ resolve_gist_id() {
         return 0
     fi
 
-    require_command jq
-    require_gh_auth
+    backups_json="$(list_kcloud_backups_json)"
+    match_count="$(jq --arg name "$gist_ref" '[.[] | select(.description == $name)] | length' <<<"$backups_json")"
 
-    match_count="$(gh api gists --paginate | jq --arg description "$gist_ref" '[.[] | select(.description == $description)] | length')"
     if [[ "$match_count" == "1" ]]; then
-        resolved_id="$(gh api gists --paginate | jq -r --arg description "$gist_ref" '.[] | select(.description == $description) | .id')"
+        resolved_id="$(jq -r --arg name "$gist_ref" '.[] | select(.description == $name) | .id' <<<"$backups_json")"
         printf '%s\n' "$resolved_id"
         return 0
     fi
 
     if [[ "$match_count" == "0" ]]; then
-        echo "Error: no gist found with id or exact description '$gist_ref'."
+        echo "Error: no KCloud backup named '$gist_ref' was found."
     else
-        echo "Error: multiple gists found with description '$gist_ref'. Use the gist id instead."
+        echo "Error: multiple KCloud backups named '$gist_ref' were found."
     fi
+    echo ""
+    echo "Available KCloud backups:"
+    list_kcloud_backups || true
     exit 1
 }
 
 create_gist() {
+    local backup_name="$1"
+
     require_command jq
     require_gh_auth
 
     gh api gists \
-        -f description="KCloud KDE settings backup" \
+        -f description="$backup_name" \
         -F public=false \
         -F "files[$README_FILENAME][content]=KCloud gist bootstrap" \
         --jq '.id'
@@ -333,39 +384,51 @@ upload_gist_backup() {
 download_gist_backup() {
     local gist_id="$1"
     local work_dir="$2"
+    local gist_json
+    local backup_raw_url
 
     require_command jq
     require_gh_auth
+    require_command curl
 
     rm -rf "$work_dir"
     mkdir -p "$work_dir"
 
     echo "Downloading gist backup: $gist_id"
-    gh api "gists/$gist_id" | jq -r --arg file "$GIST_FILENAME" '.files[$file].content // empty' >"$work_dir/$GIST_FILENAME"
+    gist_json="$(gh api "gists/$gist_id")"
+    backup_raw_url="$(jq -r --arg file "$GIST_FILENAME" '.files[$file].raw_url // empty' <<<"$gist_json")"
+
+    if [[ -n "$backup_raw_url" ]]; then
+        curl -fsSL "$backup_raw_url" >"$work_dir/$GIST_FILENAME"
+    else
+        jq -r --arg file "$GIST_FILENAME" '.files[$file].content // empty' <<<"$gist_json" >"$work_dir/$GIST_FILENAME"
+    fi
 
     if [[ ! -s "$work_dir/$GIST_FILENAME" ]]; then
         echo "Error: gist '$gist_id' does not contain '$GIST_FILENAME'."
         exit 1
     fi
 
-    gh api "gists/$gist_id" | jq -r --arg file "$MANIFEST_FILENAME" '.files[$file].content // empty' >"$work_dir/$MANIFEST_FILENAME" || true
+    jq -r --arg file "$MANIFEST_FILENAME" '.files[$file].content // empty' <<<"$gist_json" >"$work_dir/$MANIFEST_FILENAME" || true
 }
 
 do_backup_gist() {
-    local gist_id="${1:-}"
+    local backup_name
+    local gist_id=""
     local work_dir="$2"
     local backup_dir="${work_dir%/}.backup"
 
     require_command tar
     require_command base64
 
-    if [[ -z "$gist_id" ]]; then
-        echo "No gist id provided. Creating a new private gist..."
-        gist_id="$(create_gist)"
-        echo "Created gist: $gist_id"
-        echo "Tip: export KCLOUD_GIST_ID=$gist_id"
+    backup_name="$(resolve_backup_name "${1:-}")"
+
+    if gist_id="$(resolve_gist_id_by_name "$backup_name" 2>/dev/null)"; then
+        echo "Using existing KCloud backup: $backup_name"
     else
-        gist_id="$(resolve_gist_id "$gist_id")"
+        echo "No KCloud backup named '$backup_name' found. Creating a new private gist..."
+        gist_id="$(create_gist "$backup_name")"
+        echo "Created gist for backup: $backup_name"
     fi
 
     rm -rf "$backup_dir"
@@ -390,6 +453,36 @@ do_restore_gist() {
     do_restore "$dest_dir"
 }
 
+select_backup_name_interactive() {
+    local backups_json
+    local options=()
+    local values=()
+    local selected_label
+    local idx
+
+    backups_json="$(list_kcloud_backups_json)"
+    if [[ "$(jq 'length' <<<"$backups_json")" == "0" ]]; then
+        echo "No KCloud backups were found in your gists."
+        exit 1
+    fi
+
+    while IFS=$'\t' read -r name updated_at; do
+        options+=("$name ($updated_at)")
+        values+=("$name")
+    done < <(jq -r '.[] | "\(.name)\t\(.updated_at)"' <<<"$backups_json")
+
+    prompt_menu selected_label "Choose a KCloud backup to restore:" "${options[@]}"
+    for idx in "${!options[@]}"; do
+        if [[ "${options[$idx]}" == "$selected_label" ]]; then
+            printf '%s\n' "${values[$idx]}"
+            return 0
+        fi
+    done
+
+    echo "Error: failed to resolve selected backup."
+    exit 1
+}
+
 require_tty() {
     [[ -r /dev/tty ]] || {
         echo "Error: interactive mode requires a TTY."
@@ -403,7 +496,7 @@ prompt_text() {
     local __var_name="$2"
     local input
 
-    if [[ -r /dev/tty ]]; then
+    if [[ -t 0 && -r /dev/tty ]]; then
         read -r -p "$prompt" input </dev/tty
     else
         read -r -p "$prompt" input
@@ -450,10 +543,10 @@ prompt_menu() {
 interactive_main() {
     local action
     local storage
-    local gist_id=""
+    local backup_name=""
     local dest_dir=""
     local work_dir=""
-    local summary_gist=""
+    local summary_backup=""
 
     require_tty
 
@@ -472,12 +565,12 @@ interactive_main() {
             TARGET="$dest_dir"
             ;;
         "Backup settings|GitHub gist")
-            prompt_text "Existing gist ID (leave blank to create a new private gist): " gist_id
+            prompt_with_default "Backup name:" "$(resolve_backup_name "")" backup_name
             prompt_with_default "Local staging directory:" "$DEFAULT_GIST_WORKDIR" work_dir
             MODE="--backup-gist"
-            TARGET="$gist_id"
+            TARGET="$backup_name"
             EXTRA_TARGET="$work_dir"
-            summary_gist="${gist_id:-new private gist}"
+            summary_backup="$backup_name"
             ;;
         "Restore settings|Local folder")
             prompt_with_default "Restore source directory:" "$DEFAULT_DEST" dest_dir
@@ -485,17 +578,12 @@ interactive_main() {
             TARGET="$dest_dir"
             ;;
         "Restore settings|GitHub gist")
-            prompt_text "Gist ID to restore from: " gist_id
-            [[ -n "$gist_id" ]] || gist_id="${KCLOUD_GIST_ID:-${KBACK_GIST_ID:-}}"
-            [[ -n "$gist_id" ]] || {
-                echo "A gist ID is required for restore."
-                exit 1
-            }
+            backup_name="$(select_backup_name_interactive)"
             prompt_with_default "Local extraction directory:" "$DEFAULT_DEST" dest_dir
             MODE="--restore-gist"
-            TARGET="$gist_id"
+            TARGET="$backup_name"
             EXTRA_TARGET="$dest_dir"
-            summary_gist="$gist_id"
+            summary_backup="$backup_name"
             ;;
     esac
 
@@ -512,12 +600,12 @@ interactive_main() {
             ;;
         --backup-gist)
             echo "  Action: gist backup"
-            echo "  Gist: $summary_gist"
+            echo "  Backup name: $summary_backup"
             echo "  Staging directory: $EXTRA_TARGET"
             ;;
         --restore-gist)
             echo "  Action: gist restore"
-            echo "  Gist: $summary_gist"
+            echo "  Backup name: $summary_backup"
             echo "  Extraction directory: $EXTRA_TARGET"
             ;;
     esac
@@ -545,12 +633,21 @@ case "$MODE" in
         do_restore "$TARGET"
         ;;
     --backup-gist)
-        GIST_ID="${TARGET:-${KCLOUD_GIST_ID:-${KBACK_GIST_ID:-}}}"
+        GIST_ID="${TARGET:-${KCLOUD_GIST_NAME:-${KBACK_GIST_NAME:-}}}"
         WORK_DIR="${EXTRA_TARGET:-$DEFAULT_GIST_WORKDIR}"
         do_backup_gist "$GIST_ID" "$WORK_DIR"
         ;;
     --restore-gist)
-        GIST_ID="$(resolve_gist_id "${TARGET:-}")"
+        if [[ -n "${TARGET:-}" ]]; then
+            GIST_ID="$(resolve_gist_id_by_name "$TARGET")"
+        else
+            echo "Available KCloud backups:"
+            list_kcloud_backups || exit 1
+            echo ""
+            echo "Run again with one of the backup names above:"
+            echo "  $0 --restore-gist <backup_name> [dest_dir]"
+            exit 1
+        fi
         DEST_DIR="${EXTRA_TARGET:-$DEFAULT_DEST}"
         do_restore_gist "$GIST_ID" "$DEST_DIR"
         ;;
