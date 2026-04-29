@@ -496,8 +496,9 @@ prompt_text() {
     local __var_name="$2"
     local input
 
-    if [[ -t 0 && -r /dev/tty ]]; then
-        read -r -p "$prompt" input </dev/tty
+    if exec 3</dev/tty 2>/dev/null; then
+        read -r -p "$prompt" input <&3
+        exec 3<&-
     else
         read -r -p "$prompt" input
     fi
