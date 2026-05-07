@@ -21,8 +21,22 @@ html, body {
 h1 {
     font-family: 'Abstract', monospace;
     font-size: 2rem;
+    line-height: 2.2;
     margin-bottom: 0.4em;
-    text-shadow: 4px 4px #00000040;
+}
+
+.accent {
+    color: #D4531A;
+}
+
+.title-line {
+    display: block;
+    color: #e0e0e0;
+}
+
+.title-line.systems {
+    /* Adjust this value to align the S under the E in Seglectic */
+    padding-left: var(--systems-indent, 2.8em);
 }
 
 .section-label {
