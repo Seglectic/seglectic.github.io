@@ -388,21 +388,40 @@ Node.js script. Configurable at the top of the file:
 
 ```js
 // CONFIGURE these paths:
-const OBSIDIAN_SOURCE = process.env.OBSIDIAN_SOURCE || '/path/to/your/vault/devlog';
-const ASTRO_DEVLOG_DIR = './src/content/devlog';
+const VAULT_PROJECTS_DIR = process.env.VAULT_PROJECTS || '/path/to/vault/Projects';
+const ASTRO_DEVLOG_DIR   = './src/content/devlog';
 const ASTRO_PROJECTS_DIR = './src/content/projects';
-const PUBLIC_IMAGES_DIR = './public/images';
+const PUBLIC_IMAGES_DIR  = './public/images';
 ```
 
-Behavior:
-1. Read all `.md` files from `OBSIDIAN_SOURCE`
-2. Parse frontmatter with `gray-matter`
-3. Skip if `publish !== true`
-4. Determine type from frontmatter `type` field (default: `devlog`)
-5. Warn about unsupported Obsidian syntax: `[[wikilinks]]`, `![[embeds]]`
-6. Copy body to appropriate collection dir
-7. Copy referenced local images to `public/images/`
-8. Normalize frontmatter fields (dates, slugs)
+### Vault structure assumed
+
+```
+VaultRoot/
+  Projects/
+    Canopticon/
+      devlog/
+        2026-04-mask-rendering.md   ← publish: true → imported
+        2026-05-wip-notes.md        ← publish: false → skipped
+      Canopticon.md                 ← optional: project body content
+    Segterm/
+      devlog/
+        2026-05-first-boot.md
+```
+
+### Behavior
+
+1. Scan `VAULT_PROJECTS_DIR` for subdirectories (each is a project)
+2. Derive project slug from folder name: lowercase, spaces → hyphens (e.g. `My Project` → `my-project`); override with `slug:` frontmatter if present
+3. For each project, check if a `devlog/` subfolder exists
+4. Scan `devlog/` for `.md` files; parse frontmatter with `gray-matter`
+5. Skip files where `publish !== true`
+6. Auto-inject `project: <slug>` into output frontmatter (no need to set it manually per note)
+7. Warn about unsupported Obsidian syntax: `[[wikilinks]]`, `![[embeds]]`
+8. Copy cleaned `.mdx` files into `ASTRO_DEVLOG_DIR`
+9. Copy local images (from `devlog/` or project root) into `PUBLIC_IMAGES_DIR/projects/<slug>/`
+10. Normalize frontmatter fields (dates, output slugs)
+11. Optionally: if a `[Project Name].md` or `README.md` exists at the project root and has `publish: true`, import it as project body content into `ASTRO_PROJECTS_DIR`
 
 ---
 
