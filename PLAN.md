@@ -409,7 +409,7 @@ Projects/
   POSTr.md
 ```
 
-Flat single-file projects cannot have a `devlog/` subfolder. To publish devlog entries for one, it needs to be converted to a folder-based project first (rename the file, create a folder, move it in).
+Flat single-file projects are a legacy format — they will eventually be migrated to folder-based or archived. The import script only handles folder-based projects; flat `.md` files are ignored.
 
 ### Slug derivation
 
@@ -433,7 +433,7 @@ The `status` field maps directly to the content schema (`concept` → add to all
 
 ### Behavior
 
-1. Scan `VAULT_PROJECTS_DIR` for both folder-based projects and flat `.md` files
+1. Scan `VAULT_PROJECTS_DIR` for subdirectories only (flat `.md` files are legacy, ignored)
 2. For each project file found, parse frontmatter with `gray-matter`
 3. Extract slug from `project/xxx` tag
 4. Extract `summary` from the `^head` block (first bullet under the title heading)
