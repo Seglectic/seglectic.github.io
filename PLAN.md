@@ -34,8 +34,6 @@ seglectic.github.io/
 │   │   │   ├── canopticon-hero.png
 │   │   │   └── segterm-hero.png
 │   │   └── devlog/
-│   └── emojifier/
-│       └── index.html              ← copied verbatim, stays working
 ├── src/
 │   ├── content/
 │   │   ├── config.ts               ← collection schemas (Zod)
@@ -420,11 +418,11 @@ Behavior:
 
 | File | Action |
 |------|--------|
-| `emojifier/index.html` | Move to `public/emojifier/index.html` — still reachable at `/emojifier/` |
 | `CNAME` | Move to `public/CNAME` |
 | `assets/fonts/ABSTRACT.ttf` | Move to `public/fonts/ABSTRACT.ttf` |
 | `favicon.ico`, `favicon.png` | Move to `public/` |
 | `scripts/kcloud.sh` | Keep in `scripts/`, untouched |
+| `emojifier/` | Drop — not included in the new site |
 
 ---
 
@@ -457,7 +455,6 @@ npm run preview     # verify built output
 
 Check:
 - CNAME present in `dist/`
-- `emojifier/` present and functional at `/emojifier/`
 - All project cards link correctly
 - StatusBadge colors render per status
 - Fonts load from `/fonts/ABSTRACT.ttf`
@@ -472,5 +469,5 @@ Check:
 - Sample project slugs (canopticon, segterm) are placeholders — real content added later
 - Hero images are placeholders until real screenshots exist
 - `ProjectFilter.svelte` is deferred to phase 2 (projects page starts static)
-- The `emojifier` tool needs no changes — just moved to `public/`
-- Existing `assets/AR/Tap-Kun.usdz` is not included in the new build (can be added to `public/` manually if needed)
+- `emojifier/` is dropped from the new site entirely
+- `assets/AR/Tap-Kun.usdz` is not included in the new build (can be added to `public/` manually if needed)
