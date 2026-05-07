@@ -394,34 +394,71 @@ const ASTRO_PROJECTS_DIR = './src/content/projects';
 const PUBLIC_IMAGES_DIR  = './public/images';
 ```
 
-### Vault structure assumed
+### Actual vault structure
+
+Projects come in two shapes:
 
 ```
-VaultRoot/
-  Projects/
-    Canopticon/
-      devlog/
-        2026-04-mask-rendering.md   ← publish: true → imported
-        2026-05-wip-notes.md        ← publish: false → skipped
-      Canopticon.md                 ← optional: project body content
-    Segterm/
-      devlog/
-        2026-05-first-boot.md
+Projects/
+  Airboop - NFC Temperature Logger/   ← folder-based (has attachments or subfolders)
+    Airboop - NFC Temperature Logger.md
+    devlog/                            ← ADD THIS to enable publishing
+      2026-05-first-entry.md
+    attach/
+  SegSnap.md                          ← flat single-file project (no folder)
+  POSTr.md
 ```
+
+Flat single-file projects cannot have a `devlog/` subfolder. To publish devlog entries for one, it needs to be converted to a folder-based project first (rename the file, create a folder, move it in).
+
+### Slug derivation
+
+Slug comes from the `project/xxx` tag in frontmatter — **not** the folder name.
+
+```yaml
+tags:
+  - project/airboop   ← slug = "airboop"
+```
+
+This is reliable and already consistent across all project files.
+
+### Project file conventions (observed)
+
+All project files follow the same template:
+- `title`, `tags`, `status` in frontmatter
+- First bullet under heading has a `^head` block reference — this is the one-liner description, ideal for `tagline`/`summary`
+- Sections: Objective, Challenges, ToDo, Specs, Log (Dataview), Resources, Timeline
+
+The `status` field maps directly to the content schema (`concept` → add to allowed values, or map to `prototype`).
 
 ### Behavior
 
-1. Scan `VAULT_PROJECTS_DIR` for subdirectories (each is a project)
-2. Derive project slug from folder name: lowercase, spaces → hyphens (e.g. `My Project` → `my-project`); override with `slug:` frontmatter if present
-3. For each project, check if a `devlog/` subfolder exists
-4. Scan `devlog/` for `.md` files; parse frontmatter with `gray-matter`
-5. Skip files where `publish !== true`
-6. Auto-inject `project: <slug>` into output frontmatter (no need to set it manually per note)
-7. Warn about unsupported Obsidian syntax: `[[wikilinks]]`, `![[embeds]]`
-8. Copy cleaned `.mdx` files into `ASTRO_DEVLOG_DIR`
-9. Copy local images (from `devlog/` or project root) into `PUBLIC_IMAGES_DIR/projects/<slug>/`
-10. Normalize frontmatter fields (dates, output slugs)
-11. Optionally: if a `[Project Name].md` or `README.md` exists at the project root and has `publish: true`, import it as project body content into `ASTRO_PROJECTS_DIR`
+1. Scan `VAULT_PROJECTS_DIR` for both folder-based projects and flat `.md` files
+2. For each project file found, parse frontmatter with `gray-matter`
+3. Extract slug from `project/xxx` tag
+4. Extract `summary` from the `^head` block (first bullet under the title heading)
+5. **For folder-based projects only**: check for a `devlog/` subfolder
+6. Scan `devlog/` for `.md` files; skip where `publish !== true`
+7. Auto-inject `project: <slug>` into devlog output frontmatter
+8. Warn about unsupported Obsidian syntax: `[[wikilinks]]`, `![[embeds]]`, Dataview blocks
+9. Strip Dataview code blocks from project body before importing
+10. Copy cleaned `.mdx` files into `ASTRO_DEVLOG_DIR`
+11. Copy local images into `PUBLIC_IMAGES_DIR/projects/<slug>/`
+12. Optionally: if the project file itself has `publish: true`, import it into `ASTRO_PROJECTS_DIR`
+
+### Status mapping
+
+Obsidian `status` values seen: `concept`, `active`. Map these to site schema:
+
+| Vault | Site |
+|-------|------|
+| `concept` | `prototype` |
+| `active` | `active` |
+| `complete` | `released` |
+| `shelved` | `shelved` |
+| `archived` | `archived` |
+
+Override with explicit `site_status:` frontmatter field if the default mapping is wrong for a specific project.
 
 ---
 
