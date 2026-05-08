@@ -11,6 +11,7 @@ const projects = defineCollection({
       category: z.enum(['software', 'hardware', 'embedded', 'ai', 'web', 'tool', 'other']),
       tags: z.array(z.string()).default([]),
       heroImage: image().optional(),
+      logoImage: image().optional(),
       summary: z.string(),
       github: z.string().url().optional(),
       demo: z.string().url().optional(),

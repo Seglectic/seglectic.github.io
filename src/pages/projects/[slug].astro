@@ -24,7 +24,7 @@ const relatedDevlog = allDevlog
   .filter((post: CollectionEntry<'devlog'>) => post.data.project === project.id && post.data.publish)
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
 
-const { title, tagline, status, category, heroImage, github, demo, docs } = project.data;
+const { title, tagline, heroImage, logoImage, github, demo, docs } = project.data;
 ---
 
 <Layout
@@ -34,6 +34,14 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
   {heroImage && (
     <section class="hero-image-wrap">
       <Image src={heroImage} alt={`${title} hero`} class="hero-image" />
+      {logoImage && (
+        <Image
+          src={logoImage}
+          alt={`${title} logo`}
+          class="hero-logo"
+          data-canopticon-logo
+        />
+      )}
       <div class="hero-overlay">
         <div class="hero-copy">
           <h1 class="title hero-reveal hero-reveal--title">{title}</h1>
@@ -113,6 +121,20 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     object-fit: cover;
     display: block;
     filter: saturate(0.95) contrast(1.02);
+  }
+
+  .hero-logo {
+    position: absolute;
+    left: 50%;
+    top: 43%;
+    width: clamp(110px, 16vw, 168px);
+    height: auto;
+    transform: translate(-50%, -50%);
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 14px 34px rgba(0, 0, 0, 0.42));
+    will-change: transform;
+    z-index: 1;
   }
 
   .hero-overlay {
@@ -344,10 +366,42 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     }
   };
 
-  initProjectReveals();
+  const initCanopticonLogoBob = () => {
+    const logo = document.querySelector('[data-canopticon-logo]');
+    if (!logo) return;
 
-  if (!window.__seglecticProjectRevealBound) {
-    document.addEventListener('astro:page-load', initProjectReveals);
-    window.__seglecticProjectRevealBound = true;
+    const amplitude = 12;
+    const periodMs = 2000;
+    const startedAt = performance.now();
+    let frameId = 0;
+
+    const tick = (now) => {
+      const phase = ((now - startedAt) / periodMs) * Math.PI * 2;
+      const offsetY = Math.sin(phase) * amplitude;
+      logo.style.transform = `translate(-50%, calc(-50% + ${offsetY.toFixed(2)}px))`;
+      frameId = window.requestAnimationFrame(tick);
+    };
+
+    frameId = window.requestAnimationFrame(tick);
+
+    window.addEventListener(
+      'pagehide',
+      () => {
+        window.cancelAnimationFrame(frameId);
+      },
+      { once: true }
+    );
+  };
+
+  const initProjectPage = () => {
+    initProjectReveals();
+    initCanopticonLogoBob();
+  };
+
+  initProjectPage();
+
+  if (!window.__seglecticProjectPageBound) {
+    document.addEventListener('astro:page-load', initProjectPage);
+    window.__seglecticProjectPageBound = true;
   }
 </script>
