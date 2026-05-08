@@ -35,25 +35,25 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     <section class="hero-image-wrap">
       <Image src={heroImage} alt={`${title} hero`} class="hero-image" />
       <div class="hero-overlay">
-          <div class="hero-copy">
-          <h1 class="title">{title}</h1>
-          <p class="tagline">{tagline}</p>
+        <div class="hero-copy">
+          <h1 class="title hero-reveal hero-reveal--title">{title}</h1>
+          <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
         </div>
       </div>
     </section>
   )}
 
-  <article class="project-wrap">
+  <article class="project-wrap" data-reveal>
     <header class="project-header">
       <p class="summary">{project.data.summary}</p>
     </header>
 
-    <div class="project-body">
+    <div class="project-body" data-reveal>
       <Content />
     </div>
 
     {(github || demo || docs) && (
-      <div class="quick-links quick-links--details">
+      <div class="quick-links quick-links--details" data-reveal>
         {github && (
           <a href={github} class="link-btn" target="_blank" rel="noopener noreferrer">
             GitHub
@@ -73,7 +73,7 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     )}
 
     {relatedDevlog.length > 0 && (
-      <section class="related-devlog">
+      <section class="related-devlog" data-reveal>
         <h2 class="related-title">Devlog</h2>
         <div class="devlog-list">
           {relatedDevlog.map((post: CollectionEntry<'devlog'>) => (
@@ -155,6 +155,21 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     text-wrap: pretty;
   }
 
+  .hero-reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    animation: hero-fade-up 900ms cubic-bezier(0.18, 0.82, 0.22, 1) forwards;
+    will-change: transform, opacity;
+  }
+
+  .hero-reveal--title {
+    animation-delay: 160ms;
+  }
+
+  .hero-reveal--tagline {
+    animation-delay: 320ms;
+  }
+
   .quick-links {
     display: flex;
     gap: var(--space-sm);
@@ -190,6 +205,20 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     color: var(--text);
     font-size: 1.05rem;
     line-height: 1.75;
+  }
+
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 700ms cubic-bezier(0.18, 0.82, 0.22, 1),
+      transform 700ms cubic-bezier(0.18, 0.82, 0.22, 1);
+    will-change: transform, opacity;
+  }
+
+  [data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .project-body {
@@ -259,4 +288,54 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
       max-width: none;
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-reveal,
+    [data-reveal] {
+      opacity: 1;
+      transform: none;
+      animation: none;
+      transition: none;
+    }
+  }
+
+  @keyframes hero-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 </style>
+
+<script>
+  const revealTargets = Array.from(document.querySelectorAll('[data-reveal]'));
+
+  if (
+    revealTargets.length > 0 &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches &&
+    'IntersectionObserver' in window
+  ) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      },
+      {
+        threshold: 0.16,
+        rootMargin: '0px 0px -8% 0px',
+      }
+    );
+
+    for (const target of revealTargets) observer.observe(target);
+  } else {
+    for (const target of revealTargets) target.classList.add('is-visible');
+  }
+</script>
