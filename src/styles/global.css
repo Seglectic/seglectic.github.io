@@ -43,6 +43,7 @@
 
   /* Layout */
   --container-max: 1400px;
+  --content-max: 960px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

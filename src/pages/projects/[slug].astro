@@ -1,7 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
-import StatusBadge from '../../components/StatusBadge.astro';
 import DevlogCard from '../../components/DevlogCard.astro';
 
 export async function getStaticPaths() {
@@ -31,46 +31,46 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
   title={`${title} — Seglectic Systems`}
   description={project.data.summary}
 >
+  {heroImage && (
+    <section class="hero-image-wrap">
+      <Image src={heroImage} alt={`${title} hero`} class="hero-image" />
+      <div class="hero-overlay">
+          <div class="hero-copy">
+          <h1 class="title">{title}</h1>
+          <p class="tagline">{tagline}</p>
+        </div>
+      </div>
+    </section>
+  )}
+
   <article class="project-wrap">
     <header class="project-header">
-      {heroImage && (
-        <div class="hero-image-wrap">
-          <img src={heroImage} alt={`${title} hero`} class="hero-image" />
-        </div>
-      )}
-
-      <div class="meta-row">
-        <StatusBadge status={status} />
-        <span class="category">{category}</span>
-      </div>
-
-      <h1 class="title">{title}</h1>
-      <p class="tagline">{tagline}</p>
-
-      {(github || demo || docs) && (
-        <div class="quick-links">
-          {github && (
-            <a href={github} class="link-btn" target="_blank" rel="noopener noreferrer">
-              GitHub
-            </a>
-          )}
-          {demo && (
-            <a href={demo} class="link-btn" target="_blank" rel="noopener noreferrer">
-              Demo
-            </a>
-          )}
-          {docs && (
-            <a href={docs} class="link-btn" target="_blank" rel="noopener noreferrer">
-              Docs
-            </a>
-          )}
-        </div>
-      )}
+      <p class="summary">{project.data.summary}</p>
     </header>
 
     <div class="project-body">
       <Content />
     </div>
+
+    {(github || demo || docs) && (
+      <div class="quick-links quick-links--details">
+        {github && (
+          <a href={github} class="link-btn" target="_blank" rel="noopener noreferrer">
+            GitHub
+          </a>
+        )}
+        {demo && (
+          <a href={demo} class="link-btn" target="_blank" rel="noopener noreferrer">
+            Demo
+          </a>
+        )}
+        {docs && (
+          <a href={docs} class="link-btn" target="_blank" rel="noopener noreferrer">
+            Docs
+          </a>
+        )}
+      </div>
+    )}
 
     {relatedDevlog.length > 0 && (
       <section class="related-devlog">
@@ -92,49 +92,67 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
   }
 
   .project-header {
-    margin-bottom: var(--space-xl);
+    margin-bottom: calc(var(--space-lg) + var(--space-sm));
   }
 
   .hero-image-wrap {
-    margin-bottom: var(--space-lg);
-    border: 1px solid var(--border);
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-bottom: calc(var(--space-xl) + var(--space-sm));
     overflow: hidden;
+    min-height: 100vh;
+    background: var(--bg-surface);
   }
 
   .hero-image {
     width: 100%;
-    height: auto;
+    min-height: 100vh;
+    height: 100vh;
+    object-fit: cover;
     display: block;
+    filter: saturate(0.95) contrast(1.02);
   }
 
-  .meta-row {
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-    margin-bottom: var(--space-md);
+    align-items: flex-end;
+    background:
+      linear-gradient(180deg, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.04) 42%, rgba(15, 15, 15, 0.46) 76%, rgba(15, 15, 15, 0.92) 100%);
   }
 
-  .category {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-dim);
+  .hero-copy {
+    width: min(100%, 1240px);
+    margin: 0 auto;
+    padding: clamp(2rem, 4vw, 3.5rem) var(--space-lg) clamp(3.5rem, 8vw, 6rem);
   }
 
   .title {
-    font-family: var(--font-mono);
-    font-size: 2.25rem;
-    font-weight: 400;
-    color: var(--text);
-    margin: 0 0 var(--space-sm) 0;
-    letter-spacing: -0.02em;
+    font-family: "Segoe UI", "Aptos", "Helvetica Neue", "Arial Nova", sans-serif;
+    font-size: clamp(2.75rem, 7vw, 6rem);
+    font-weight: 300;
+    color: #f3f1eb;
+    margin: 0;
+    letter-spacing: 0.045em;
+    line-height: 0.92;
+    text-transform: uppercase;
+    max-width: 11ch;
+    text-wrap: balance;
+    text-shadow: 0 0 24px rgba(15, 15, 15, 0.28);
   }
 
   .tagline {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    margin: 0 0 var(--space-lg) 0;
+    font-family: "IBM Plex Mono", "Aptos Mono", "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", monospace;
+    color: rgba(232, 232, 230, 0.78);
+    font-size: clamp(0.95rem, 1.45vw, 1.1rem);
+    line-height: 1.75;
+    margin: calc(var(--space-md) + 2px) 0 0 0;
+    max-width: 32rem;
+    letter-spacing: 0.02em;
+    text-wrap: pretty;
   }
 
   .quick-links {
@@ -143,20 +161,35 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     flex-wrap: wrap;
   }
 
+  .quick-links--details {
+    margin-bottom: var(--space-xl);
+  }
+
   .link-btn {
     display: inline-block;
-    padding: var(--space-xs) var(--space-md);
-    border: 1px solid var(--border);
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(232, 232, 230, 0.28);
     font-family: var(--font-mono);
     font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 0.05em;
-    transition: border-color 0.15s, color 0.15s;
+    color: rgba(243, 241, 235, 0.84);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(15, 15, 15, 0.18);
+    backdrop-filter: blur(12px);
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
   }
 
   .link-btn:hover {
     border-color: var(--accent);
     color: var(--accent);
+    background: rgba(15, 15, 15, 0.36);
+  }
+
+  .summary {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.05rem;
+    line-height: 1.75;
   }
 
   .project-body {
@@ -213,5 +246,17 @@ const { title, tagline, status, category, heroImage, github, demo, docs } = proj
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+  }
+
+  @media (max-width: 720px) {
+    .hero-copy {
+      padding-left: var(--space-md);
+      padding-right: var(--space-md);
+      padding-bottom: calc(var(--space-xl) + var(--space-md));
+    }
+
+    .title {
+      max-width: none;
+    }
   }
 </style>
