@@ -1,0 +1,97 @@
+---
+import TagList from './TagList.astro';
+
+interface Props {
+  post: {
+    id: string;
+    slug?: string;
+    data: {
+      title: string;
+      date: Date;
+      project?: string;
+      summary?: string;
+      tags?: string[];
+    };
+  };
+}
+
+const { post } = Astro.props;
+const { title, date, project, summary, tags = [] } = post.data;
+const href = `/devlog/${post.id}`;
+
+const formattedDate = new Intl.DateTimeFormat('en-US', {
+  year:  'numeric',
+  month: 'short',
+  day:   'numeric',
+}).format(new Date(date));
+---
+
+<article class="devlog-card">
+  <div class="card-meta">
+    <time class="date" datetime={new Date(date).toISOString()}>{formattedDate}</time>
+    {project && <span class="project-name">{project}</span>}
+  </div>
+  <h2 class="title">
+    <a href={href}>{title}</a>
+  </h2>
+  {summary && <p class="summary">{summary}</p>}
+  {tags.length > 0 && <TagList tags={tags} />}
+</article>
+
+<style>
+  .devlog-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .project-name {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1rem;
+    font-family: var(--font-mono);
+    line-height: 1.4;
+  }
+
+  .title a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .title a:hover {
+    color: var(--accent);
+  }
+
+  .summary {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+</style>

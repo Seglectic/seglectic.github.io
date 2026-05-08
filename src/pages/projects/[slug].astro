@@ -1,0 +1,217 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import StatusBadge from '../../components/StatusBadge.astro';
+import DevlogCard from '../../components/DevlogCard.astro';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+
+const allDevlog = await getCollection('devlog');
+const relatedDevlog = allDevlog
+  .filter((post: CollectionEntry<'devlog'>) => post.data.project === project.id && post.data.publish)
+  .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const { title, tagline, status, category, heroImage, github, demo, docs } = project.data;
+---
+
+<Layout
+  title={`${title} — Seglectic Systems`}
+  description={project.data.summary}
+>
+  <article class="project-wrap">
+    <header class="project-header">
+      {heroImage && (
+        <div class="hero-image-wrap">
+          <img src={heroImage} alt={`${title} hero`} class="hero-image" />
+        </div>
+      )}
+
+      <div class="meta-row">
+        <StatusBadge status={status} />
+        <span class="category">{category}</span>
+      </div>
+
+      <h1 class="title">{title}</h1>
+      <p class="tagline">{tagline}</p>
+
+      {(github || demo || docs) && (
+        <div class="quick-links">
+          {github && (
+            <a href={github} class="link-btn" target="_blank" rel="noopener noreferrer">
+              GitHub
+            </a>
+          )}
+          {demo && (
+            <a href={demo} class="link-btn" target="_blank" rel="noopener noreferrer">
+              Demo
+            </a>
+          )}
+          {docs && (
+            <a href={docs} class="link-btn" target="_blank" rel="noopener noreferrer">
+              Docs
+            </a>
+          )}
+        </div>
+      )}
+    </header>
+
+    <div class="project-body">
+      <Content />
+    </div>
+
+    {relatedDevlog.length > 0 && (
+      <section class="related-devlog">
+        <h2 class="related-title">Devlog</h2>
+        <div class="devlog-list">
+          {relatedDevlog.map((post: CollectionEntry<'devlog'>) => (
+            <DevlogCard post={post} />
+          ))}
+        </div>
+      </section>
+    )}
+  </article>
+</Layout>
+
+<style>
+  .project-wrap {
+    padding: var(--space-xl) 0;
+    max-width: 720px;
+  }
+
+  .project-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero-image-wrap {
+    margin-bottom: var(--space-lg);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .category {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .title {
+    font-family: var(--font-mono);
+    font-size: 2.25rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: 0 0 var(--space-sm) 0;
+    letter-spacing: -0.02em;
+  }
+
+  .tagline {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin: 0 0 var(--space-lg) 0;
+  }
+
+  .quick-links {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+  }
+
+  .link-btn {
+    display: inline-block;
+    padding: var(--space-xs) var(--space-md);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .link-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .project-body {
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: var(--space-xl);
+  }
+
+  .project-body :global(h2) {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+    letter-spacing: 0.04em;
+  }
+
+  .project-body :global(h3) {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text-muted);
+    margin: var(--space-md) 0 var(--space-xs) 0;
+  }
+
+  .project-body :global(ul) {
+    padding-left: var(--space-lg);
+  }
+
+  .project-body :global(li) {
+    margin-bottom: var(--space-xs);
+  }
+
+  .project-body :global(p) {
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .related-devlog {
+    border-top: 1px solid var(--border);
+    padding-top: var(--space-lg);
+  }
+
+  .related-title {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .devlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+</style>

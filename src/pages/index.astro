@@ -1,0 +1,117 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import DevlogCard from '../components/DevlogCard.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+
+const allProjects = await getCollection('projects');
+const allDevlog = await getCollection('devlog');
+
+const featuredProjects = allProjects
+  .filter((p: CollectionEntry<'projects'>) => p.data.featured)
+  .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => a.data.order - b.data.order);
+
+const recentDevlog = allDevlog
+  .filter((p: CollectionEntry<'devlog'>) => p.data.publish)
+  .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+
+const activeProjects = allProjects
+  .filter((p: CollectionEntry<'projects'>) => p.data.status === 'active')
+  .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => a.data.order - b.data.order);
+---
+
+<Layout title="Seglectic Systems" description="An experimental R&D studio building tools and systems.">
+  <Hero
+    title="Seglectic Systems"
+    tagline="An experimental R&D studio."
+    eyebrow="Systems in motion"
+  />
+
+  <section class="section">
+    <SectionHeader title="Featured Projects" href="/projects" />
+    <div class="projects-grid">
+      {featuredProjects.map((project: CollectionEntry<'projects'>) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <SectionHeader title="Latest Devlog" href="/devlog" />
+    <div class="devlog-list">
+      {recentDevlog.map((post: CollectionEntry<'devlog'>) => (
+        <DevlogCard post={post} />
+      ))}
+    </div>
+  </section>
+
+  <section class="section">
+    <SectionHeader title="Active Systems" />
+    <ul class="active-list">
+      {activeProjects.map((project: CollectionEntry<'projects'>) => (
+        <li>
+          <a href={`/projects/${project.id}`}>{project.data.title}</a>
+          <span class="active-tagline">{project.data.tagline}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+</Layout>
+
+<style>
+  .section {
+    margin-bottom: var(--space-xl);
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+    max-width: 100%;
+  }
+
+  .devlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .active-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .active-list li {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-md);
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .active-list li:last-child {
+    border-bottom: none;
+  }
+
+  .active-list a {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--accent-cyan);
+  }
+
+  .active-list a:hover {
+    color: var(--accent);
+  }
+
+  .active-tagline {
+    color: var(--text-muted);
+    font-size: 0.875rem;
+  }
+</style>

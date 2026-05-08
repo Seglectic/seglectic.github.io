@@ -1,0 +1,109 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="About — Seglectic Systems"
+  description="Seglectic Systems is a dark, experimental R&D studio building tools and systems at the edge of software and hardware."
+>
+  <div class="about-wrap">
+    <header class="about-header">
+      <p class="eyebrow">About</p>
+      <h1 class="title">Seglectic Systems</h1>
+    </header>
+
+    <div class="prose">
+      <p>
+        Seglectic Systems is a dark, experimental R&D studio. The work here lives at the intersection
+        of software, hardware, and embedded systems — built to explore, to understand, and occasionally
+        to ship.
+      </p>
+      <p>
+        Projects range from computer vision tools running on Raspberry Pi to experimental terminal
+        emulators written in Rust. The common thread is curiosity: what happens when you go low-level,
+        when you instrument the physical world, when you build the thing you wish existed.
+      </p>
+      <p>
+        Nothing here is polished for mass consumption. These are tools and systems in motion —
+        some active, some in prototype, some shelved. The devlog tracks what's happening and why.
+      </p>
+      <p>
+        All work is open source where possible.
+      </p>
+    </div>
+
+    <div class="links">
+      <a href="https://github.com/Seglectic" class="link-btn" target="_blank" rel="noopener noreferrer">
+        GitHub
+      </a>
+      <a href="/projects" class="link-btn">
+        Projects
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about-wrap {
+    padding: var(--space-xl) 0;
+    max-width: 680px;
+  }
+
+  .about-header {
+    margin-bottom: var(--space-lg);
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-sm) 0;
+  }
+
+  .title {
+    font-family: var(--font-mono);
+    font-size: 2rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  .prose {
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: var(--space-lg);
+  }
+
+  .prose p {
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+  }
+
+  .link-btn {
+    display: inline-block;
+    padding: var(--space-sm) var(--space-md);
+    border: 1px solid var(--border);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    letter-spacing: 0.05em;
+    transition: border-color 0.15s, color 0.15s;
+  }
+
+  .link-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+</style>

@@ -1,0 +1,38 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+
+const allProjects = await getCollection('projects');
+
+const projects = allProjects
+  .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => a.data.order - b.data.order);
+---
+
+<Layout
+  title="Projects — Seglectic Systems"
+  description="All projects from Seglectic Systems — software, hardware, embedded, and AI experiments."
+>
+  <div class="page-wrap">
+    <SectionHeader title="Projects" />
+    <div class="projects-grid">
+      {projects.map((project: CollectionEntry<'projects'>) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page-wrap {
+    padding: var(--space-xl) 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-md);
+    max-width: 100%;
+  }
+</style>
