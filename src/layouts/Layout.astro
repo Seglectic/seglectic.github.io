@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 
@@ -38,6 +39,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+
+    <ClientRouter />
   </head>
   <body>
     <SiteHeader />
