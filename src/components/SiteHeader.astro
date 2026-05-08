@@ -11,7 +11,8 @@ const currentPath = Astro.url.pathname;
 <header>
   <div class="header-inner">
     <a class="logo" href="/">
-      <span class="logo-seg">SEG</span><span class="logo-lectic">LECTIC</span><span class="logo-systems">SYSTEMS</span>
+      <span class="logo-row"><span class="logo-seg">SEG</span><span class="logo-lectic">LECTIC</span></span>
+      <span class="logo-row logo-row--systems"><span class="logo-sys">SYS</span><span class="logo-tems">TEMS</span></span>
     </a>
 
     <nav aria-label="Site navigation">
@@ -41,19 +42,11 @@ const currentPath = Astro.url.pathname;
   }
 
   .header-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: var(--space-md);
+    padding: var(--space-md) var(--space-lg);
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: var(--space-md);
-  }
-
-  @media (min-width: 640px) {
-    .header-inner {
-      padding: var(--space-md) var(--space-lg);
-    }
   }
 
   /* Logo */
@@ -63,28 +56,28 @@ const currentPath = Astro.url.pathname;
     letter-spacing: 0.05em;
     text-decoration: none;
     display: flex;
-    align-items: baseline;
-    gap: 0;
+    flex-direction: column;
+    gap: 0.15em;
     white-space: nowrap;
   }
 
-  .logo-seg {
-    color: var(--accent);
+  .logo-row {
+    display: block;
   }
 
-  .logo-lectic {
-    color: var(--text);
+  .logo-row--systems {
+    padding-left: 1.01ch; /* ← shift SYSTEMS left/right to align S under E */
   }
 
-  .logo-systems {
-    color: var(--text-muted);
-    font-size: 0.65em;
-    margin-left: 0.5em;
-    letter-spacing: 0.08em;
-  }
+  .logo-seg { color: var(--accent); }
+  .logo-lectic { color: var(--text); }
+  .logo-sys { color: var(--accent); }
+  .logo-tems { color: var(--text); }
 
   .logo:hover .logo-seg,
-  .logo:hover .logo-lectic {
+  .logo:hover .logo-lectic,
+  .logo:hover .logo-sys,
+  .logo:hover .logo-tems {
     color: var(--accent);
   }
 
@@ -125,7 +118,7 @@ const currentPath = Astro.url.pathname;
       gap: var(--space-md);
     }
 
-    .logo-systems {
+    .logo-row--systems {
       display: none;
     }
   }
