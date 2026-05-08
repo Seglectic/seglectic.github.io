@@ -25,7 +25,8 @@
   --accent-amber:  #c4964e;
 
   /* Typography */
-  --font-mono:     'Abstract', 'Courier New', monospace;
+  --font-logo:     'Abstract', 'Courier New', monospace;
+  --font-mono:     ui-monospace, 'Courier New', monospace;
   --font-sans:     system-ui, -apple-system, sans-serif;
 
   /* Spacing */
