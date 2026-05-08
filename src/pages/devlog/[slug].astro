@@ -1,0 +1,182 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('devlog');
+  return posts
+    .filter((post) => post.data.publish)
+    .map((post) => ({
+      params: { slug: post.id },
+      props: { post },
+    }));
+}
+
+interface Props {
+  post: CollectionEntry<'devlog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const { title, date, project, tags, summary } = post.data;
+
+const formattedDate = date.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+---
+
+<Layout
+  title={`${title} — Devlog — Seglectic Systems`}
+  description={summary}
+>
+  <article class="post-wrap">
+    <header class="post-header">
+      <div class="meta-top">
+        <time class="date" datetime={date.toISOString()}>{formattedDate}</time>
+        {project && (
+          <span class="separator">/</span>
+          <a href={`/projects/${project}`} class="project-link">{project}</a>
+        )}
+      </div>
+
+      <h1 class="title">{title}</h1>
+      <p class="summary">{summary}</p>
+
+      {tags.length > 0 && (
+        <div class="tags">
+          {tags.map((tag: string) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="post-body">
+      <Content />
+    </div>
+
+    <footer class="post-footer">
+      <a href="/devlog" class="back-link">← Back to devlog</a>
+    </footer>
+  </article>
+</Layout>
+
+<style>
+  .post-wrap {
+    padding: var(--space-xl) 0;
+    max-width: 680px;
+  }
+
+  .post-header {
+    margin-bottom: var(--space-xl);
+    padding-bottom: var(--space-lg);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .meta-top {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+  }
+
+  .date {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .separator {
+    color: var(--text-dim);
+    font-size: 0.8rem;
+  }
+
+  .project-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--accent-cyan);
+    letter-spacing: 0.05em;
+  }
+
+  .project-link:hover {
+    color: var(--accent);
+  }
+
+  .title {
+    font-family: var(--font-mono);
+    font-size: 1.75rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: 0 0 var(--space-sm) 0;
+    letter-spacing: -0.02em;
+  }
+
+  .summary {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0 0 var(--space-md) 0;
+    line-height: 1.6;
+  }
+
+  .tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    border: 1px solid var(--border-subtle);
+    padding: 2px 6px;
+  }
+
+  .post-body {
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: var(--space-xl);
+  }
+
+  .post-body :global(h2) {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    font-weight: 400;
+    color: var(--text);
+    margin: var(--space-lg) 0 var(--space-sm) 0;
+    letter-spacing: 0.04em;
+  }
+
+  .post-body :global(p) {
+    margin: 0 0 var(--space-md) 0;
+  }
+
+  .post-body :global(ul) {
+    padding-left: var(--space-lg);
+  }
+
+  .post-body :global(li) {
+    margin-bottom: var(--space-xs);
+  }
+
+  .post-footer {
+    border-top: 1px solid var(--border-subtle);
+    padding-top: var(--space-md);
+  }
+
+  .back-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+</style>

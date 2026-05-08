@@ -1,0 +1,41 @@
+---
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+
+const colorMap: Record<string, string> = {
+  active:    'var(--accent-cyan)',
+  prototype: 'var(--accent-amber)',
+  released:  '#6aaa6a',
+  shelved:   'var(--text-dim)',
+  archived:  'var(--text-dim)',
+};
+
+const dotColor = colorMap[status.toLowerCase()] ?? 'var(--text-dim)';
+---
+
+<span class="badge">
+  <span class="dot" style={`background: ${dotColor};`}></span>
+  <span class="label">{status}</span>
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color: var(--text-muted);
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+</style>

@@ -1,0 +1,51 @@
+---
+interface Props {
+  title: string;
+  tagline: string;
+  eyebrow?: string;
+}
+
+const { title, tagline, eyebrow } = Astro.props;
+---
+
+<section class="hero">
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <h1 class="title">{title}</h1>
+  <p class="tagline">{tagline}</p>
+</section>
+
+<style>
+  .hero {
+    padding: var(--space-xl) 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .eyebrow {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+  }
+
+  .title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+
+  .tagline {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 60ch;
+    margin-top: var(--space-sm);
+  }
+</style>

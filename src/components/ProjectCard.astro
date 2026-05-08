@@ -1,0 +1,88 @@
+---
+import StatusBadge from './StatusBadge.astro';
+import TagList from './TagList.astro';
+
+interface Props {
+  project: {
+    id: string;
+    slug?: string;
+    data: {
+      title: string;
+      tagline?: string;
+      category?: string;
+      status: string;
+      tags?: string[];
+    };
+  };
+}
+
+const { project } = Astro.props;
+const { title, tagline, category, status, tags = [] } = project.data;
+const href = `/projects/${project.id}`;
+---
+
+<a class="card" href={href}>
+  <article>
+    {category && <span class="category">{category}</span>}
+    <h2 class="title">{title}</h2>
+    {tagline && <p class="tagline">{tagline}</p>}
+    <div class="meta">
+      <StatusBadge status={status} />
+      <TagList tags={tags} />
+    </div>
+  </article>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    text-decoration: none;
+    color: inherit;
+    transition: border-color 0.2s ease;
+  }
+
+  .card:hover {
+    border-color: var(--accent);
+  }
+
+  article {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .category {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+  }
+
+  .title {
+    margin: 0;
+    font-size: 1.1rem;
+    font-family: var(--font-mono);
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .tagline {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+    margin-top: var(--space-xs);
+  }
+</style>

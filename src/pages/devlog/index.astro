@@ -1,0 +1,38 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import DevlogCard from '../../components/DevlogCard.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+
+const allDevlog = await getCollection('devlog');
+
+const posts = allDevlog
+  .filter((post: CollectionEntry<'devlog'>) => post.data.publish)
+  .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Layout
+  title="Devlog — Seglectic Systems"
+  description="Development log from Seglectic Systems. Notes on what's being built and why."
+>
+  <div class="page-wrap">
+    <SectionHeader title="Devlog" />
+    <div class="devlog-list">
+      {posts.map((post: CollectionEntry<'devlog'>) => (
+        <DevlogCard post={post} />
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page-wrap {
+    padding: var(--space-xl) 0;
+  }
+
+  .devlog-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+</style>

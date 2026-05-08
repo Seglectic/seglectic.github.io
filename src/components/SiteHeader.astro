@@ -1,0 +1,132 @@
+---
+const navLinks = [
+  { label: 'Projects', href: '/projects' },
+  { label: 'Devlog',   href: '/devlog'   },
+  { label: 'About',    href: '/about'    },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="/">
+      <span class="logo-seg">SEG</span><span class="logo-lectic">LECTIC</span><span class="logo-systems">SYSTEMS</span>
+    </a>
+
+    <nav aria-label="Site navigation">
+      <ul>
+        {navLinks.map(link => (
+          <li>
+            <a
+              href={link.href}
+              class:list={['nav-link', { active: currentPath.startsWith(link.href) }]}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  header {
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 640px) {
+    .header-inner {
+      padding: var(--space-md) var(--space-lg);
+    }
+  }
+
+  /* Logo */
+  .logo {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0;
+    white-space: nowrap;
+  }
+
+  .logo-seg {
+    color: var(--accent);
+  }
+
+  .logo-lectic {
+    color: var(--text);
+  }
+
+  .logo-systems {
+    color: var(--text-muted);
+    font-size: 0.65em;
+    margin-left: 0.5em;
+    letter-spacing: 0.08em;
+  }
+
+  .logo:hover .logo-seg,
+  .logo:hover .logo-lectic {
+    color: var(--accent);
+  }
+
+  /* Nav */
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-lg);
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--accent);
+  }
+
+  /* Responsive: tighten nav gap on small screens */
+  @media (max-width: 480px) {
+    .header-inner {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-md);
+    }
+
+    nav ul {
+      gap: var(--space-md);
+    }
+
+    .logo-systems {
+      display: none;
+    }
+  }
+</style>

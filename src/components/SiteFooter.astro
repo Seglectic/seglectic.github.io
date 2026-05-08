@@ -1,0 +1,52 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer>
+  <div class="footer-inner">
+    <span>Seglectic Systems &copy; {year}</span>
+    <a
+      href="https://github.com/Seglectic"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="gh-link"
+    >
+      GitHub
+    </a>
+  </div>
+</footer>
+
+<style>
+  footer {
+    border-top: 1px solid var(--border);
+    margin-top: var(--space-xl);
+  }
+
+  .footer-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--space-md);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  @media (min-width: 640px) {
+    .footer-inner {
+      padding: var(--space-md) var(--space-lg);
+    }
+  }
+
+  .gh-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .gh-link:hover {
+    color: var(--accent);
+  }
+</style>
