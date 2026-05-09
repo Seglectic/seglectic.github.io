@@ -1,0 +1,160 @@
+---
+interface Props {
+  src: string;
+  alt?: string;
+  poster?: string;
+  materialProfile?: string;
+}
+
+const { src, alt = '3D model', poster, materialProfile } = Astro.props;
+---
+
+<div class="mv-wrap">
+  <div class="mv-top-fade"></div>
+  <model-viewer
+    src={src}
+    alt={alt}
+    camera-controls
+    auto-rotate
+    auto-rotate-delay={500}
+    rotation-per-second="20deg"
+    shadow-intensity="1.5"
+    shadow-softness="0.4"
+    exposure="1.4"
+    tone-mapping="commerce"
+    environment-image="neutral"
+    data-material-profile={materialProfile}
+    {...poster ? { poster } : {}}
+  ></model-viewer>
+  <div class="mv-bottom-fade"></div>
+</div>
+
+<script>
+  import '@google/model-viewer';
+
+  const CANOPTICON_MATERIALS = {
+    'Aluminum_-_Satin': {
+      metallic: 0.95,
+      roughness: 0.34,
+      specular: 1,
+      doubleSided: false,
+    },
+    'Aluminum_-_Bead_Blasted': {
+      metallic: 0.82,
+      roughness: 0.74,
+      specular: 0.92,
+      doubleSided: false,
+    },
+    'Opaque(34,88,170)': {
+      metallic: 0.02,
+      roughness: 0.26,
+      specular: 0.62,
+      doubleSided: false,
+    },
+    'Opaque(202,209,238)': {
+      metallic: 0,
+      roughness: 0.42,
+      specular: 0.55,
+      doubleSided: false,
+    },
+    'Opaque(200,142,7)': {
+      metallic: 0,
+      roughness: 0.5,
+      specular: 0.42,
+      doubleSided: false,
+    },
+  };
+
+  const DEFAULT_CANOPTICON_MATERIAL = {
+    metallic: 0,
+    roughness: 0.88,
+    specular: 0.3,
+    doubleSided: false,
+  };
+
+  const applyCanopticonMaterials = (viewer) => {
+    const materials = viewer.model?.materials ?? [];
+
+    for (const material of materials) {
+      const profile =
+        CANOPTICON_MATERIALS[material.name] ?? DEFAULT_CANOPTICON_MATERIAL;
+      const pbr = material.pbrMetallicRoughness;
+
+      pbr.setMetallicFactor(profile.metallic);
+      pbr.setRoughnessFactor(profile.roughness);
+      material.setSpecularFactor(profile.specular);
+      material.setDoubleSided(profile.doubleSided);
+      material.setAlphaMode('OPAQUE');
+    }
+  };
+
+  const applyMaterialProfile = (viewer) => {
+    switch (viewer.dataset.materialProfile) {
+      case 'canopticon':
+        applyCanopticonMaterials(viewer);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const initializeMaterialProfiles = () => {
+    const viewers = document.querySelectorAll('model-viewer[data-material-profile]');
+
+    for (const viewer of viewers) {
+      if (viewer.dataset.materialProfileInitialized === 'true') {
+        continue;
+      }
+
+      viewer.dataset.materialProfileInitialized = 'true';
+      viewer.addEventListener('load', () => applyMaterialProfile(viewer), {
+        once: true,
+      });
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeMaterialProfiles, {
+      once: true,
+    });
+  } else {
+    initializeMaterialProfiles();
+  }
+</script>
+
+<style>
+  .mv-wrap {
+    position: relative;
+    margin: var(--space-lg) 0;
+    overflow: hidden;
+  }
+
+  model-viewer {
+    width: 100%;
+    height: 560px;
+    background-color: #0f0f0f;
+    --progress-bar-color: var(--accent);
+    --progress-mask: transparent;
+    display: block;
+  }
+
+  .mv-top-fade,
+  .mv-bottom-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 80px;
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .mv-top-fade {
+    top: 0;
+    background: linear-gradient(to bottom, var(--bg), transparent);
+  }
+
+  .mv-bottom-fade {
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg), transparent);
+  }
+</style>

@@ -1,25 +1,71 @@
 ---
 title: Canopticon
-tagline: Canopy cover analysis from photos.
+tagline: Eye for the sky.
 status: active
 category: ai
 tags: [computer-vision, ai, raspberry-pi]
 heroImage: ./hero.JPEG
 logoImage: ./canopticon-logo.png
-summary: A computer vision tool for estimating canopy cover percentage from photos using sky segmentation.
+summary: A fully portable machine vision tool for estimating canopy cover from photos using sky segmentation.
 github: https://github.com/Seglectic/Canopticon
 featured: true
 order: 10
 ---
+import ImageComparisonSlider from '../../../components/ImageComparisonSlider.astro'
+import ModelViewer from '../../../components/ModelViewer.astro'
+import beforeImg from './zdb2j8obgkv5.jpeg'
+import afterImg from './zdb2j8obgkv5_overlay.jpg'
+import caseModel from './case.glb?url'
+import mapImg from './map.jpg'
 
-Canopticon analyzes photos to estimate the percentage of sky visible through a forest canopy. It uses image segmentation to identify sky pixels and compute a cover ratio.
+
+# High Reliability Sky Analysis
+<ImageComparisonSlider
+  before={beforeImg}
+  after={afterImg}
+  beforeAlt="Original canopy photo"
+  afterAlt="Sky segmentation overlay"
+/>
+Canopticon analyzes photos you send it to estimate the percentage of sky visible through a forest canopy. It uses image segmentation to identify sky pixels to deliver a cover ratio. 
+
+# Portable
+<ModelViewer
+  src={caseModel}
+  alt="Canopticon enclosure"
+  materialProfile="canopticon"
+/>
+
+Canopticon lives in a box; bring it to the field and fire its onboard camera directly or upload images straight from your phone.
+
+On boot Canopticon displays a QR code to connect to its own local wifi. <b>No internet required</b>. 
+
+Once connected, browse to "sky.local" or simply scan the second QR code once it noticed you joined.
+
+# Automapping
+
+<img
+  src={mapImg.src}
+  alt="Canopticon local map view"
+  style={{ width: '50%', margin: '2rem auto', display: 'block' }}
+/>
+
+Modern phones store GPS info in photo metadata, Canopticon detects this and plots the image on a map fully local to the device so it can serve it while offline.
+Canopy cover is tallied for photos per area and the region is shaded according to the amount of cover, providing at-a-glance coverage info without any manual input.
+
 
 ## Features
 
-- Photo-based canopy analysis
-- Sky segmentation pipeline
-- Outputs percentage and annotated image
+- Photo-based canopy analysis from field images or uploads
+- On-device sky segmentation with coverage percentage output
+- Annotated overlays for quick visual verification
+- Fully offline workflow over the device's local wifi network
+- Portable enclosure with onboard camera capture
+- Automatic geotag plotting and area-based canopy mapping
+- Mobile-first simple workflow for use in the field
 
-## Tech
+## Why?
 
-Python, OpenCV, Raspberry Pi
+Older canopy estimation workflows often rely on shaky thresholding and color heuristics which break down in uneven lighting, dense foliage, high-contrast scenes, or even just during dusk hours. 
+
+Canopticon replaces that guesswork with an on-device segmentation pipeline that isolates sky pixels more reliably, producing cleaner overlays and more trustworthy coverage estimates without requiring a network connection.
+

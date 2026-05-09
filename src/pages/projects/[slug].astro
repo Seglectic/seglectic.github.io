@@ -44,7 +44,12 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
       )}
       <div class="hero-overlay">
         <div class="hero-copy">
-          <h1 class="title hero-reveal hero-reveal--title">{title}</h1>
+          <h1 class:list={[
+            'title',
+            'hero-reveal',
+            'hero-reveal--title',
+            project.id === 'canopticon' && 'title--anta',
+          ]}>{title}</h1>
           <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
         </div>
       </div>
@@ -95,8 +100,8 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
 
 <style>
   .project-wrap {
-    padding: var(--space-xl) 0;
-    max-width: 720px;
+    padding: clamp(1.25rem, 3vw, 2rem) 0 var(--space-xl);
+    max-width: 800px;
   }
 
   .project-header {
@@ -108,7 +113,7 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
     width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    margin-bottom: calc(var(--space-xl) + var(--space-sm));
+    margin-bottom: 0;
     overflow: hidden;
     min-height: 100vh;
     background: var(--bg-surface);
@@ -143,7 +148,7 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
     display: flex;
     align-items: flex-end;
     background:
-      linear-gradient(180deg, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.04) 42%, rgba(15, 15, 15, 0.46) 76%, rgba(15, 15, 15, 0.92) 100%);
+      linear-gradient(180deg, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.06) 40%, rgba(15, 15, 15, 0.52) 72%, rgba(15, 15, 15, 0.9) 86%, var(--bg) 100%);
   }
 
   .hero-copy {
@@ -164,6 +169,13 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
     max-width: 11ch;
     text-wrap: balance;
     text-shadow: 0 0 24px rgba(15, 15, 15, 0.28);
+  }
+
+  .title--anta {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: none;
   }
 
   .tagline {
@@ -249,6 +261,16 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
     margin-bottom: var(--space-xl);
   }
 
+  .project-body :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: var(--space-lg) 0;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-surface);
+  }
+
   .project-body :global(h2) {
     font-family: var(--font-mono);
     font-size: 1.1rem;
@@ -300,12 +322,15 @@ const { title, tagline, heroImage, logoImage, github, demo, docs } = project.dat
   }
 
   @media (max-width: 720px) {
+    .project-wrap {
+      padding-top: var(--space-md);
+    }
+
     .hero-copy {
       padding-left: var(--space-md);
       padding-right: var(--space-md);
       padding-bottom: calc(var(--space-xl) + var(--space-md));
     }
-
     .title {
       max-width: none;
     }

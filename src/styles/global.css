@@ -3,6 +3,12 @@
   src: url('/fonts/ABSTRACT.ttf') format('truetype');
 }
 
+@font-face {
+  font-family: 'Anta';
+  src: url('/fonts/Anta-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+
 :root {
   /* Backgrounds */
   --bg:            #0f0f0f;
@@ -26,6 +32,7 @@
 
   /* Typography */
   --font-logo:     'Abstract', 'Courier New', monospace;
+  --font-display:  'Anta', system-ui, sans-serif;
   --font-mono:     ui-monospace, 'Courier New', monospace;
   --font-sans:     system-ui, -apple-system, sans-serif;
 

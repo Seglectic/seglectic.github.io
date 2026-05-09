@@ -1,0 +1,195 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  before: ImageMetadata;
+  after: ImageMetadata;
+  beforeAlt?: string;
+  afterAlt?: string;
+}
+
+const { before, after, beforeAlt = 'Before', afterAlt = 'After' } = Astro.props;
+const id = `ics-${Math.random().toString(36).slice(2, 7)}`;
+
+const [beforeOpt, afterOpt] = await Promise.all([
+  getImage({ src: before, format: 'webp', quality: 85, width: 1200 }),
+  getImage({ src: after,  format: 'webp', quality: 85, width: 1200 }),
+]);
+---
+
+<div class="ics" id={id} aria-label="Image comparison slider">
+  <img class="ics-img ics-after" src={afterOpt.src} alt={afterAlt} draggable="false" />
+  <img class="ics-img ics-before" src={beforeOpt.src} alt={beforeAlt} draggable="false" />
+  <div
+    class="ics-divider"
+    role="slider"
+    aria-label="Comparison divider"
+    aria-valuemin={0}
+    aria-valuemax={100}
+    aria-valuenow={50}
+    tabindex={0}
+  >
+    <div class="ics-handle">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M6 10L2 6.5M6 10L2 13.5M6 10H1M14 10L18 6.5M14 10L18 13.5M14 10H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+  <span class="ics-label ics-label-before">Before</span>
+  <span class="ics-label ics-label-after">After</span>
+</div>
+
+<style>
+  .ics {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    cursor: col-resize;
+    user-select: none;
+    --split: 50%;
+    margin: var(--space-lg) 0;
+  }
+
+  .ics-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+
+  .ics-before {
+    clip-path: inset(0 calc(100% - var(--split)) 0 0);
+    z-index: 1;
+  }
+
+  .ics-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    transform: translateX(-50%);
+    width: 2px;
+    background: var(--text);
+    z-index: 2;
+    cursor: col-resize;
+    outline: none;
+    touch-action: none;
+  }
+
+  /* expand hit area */
+  .ics-divider::before {
+    content: '';
+    position: absolute;
+    inset: 0 -10px;
+  }
+
+  .ics-handle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--text);
+    color: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    transition: background 0.15s, transform 0.15s;
+    pointer-events: none;
+  }
+
+  .ics-divider:focus-visible .ics-handle {
+    background: var(--accent-cyan);
+    color: var(--bg);
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+
+  .ics-label {
+    position: absolute;
+    bottom: var(--space-sm);
+    padding: 3px 8px;
+    border-radius: var(--radius-sm);
+    background: rgba(0, 0, 0, 0.55);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    z-index: 3;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  .ics-label-before {
+    left: var(--space-sm);
+  }
+
+  .ics-label-after {
+    right: var(--space-sm);
+  }
+
+  .ics.ics-interacted .ics-label {
+    opacity: 0;
+  }
+</style>
+
+<script define:vars={{ id }}>
+  function initSlider(root) {
+    const divider = root.querySelector('.ics-divider');
+    let dragging = false;
+
+    function setSplit(pct) {
+      const clamped = Math.min(100, Math.max(0, pct));
+      root.style.setProperty('--split', clamped + '%');
+      divider.setAttribute('aria-valuenow', Math.round(clamped));
+    }
+
+    function getPct(clientX) {
+      const rect = root.getBoundingClientRect();
+      return ((clientX - rect.left) / rect.width) * 100;
+    }
+
+    divider.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      divider.setPointerCapture(e.pointerId);
+      root.classList.add('ics-interacted');
+      e.preventDefault();
+    });
+
+    divider.addEventListener('pointermove', (e) => {
+      if (!dragging) return;
+      setSplit(getPct(e.clientX));
+    });
+
+    divider.addEventListener('pointerup', () => { dragging = false; });
+    divider.addEventListener('pointercancel', () => { dragging = false; });
+
+    root.addEventListener('pointerdown', (e) => {
+      if (divider.contains(e.target)) return;
+      root.classList.add('ics-interacted');
+      setSplit(getPct(e.clientX));
+    });
+
+    divider.addEventListener('keydown', (e) => {
+      const current = parseFloat(root.style.getPropertyValue('--split') || '50');
+      if (e.key === 'ArrowLeft') { setSplit(current - 2); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { setSplit(current + 2); e.preventDefault(); }
+    });
+
+    setSplit(50);
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    const el = document.getElementById(id);
+    if (el) initSlider(el);
+  });
+</script>
