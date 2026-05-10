@@ -1,5 +1,6 @@
 ---
 import TagList from './TagList.astro';
+import { devlogSlug } from '../lib/content';
 
 interface Props {
   post: {
@@ -17,7 +18,7 @@ interface Props {
 
 const { post } = Astro.props;
 const { title, date, project, summary, tags = [] } = post.data;
-const href = `/devlog/${post.id}`;
+const href = `/devlog/${devlogSlug(post.id)}`;
 
 const formattedDate = new Intl.DateTimeFormat('en-US', {
   year:  'numeric',

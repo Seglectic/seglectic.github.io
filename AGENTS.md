@@ -27,8 +27,8 @@ npm run preview  # preview built output
 src/
   components/     # Astro components
   content/
-    projects/     # project MDX files
-    devlog/       # devlog MDX files
+    projects/     # project folders with local MDX + assets
+    devlog/       # devlog folders with local MDX + assets
   layouts/
     Layout.astro  # base HTML shell
   pages/          # routes
@@ -56,7 +56,7 @@ Key values:
 
 ## Content Collections
 
-### Projects (`src/content/projects/*.mdx`)
+### Projects (`src/content/projects/<slug>/index.mdx`)
 
 Required frontmatter: `title`, `tagline`, `status`, `category`, `summary`
 
@@ -65,12 +65,24 @@ Required frontmatter: `title`, `tagline`, `status`, `category`, `summary`
 
 Optional: `heroImage`, `github`, `demo`, `docs`, `featured`, `order`
 
-### Devlog (`src/content/devlog/*.mdx`)
+### Devlog (`src/content/devlog/<slug>/index.mdx`)
 
 Required frontmatter: `title`, `date`, `summary`
 
 Set `publish: true` to make a post visible. Posts default to unpublished.
 Use `project: <slug>` to link a post to a project.
+Each devlog entry lives in its own folder so notes and local media stay colocated.
+
+Devlog folder naming:
+- Use `YYDDD-MMMDD-hMMA-[title]`
+- Example: `26121-May01-12AM-first-successful-boot-sequence`
+
+## Working Preferences
+
+- Prefer a clean workspace and file tree; remove obsolete root-level files and legacy assets when they are no longer part of the active site
+- Keep page content local to the folder it lives in; when a page, project, or devlog has dedicated assets, colocate them with that content instead of scattering them into shared directories
+- Prefer folder-based content entries with `index.mdx` so a single directory can hold the document and all related media
+- Use shared templates/components only for genuinely reusable patterns; keep one-off content structure and styling local when possible
 
 ## Obsidian Import
 
@@ -79,6 +91,12 @@ VAULT_PROJECTS=/path/to/vault/Projects node scripts/import-obsidian-devlog.js
 ```
 
 Only processes folder-based projects. Slugs derive from `project/xxx` tags in frontmatter.
+Future automation may create devlog folders directly in the repo or via GitHub Actions; generated entries should follow the same folder-based structure and naming rules as hand-authored entries.
+
+## Repo Shortcuts
+
+- `$deploy` means: commit the current worktree on `dev`, push `dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`
+- Prefer this deploy flow over editing or pushing `master` directly during normal work
 
 ## Key Constraints
 
@@ -86,3 +104,5 @@ Only processes folder-based projects. Slugs derive from `project/xxx` tags in fr
 - Abstract font is logo-only — do not apply `--font-logo` to anything except `.logo` in SiteHeader
 - `scripts/kcloud.sh` must not be modified
 - Astro must remain static/prerendered — no server-only features
+- Avoid adding project-specific styling hooks or one-off classes to shared templates/components when the need is local to a single MDX document
+- For page-specific layout/styling, prefer document-local markup or a dedicated local component; only add shared template styles when the pattern is clearly reusable across multiple project pages

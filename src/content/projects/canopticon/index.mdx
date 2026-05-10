@@ -17,7 +17,9 @@ import beforeImg from './zdb2j8obgkv5.jpeg'
 import afterImg from './zdb2j8obgkv5_overlay.jpg'
 import caseModel from './case.glb?url'
 import mapImg from './map.jpg'
+import exifCapImg from './screenCap-1778373173.png'
 
+Canopticon analyzes photos you send it to estimate the percentage of sky visible through a forest canopy. It uses image segmentation to identify sky pixels to deliver a cover ratio. 
 
 # High Reliability Sky Analysis
 <ImageComparisonSlider
@@ -26,7 +28,6 @@ import mapImg from './map.jpg'
   beforeAlt="Original canopy photo"
   afterAlt="Sky segmentation overlay"
 />
-Canopticon analyzes photos you send it to estimate the percentage of sky visible through a forest canopy. It uses image segmentation to identify sky pixels to deliver a cover ratio. 
 
 # Portable
 <ModelViewer
@@ -43,14 +44,22 @@ Once connected, browse to "sky.local" or simply scan the second QR code once it 
 
 # Automapping
 
-<img
-  src={mapImg.src}
-  alt="Canopticon local map view"
-  style={{ width: '50%', margin: '2rem auto', display: 'block' }}
-/>
-
-Modern phones store GPS info in photo metadata, Canopticon detects this and plots the image on a map fully local to the device so it can serve it while offline.
-Canopy cover is tallied for photos per area and the region is shaded according to the amount of cover, providing at-a-glance coverage info without any manual input.
+<div class="media-split">
+  <img
+    src={mapImg.src}
+    alt="Canopticon local map view"
+    data-lightboxable
+  />
+  <div class="media-split__copy">
+    <p>Modern phones store GPS info in photo metadata, Canopticon detects this and plots the image on a map fully local to the device so it can serve it while offline.</p>
+    <img
+      src={exifCapImg.src}
+      alt="Terminal output showing EXIF metadata extracted from a canopy image"
+      data-lightboxable
+    />
+    <p>Canopy cover is tallied for photos per area and the region is shaded according to the amount of cover, providing at-a-glance coverage info without any manual input.</p>
+  </div>
+</div>
 
 
 ## Features
@@ -68,4 +77,3 @@ Canopy cover is tallied for photos per area and the region is shaded according t
 Older canopy estimation workflows often rely on shaky thresholding and color heuristics which break down in uneven lighting, dense foliage, high-contrast scenes, or even just during dusk hours. 
 
 Canopticon replaces that guesswork with an on-device segmentation pipeline that isolates sky pixels more reliably, producing cleaner overlays and more trustworthy coverage estimates without requiring a network connection.
-

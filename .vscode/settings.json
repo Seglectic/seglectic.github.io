@@ -1,0 +1,25 @@
+{
+  "explorer.compactFolders": true,
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "package.json": "package-lock.json",
+    "astro.config.mjs": "tsconfig.json, svelte.config.js",
+    ".gitignore": "AGENTS.md, PLAN.md, README.md"
+  },
+  "files.exclude": {
+    ".astro": true,
+    "dist": true,
+    "node_modules": true
+  },
+  "search.exclude": {
+    ".astro": true,
+    "dist": true,
+    "node_modules": true
+  },
+  "files.watcherExclude": {
+    "**/.astro/**": true,
+    "**/dist/**": true,
+    "**/node_modules/**": true
+  }
+}

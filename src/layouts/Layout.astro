@@ -7,9 +7,10 @@ import SiteFooter from '../components/SiteFooter.astro';
 interface Props {
   title: string;
   description: string;
+  bodyClass?: string;
 }
 
-const { title, description } = Astro.props;
+const { title, description, bodyClass } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
@@ -24,8 +25,6 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
 
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <!-- Open Graph -->
@@ -42,7 +41,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
     <ClientRouter />
   </head>
-  <body>
+  <body class={bodyClass}>
     <SiteHeader />
     <main>
       <slot />
@@ -56,6 +55,18 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+  }
+
+  :global(body.canopticon-page) {
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(120, 194, 255, 0.035) 0 24px,
+        rgba(181, 150, 255, 0.03) 24px 48px,
+        rgba(120, 194, 255, 0) 48px 88px
+      ),
+      var(--bg);
+    background-attachment: fixed;
   }
 
   main {

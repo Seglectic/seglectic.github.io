@@ -1,13 +1,14 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import { devlogSlug } from '../../lib/content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('devlog');
   return posts
     .filter((post) => post.data.publish)
     .map((post) => ({
-      params: { slug: post.id },
+      params: { slug: devlogSlug(post.id) },
       props: { post },
     }));
 }

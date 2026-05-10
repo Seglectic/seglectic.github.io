@@ -22,7 +22,14 @@ const projects = defineCollection({
 });
 
 const devlog = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/devlog' }),
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/devlog',
+    generateId: ({ entry }) =>
+      entry
+        .replace(/\/index\.(md|mdx)$/, '')
+        .replace(/\.(md|mdx)$/, ''),
+  }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
