@@ -54,7 +54,7 @@ const projectGroups = [...groupMap.values()];
             <div class="group-header-left">
               <h2 class="group-title">
                 {group.id !== '__none__'
-                  ? <a href={`/projects/${group.id}`}>{group.title}</a>
+                  ? <a href={`/${group.id}`}>{group.title}</a>
                   : group.title}
               </h2>
               <span class="group-count">{group.posts.length}</span>

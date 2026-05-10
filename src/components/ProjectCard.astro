@@ -18,7 +18,7 @@ interface Props {
 
 const { project } = Astro.props;
 const { title, tagline, category, status, tags = [] } = project.data;
-const href = `/projects/${project.id}`;
+const href = `/${project.id}`;
 ---
 
 <a class="card" href={href}>

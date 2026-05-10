@@ -43,7 +43,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
         <time class="date" datetime={date.toISOString()}>{formattedDate}</time>
         {project && (
           <span class="separator">/</span>
-          <a href={`/projects/${project}`} class="project-link">{project}</a>
+          <a href={`/${project}`} class="project-link">{project}</a>
         )}
       </div>
 

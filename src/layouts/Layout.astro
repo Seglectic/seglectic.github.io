@@ -9,10 +9,11 @@ interface Props {
   description: string;
   bodyClass?: string;
   socialImage?: string;
+  canonical?: string;
 }
 
-const { title, description, bodyClass, socialImage } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { title, description, bodyClass, socialImage, canonical } = Astro.props;
+const canonicalURL = new URL(canonical ?? Astro.url.pathname, Astro.site);
 const socialImageURL = socialImage ? new URL(socialImage, Astro.site) : undefined;
 ---
 

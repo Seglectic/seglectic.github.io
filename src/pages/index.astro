@@ -53,7 +53,7 @@ const activeProjects = allProjects
     <ul class="active-list">
       {activeProjects.map((project: CollectionEntry<'projects'>) => (
         <li>
-          <a href={`/projects/${project.id}`}>{project.data.title}</a>
+          <a href={`/${project.id}`}>{project.data.title}</a>
           <span class="active-tagline">{project.data.tagline}</span>
         </li>
       ))}

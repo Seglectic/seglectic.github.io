@@ -31,7 +31,9 @@ src/
     devlog/       # devlog folders with local MDX + assets
   layouts/
     Layout.astro  # base HTML shell
-  pages/          # routes
+  pages/
+    [slug].astro          # primary project pages at /<project-id>
+    projects/[slug].astro # canonical redirect → /<project-id>
   styles/
     global.css    # design tokens — edit this for theme changes
 public/
