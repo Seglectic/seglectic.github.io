@@ -1,0 +1,32 @@
+---
+title: GPS map view and.. a logo?
+date: 2026-04-23
+project: canopticon
+tags: [devlog, web, maps, gps]
+summary: Added a GPS-based map view for photo locations and dropped in the Canopticon logo assets.
+publish: true
+---
+
+Two things today that make the app feel way more like an actual product.
+
+## GPS map view
+
+Photos taken with location data now show up on a map. Pins at the coordinates where each shot was taken. You can tap a pin and it'll pull up the photo alongside its occlusion data. The purpose here is pretty obvious, if you're doing a survey across a large area you need spatial context for your data, not just a flat gallery list.
+
+**Map clustering** is in there too since you can end up with a lot of overlapping pins at certain zoom levels. Added a bubble badge showing the count when pins cluster together. Had to fiddle with the z-ordering a bunch. The count badge was getting covered by the cluster bubble itself, annoying to fix but is good now 🙄.
+
+## Logo 
+Canopticon has a logo, neat. 
+Added the logo assets and improved the crop. 
+
+Having an actual identity for this thing makes the UI feel a lot less placeholder-y. 
+
+It's an eye inside a stylized geometric hexagon, combining elemnents of the hand of fatima/hamsa with some kinda geometric and prismatic elements with blue and whitish colors.
+
+The idea is mainly to represent machine-vision and blue sky scanning capabilities.
+
+Still not gonna go nuts with branding or anything, just wanted something to provide an identity.
+
+## yep
+
+These two're the kind of things that make it feel like a real tool instead of a script with a webpage stapled on

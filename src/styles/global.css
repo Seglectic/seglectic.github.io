@@ -50,7 +50,7 @@
 
   /* Layout */
   --container-max: 1400px;
-  --content-max: 960px;
+  --content-max: 1200px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }

@@ -7,9 +7,10 @@ interface Props {
   after: ImageMetadata;
   beforeAlt?: string;
   afterAlt?: string;
+  aspectRatio?: string;
 }
 
-const { before, after, beforeAlt = 'Before', afterAlt = 'After' } = Astro.props;
+const { before, after, beforeAlt = 'Before', afterAlt = 'After', aspectRatio = '3 / 4' } = Astro.props;
 const id = `ics-${Math.random().toString(36).slice(2, 7)}`;
 
 const [beforeOpt, afterOpt] = await Promise.all([
@@ -18,8 +19,8 @@ const [beforeOpt, afterOpt] = await Promise.all([
 ]);
 ---
 
-<div class="ics" id={id} aria-label="Image comparison slider">
-  <img class="ics-img ics-after" src={afterOpt.src} alt={afterAlt} draggable="false" />
+<div class="ics" id={id} aria-label="Image comparison slider" style={`aspect-ratio: ${aspectRatio}`}>
+  <img class="ics-img ics-after"  src={afterOpt.src}  alt={afterAlt}  draggable="false" />
   <img class="ics-img ics-before" src={beforeOpt.src} alt={beforeAlt} draggable="false" />
   <div
     class="ics-divider"
@@ -30,14 +31,15 @@ const [beforeOpt, afterOpt] = await Promise.all([
     aria-valuenow={50}
     tabindex={0}
   >
-    <div class="ics-handle">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <path d="M6 10L2 6.5M6 10L2 13.5M6 10H1M14 10L18 6.5M14 10L18 13.5M14 10H19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+    <div class="ics-handle" aria-hidden="true">
+      <span class="ics-arrow ics-arrow-l">◂</span>
+      <span class="ics-arrow ics-arrow-r">▸</span>
     </div>
   </div>
-  <span class="ics-label ics-label-before">Before</span>
-  <span class="ics-label ics-label-after">After</span>
+  <div class="ics-header">
+    <span class="ics-label-before">{beforeAlt}</span>
+    <span class="ics-label-after">{afterAlt}</span>
+  </div>
 </div>
 
 <style>
@@ -45,12 +47,11 @@ const [beforeOpt, afterOpt] = await Promise.all([
     position: relative;
     overflow: hidden;
     aspect-ratio: 3 / 4;
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--border);
+    border: 1px solid var(--border-subtle);
     cursor: col-resize;
     user-select: none;
     --split: 50%;
-    margin: var(--space-lg) 0;
+    margin: 0 0 var(--space-lg) 0;
   }
 
   .ics-img {
@@ -74,15 +75,14 @@ const [beforeOpt, afterOpt] = await Promise.all([
     bottom: 0;
     left: var(--split);
     transform: translateX(-50%);
-    width: 2px;
-    background: var(--text);
+    width: 3px;
+    background: var(--accent);
     z-index: 2;
     cursor: col-resize;
     outline: none;
     touch-action: none;
   }
 
-  /* expand hit area */
   .ics-divider::before {
     content: '';
     position: absolute;
@@ -94,51 +94,46 @@ const [beforeOpt, afterOpt] = await Promise.all([
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--text);
-    color: var(--bg);
     display: flex;
     align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
-    transition: background 0.15s, transform 0.15s;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+    color: var(--accent);
     pointer-events: none;
   }
 
   .ics-divider:focus-visible .ics-handle {
-    background: var(--accent-cyan);
+    background: var(--accent);
     color: var(--bg);
-    transform: translate(-50%, -50%) scale(1.1);
   }
 
-  .ics-label {
+  .ics-arrow {
+    font-size: 0.8rem;
+    line-height: 1;
+  }
+
+  .ics-header {
     position: absolute;
-    bottom: var(--space-sm);
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
-    background: rgba(0, 0, 0, 0.55);
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-xs) var(--space-sm);
+    background: linear-gradient(to bottom, rgba(0,0,0,0.55) 0%, transparent 100%);
     z-index: 3;
     pointer-events: none;
-    transition: opacity 0.5s;
   }
 
-  .ics-label-before {
-    left: var(--space-sm);
-  }
-
+  .ics-label-before,
   .ics-label-after {
-    right: var(--space-sm);
-  }
-
-  .ics.ics-interacted .ics-label {
-    opacity: 0;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
   }
 </style>
 
@@ -158,30 +153,24 @@ const [beforeOpt, afterOpt] = await Promise.all([
       return ((clientX - rect.left) / rect.width) * 100;
     }
 
-    divider.addEventListener('pointerdown', (e) => {
+    root.addEventListener('pointerdown', (e) => {
       dragging = true;
-      divider.setPointerCapture(e.pointerId);
-      root.classList.add('ics-interacted');
+      root.setPointerCapture(e.pointerId);
+      setSplit(getPct(e.clientX));
       e.preventDefault();
     });
 
-    divider.addEventListener('pointermove', (e) => {
+    root.addEventListener('pointermove', (e) => {
       if (!dragging) return;
       setSplit(getPct(e.clientX));
     });
 
-    divider.addEventListener('pointerup', () => { dragging = false; });
-    divider.addEventListener('pointercancel', () => { dragging = false; });
-
-    root.addEventListener('pointerdown', (e) => {
-      if (divider.contains(e.target)) return;
-      root.classList.add('ics-interacted');
-      setSplit(getPct(e.clientX));
-    });
+    root.addEventListener('pointerup',     () => { dragging = false; });
+    root.addEventListener('pointercancel', () => { dragging = false; });
 
     divider.addEventListener('keydown', (e) => {
       const current = parseFloat(root.style.getPropertyValue('--split') || '50');
-      if (e.key === 'ArrowLeft') { setSplit(current - 2); e.preventDefault(); }
+      if (e.key === 'ArrowLeft')  { setSplit(current - 2); e.preventDefault(); }
       if (e.key === 'ArrowRight') { setSplit(current + 2); e.preventDefault(); }
     });
 

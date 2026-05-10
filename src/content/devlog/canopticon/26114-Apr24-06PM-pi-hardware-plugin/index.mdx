@@ -1,0 +1,31 @@
+---
+title: Pi hardware plugin framework
+date: 2026-04-24
+project: canopticon
+tags: [devlog, raspberry-pi, hardware, embedded, led]
+summary: Plugin system for board-specific hardware.
+publish: true
+---
+
+## Pluggin'
+Built a hardware plugin framework under `backend/plugins/` so board-specific stuff lives in its own contained place 
+
+The display is a round GC9A01, something I've had around for a while and a pretty cool display.
+
+After boot it shows a QR code for the Wi-Fi network. 
+
+When a new client joins the AP it switches to a portal QR for 10 seconds before going back
+
+Boot and QR screens got polished — they actually look decent on the round display
+
+Physical button, press to enter camera preview mode, next photo the camera captures gets posted into the normal ingest queue as if you'd uploaded it from your phone.
+
+## LEDeez
+ Processing state has an animated LED effect, idle state has its own behavior. 
+
+ The `led_helper.py` handles all the timing and state transitions. 
+
+ Took a few passes to get right
+
+ Still a little worried that it might draw too much current but the brightness limitations probably keep it fine.
+ 

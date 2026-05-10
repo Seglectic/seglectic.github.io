@@ -1,0 +1,30 @@
+---
+title: UI Updates
+date: 2026-04-24
+project: canopticon
+tags: [devlog, web, ui, frontend]
+summary: "Frontend day: gallery, map controls, theme, collapsible tray, live syncing."
+publish: true
+---
+
+Today was basically an all-day UI session. 
+
+## Gallery
+- Thumbnails got the occlusion percentage in the top-left corner with a drop shadow and custom font.
+- Status mark moved to the bottom-right corner instead.
+- other smoll stuff, matters for readability at a glance though. 
+
+## Map
+- Controls got simplified
+- Drawer layout got refined
+- Added a collapsible control tray so the map view doesn't feel cluttered 
+- Connection indicator was ending up below the buttons for some reason and it was kind of a pain to fix
+- The map bubble count icon was getting covered by the pins it was supposed to be labeling, also kind of a pain
+- Labels and badges overall got another pass.
+
+## Live Sync
+- Live sync now includes deletes, so if something gets removed on the backend it actually disappears from the client without a refresh.
+
+Lots of polish commits today, Just tons of minor tweaking but the app feels noticeably more coherent now.
+
+The theme's tighter, layout makes sense, and it's starting to feel field-ready.

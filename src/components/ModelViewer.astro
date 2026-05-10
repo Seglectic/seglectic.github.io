@@ -118,20 +118,35 @@ const { src, alt = '3D model', poster, materialProfile } = Astro.props;
   } else {
     initializeMaterialProfiles();
   }
+
+  document.querySelectorAll<HTMLElement>('.mv-wrap').forEach(wrap => {
+    wrap.addEventListener('wheel', (e) => {
+      if (!wrap.classList.contains('mv-active')) e.stopPropagation();
+    }, { capture: true, passive: true });
+
+    wrap.addEventListener('click', () => wrap.classList.add('mv-active'));
+
+    document.addEventListener('click', (e) => {
+      if (!wrap.contains(e.target as Node)) wrap.classList.remove('mv-active');
+    });
+  });
 </script>
 
 <style>
   .mv-wrap {
     position: relative;
     margin: var(--space-lg) 0;
-    overflow: hidden;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
   }
+
+
 
   model-viewer {
     width: 100%;
     height: 560px;
     background-color: transparent;
-    --progress-bar-color: var(--accent);
+    --progress-bar-color: transparent;
     --progress-mask: transparent;
     display: block;
   }

@@ -1,0 +1,42 @@
+---
+title: Mobilizing
+date: 2026-04-23
+project: canopticon
+tags: [devlog, web, python, fastapi]
+summary: Turned the batch CLI into a local web server so a phone can upload and process photos on the fly.
+publish: true
+---
+
+## Batchiquated
+Batch processing a folder is fine but the actual workflow I care about is
+- walk around outside with a phone
+- take photos
+- have something running locally process them in real time. 
+
+So Canopticon needs a web server.
+
+## Servitude
+Spun up a small Python web app alongside the existing CLI.
+
+It warms the ONNX model at startup so you're not waiting for inference to init every request, then it sits there on port `8009` listening for uploads.
+
+Phone connects to the same LAN, opens the address, uploads a photo, and gets back the annotated overlay. 
+
+The model's already hot so the turnaround is just inference time.
+
+## Lewks
+
+The frontend is a minimal mobile-first page. Didn't want to go crazy here, just something that works well enough to tap a button and get results.
+
+Kept the client JS lean, no framework, just fetch and a bit of DOM nonsense.
+
+## Needs
+
+Added a bunch of deps for this ofc
+- aiohttp stuff
+- the web layer
+- image handling pipeline changes.
+
+ The `canopticon.py` monolith grew a ton today. That's whatever for now but I can already tell this thing is gonna need to be split up soon once it gets more features.
+
+Pretty satisfying milestone tho, went from a script you run from the command line to something a phone can actually talk to.

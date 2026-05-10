@@ -1,0 +1,30 @@
+---
+title: Beeg split, backend, offline maps, pi setup
+date: 2026-04-24
+project: canopticon
+tags: [devlog, architecture, raspberry-pi, maps, python]
+summary: Refactored the monolith into a cleaner backend, added offline PMTiles map for a single US state, and implementing Pi appliance mode.
+publish: true
+---
+
+## Spleet
+- `canopticon.py` was getting out of hand, big thicc monolithic blob of python. 
+- Did the big split, moved everything into a `backend/` module structure:
+  - `cli.py`, 
+  - `inference.py`
+  - `models.py`
+  - `settings.py`, 
+  - `storage.py`, 
+  - `web.py`. 
+
+## Offline & Organizin'
+- Client stuff lives in `frontend/` instead of just "client" and "tools" which was getting confusing.
+- The offline maps thing is something I'd been putting off. 
+- Map view is great but it relies on tiles from the internet, this thing is gonna be running in the field where there's no connectivity. 
+- Downloaded offline PMTiles for Florida and wired up auto-fetching for configured offline base maps. 
+
+## Pi
+- The Pi appliance side is starting to take shape. Set up a headless Pi 4B for this, trimmed the boot stack down a TON, killed off lightdm, cups, NetworkManager-wait-online, all the desktop junk.
+- Active services went down to about 13. Avahi's enabled tho so `.local` naming works. 
+
+- The project is starting to actually look like what I want, self-contained field device instead of a wittle script.

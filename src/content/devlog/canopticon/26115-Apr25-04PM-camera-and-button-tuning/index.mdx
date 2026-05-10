@@ -1,0 +1,25 @@
+---
+title: Camera display and button tuning
+date: 2026-04-25
+project: canopticon
+tags: [devlog, raspberry-pi, hardware, embedded]
+summary: Finished tuning camera display, button, and added extra settings.
+publish: true
+---
+
+# Wrapping up the hardware stuff for now
+
+## Camera-Screen display
+- Preview rendering on the round GC9A01 needed a lot of work. 
+- Updated how the camera feed gets displayed; cropping, scaling, etc. Attempting smooth transitions in and out of capture mode. 
+- The round display has its own constraints and getting things to look right on it takes more finagling than you'd think.
+
+## Button Feel
+- Edge detection: rewrote the edge-detect logic to be more reliable. The previous version had some timing issues where you'd get double-fires or miss inputs under certain conditions. 
+- Reworked it to be cleaner about falling vs rising edge and the debounce behavior. 
+- Also cleaned up the client detection that feeds into button handling — when you press the button and there's no active client on the AP, the fallback behavior now handles that gracefully.
+## Plugins
+- Exposed a few more configuration knobs through the CLI and `settings.py` — things like LED brightness and behavior tuning that were previously hardcoded in the plugin. 
+- If you're running this on different hardware or in different lighting conditions you'd want to be able to dial those in pretty easily.
+
+That's about it for the initial build. The thing runs, processes photos, it has a GPS map, it works as a headless Pi module with a round display and a button and some LEDs. Nobbad for a couple days work.
