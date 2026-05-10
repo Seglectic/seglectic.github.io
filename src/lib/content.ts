@@ -1,3 +1,4 @@
 export function devlogSlug(id: string): string {
-  return id.replace(/\/index$/, '');
+  const clean = id.replace(/\/index$/, '');
+  return clean.split('/').pop()!;
 }

@@ -25,9 +25,10 @@ const socialImage = await getSocialPreviewUrl(post.filePath);
 const { title, date, project, tags, summary } = post.data;
 
 const formattedDate = date.toLocaleDateString('en-US', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
+  year:     'numeric',
+  month:    'long',
+  day:      'numeric',
+  timeZone: 'UTC',
 });
 ---
 

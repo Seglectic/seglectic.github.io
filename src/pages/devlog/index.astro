@@ -2,13 +2,30 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import DevlogCard from '../../components/DevlogCard.astro';
-import SectionHeader from '../../components/SectionHeader.astro';
+
+const PROJECT_CAP = 3;
 
 const allDevlog = await getCollection('devlog');
+const allProjects = await getCollection('projects');
 
 const posts = allDevlog
   .filter((post: CollectionEntry<'devlog'>) => post.data.publish)
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const projectMap = Object.fromEntries(
+  allProjects.map((p: CollectionEntry<'projects'>) => [p.id, p.data.title])
+);
+
+const projectGroups: { id: string; title: string; posts: typeof posts }[] = [];
+const seen = new Set<string>();
+for (const post of posts) {
+  const pid = post.data.project ?? '__none__';
+  if (!seen.has(pid)) {
+    seen.add(pid);
+    projectGroups.push({ id: pid, title: projectMap[pid] ?? pid, posts: [] });
+  }
+  projectGroups.find(g => g.id === pid)!.posts.push(post);
+}
 ---
 
 <Layout
@@ -16,23 +33,281 @@ const posts = allDevlog
   description="Development log from Seglectic Systems. Notes on what's being built and why."
 >
   <div class="page-wrap">
-    <SectionHeader title="Devlog" />
-    <div class="devlog-list">
-      {posts.map((post: CollectionEntry<'devlog'>) => (
-        <DevlogCard post={post} />
+    <nav class="tab-bar" id="tab-bar" role="tablist">
+      <button class="tab" role="tab" data-tab="latest"  aria-selected="true">Latest Devlogs</button>
+      <button class="tab" role="tab" data-tab="project" aria-selected="false">Project Devlogs</button>
+    </nav>
+
+    <!-- Latest panel -->
+    <div class="panel" id="panel-latest" role="tabpanel">
+      <div class="devlog-list">
+        {posts.map((post: CollectionEntry<'devlog'>) => (
+          <DevlogCard post={post} />
+        ))}
+      </div>
+    </div>
+
+    <!-- Project overview panel -->
+    <div class="panel hidden" id="panel-project" role="tabpanel">
+      {projectGroups.map(group => (
+        <section class="project-group">
+          <div class="group-header">
+            <div class="group-header-left">
+              <h2 class="group-title">
+                {group.id !== '__none__'
+                  ? <a href={`/projects/${group.id}`}>{group.title}</a>
+                  : group.title}
+              </h2>
+              <span class="group-count">{group.posts.length}</span>
+            </div>
+            <div class="group-header-right">
+              {group.posts.length > PROJECT_CAP && (
+                <button
+                  class="view-all-btn"
+                  data-project={group.id}
+                  data-project-title={group.title}
+                >
+                  View all {group.posts.length} →
+                </button>
+              )}
+            </div>
+          </div>
+          <div class="devlog-list">
+            {group.posts.slice(0, PROJECT_CAP).map((post: CollectionEntry<'devlog'>) => (
+              <DevlogCard post={post} />
+            ))}
+          </div>
+        </section>
       ))}
     </div>
+
+    <!-- Per-project panels (pre-rendered, revealed on demand) -->
+    {projectGroups.map(group => (
+      <div class="panel hidden" id={`panel-proj-${group.id}`} role="tabpanel">
+        <div class="devlog-list">
+          {group.posts.map((post: CollectionEntry<'devlog'>) => (
+            <DevlogCard post={post} />
+          ))}
+        </div>
+      </div>
+    ))}
   </div>
 </Layout>
+
+<script>
+  const tabBar = document.getElementById('tab-bar')!;
+
+  // Grab Astro's scoped CID attribute name from an existing element so we can
+  // stamp it onto dynamically created nodes and get the scoped styles for free.
+  const cid = [...tabBar.querySelector('.tab')!.attributes]
+    .find(a => a.name.startsWith('data-astro-cid'))?.name ?? null;
+
+  function stamp(el: HTMLElement) {
+    if (cid) el.setAttribute(cid, '');
+    return el;
+  }
+
+  function activate(tabId: string) {
+    tabBar.querySelectorAll<HTMLElement>('[data-tab]').forEach(t => {
+      const active = t.dataset.tab === tabId;
+      t.setAttribute('aria-selected', String(active));
+      t.classList.toggle('active', active);
+    });
+    document.querySelectorAll<HTMLElement>('.panel').forEach(p => {
+      p.classList.toggle('hidden', p.id !== `panel-${tabId}`);
+    });
+    history.replaceState(null, '', `#${tabId}`);
+  }
+
+  function openProjectTab(projectId: string, projectTitle: string) {
+    const tabId = `proj-${projectId}`;
+
+    if (!tabBar.querySelector(`[data-tab="${tabId}"]`)) {
+      // div instead of button so the close button inside is valid HTML
+      const tab = stamp(document.createElement('div'));
+      tab.className = 'tab tab-dynamic';
+      tab.setAttribute('role', 'tab');
+      tab.setAttribute('tabindex', '0');
+      tab.dataset.tab = tabId;
+      tab.setAttribute('aria-selected', 'false');
+
+      const label = stamp(document.createElement('span'));
+      label.textContent = projectTitle;
+
+      const close = stamp(document.createElement('button'));
+      close.className = 'tab-close';
+      close.textContent = '×';
+      close.setAttribute('aria-label', `Close ${projectTitle} tab`);
+      close.addEventListener('click', e => {
+        e.stopPropagation();
+        tab.remove();
+        activate('project');
+      });
+
+      tab.appendChild(label);
+      tab.appendChild(close);
+      tab.addEventListener('click', () => activate(tabId));
+      tab.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(tabId); });
+      tabBar.appendChild(tab);
+    }
+
+    activate(tabId);
+  }
+
+  tabBar.querySelectorAll<HTMLButtonElement>('.tab[data-tab="latest"], .tab[data-tab="project"]').forEach(tab => {
+    tab.addEventListener('click', () => activate(tab.dataset.tab!));
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.view-all-btn').forEach(btn => {
+    btn.addEventListener('click', () => openProjectTab(btn.dataset.project!, btn.dataset.projectTitle!));
+  });
+
+  const hash = location.hash.replace('#', '');
+  activate(hash === 'project' ? 'project' : 'latest');
+</script>
 
 <style>
   .page-wrap {
     padding: var(--space-xl) 0;
   }
 
+  /* ── Tab bar ── */
+  .tab-bar {
+    display: flex;
+    gap: 0;
+    margin-bottom: var(--space-xl);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .tab {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding: var(--space-sm) var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .tab:hover {
+    color: var(--text);
+  }
+
+  .tab.active,
+  .tab[aria-selected="true"] {
+    color: var(--text);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    line-height: 1;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0 0 0 2px;
+    transition: color 0.15s ease;
+  }
+
+  .tab-close:hover {
+    color: var(--accent);
+  }
+
+  /* ── Panels ── */
+  .hidden {
+    display: none;
+  }
+
   .devlog-list {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
+  }
+
+  /* ── Project groups ── */
+  .project-group {
+    margin-bottom: var(--space-xl);
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+    padding-bottom: var(--space-sm);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .group-header-left {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-sm);
+  }
+
+  .group-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    flex-shrink: 0;
+  }
+
+  .group-title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    padding-left: var(--space-sm);
+    border-left: 2px solid var(--accent);
+    font-weight: 400;
+  }
+
+  .group-title a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .group-title a:hover {
+    color: var(--accent);
+  }
+
+  .group-count {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── View all button ── */
+  .view-all-btn {
+    background: none;
+    border: 1px solid var(--border);
+    padding: var(--space-xs) var(--space-md);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease;
+  }
+
+  .view-all-btn:hover {
+    color: var(--accent);
+    border-color: var(--accent);
   }
 </style>
