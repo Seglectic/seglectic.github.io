@@ -65,17 +65,18 @@ Required frontmatter: `title`, `tagline`, `status`, `category`, `summary`
 
 Optional: `heroImage`, `github`, `demo`, `docs`, `featured`, `order`
 
-### Devlog (`src/content/devlog/<slug>/index.mdx`)
+### Devlog (`src/content/devlog/<project>/<slug>/index.mdx`)
 
 Required frontmatter: `title`, `date`, `summary`
 
 Set `publish: true` to make a post visible. Posts default to unpublished.
-Use `project: <slug>` to link a post to a project.
+Use `project: <slug>` to link a post to a project — this must match the project subfolder name.
 Each devlog entry lives in its own folder so notes and local media stay colocated.
 
 Devlog folder naming:
-- Use `YYDDD-MMMDD-hMMA-[title]`
-- Example: `26121-May01-12AM-first-successful-boot-sequence`
+- Entries live under a project subfolder: `devlog/<project-slug>/<entry-slug>/`
+- Entry slug format: `YYDDD-MMMDD-hMMA-[title]`
+- Example: `devlog/canopticon/26121-May01-12AM-first-successful-boot-sequence/`
 
 ## Working Preferences
 

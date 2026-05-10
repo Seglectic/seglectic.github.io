@@ -16,16 +16,15 @@ const projectMap = Object.fromEntries(
   allProjects.map((p: CollectionEntry<'projects'>) => [p.id, p.data.title])
 );
 
-const projectGroups: { id: string; title: string; posts: typeof posts }[] = [];
-const seen = new Set<string>();
+const groupMap = new Map<string, { id: string; title: string; posts: typeof posts }>();
 for (const post of posts) {
   const pid = post.data.project ?? '__none__';
-  if (!seen.has(pid)) {
-    seen.add(pid);
-    projectGroups.push({ id: pid, title: projectMap[pid] ?? pid, posts: [] });
+  if (!groupMap.has(pid)) {
+    groupMap.set(pid, { id: pid, title: projectMap[pid] ?? pid, posts: [] });
   }
-  projectGroups.find(g => g.id === pid)!.posts.push(post);
+  groupMap.get(pid)!.posts.push(post);
 }
+const projectGroups = [...groupMap.values()];
 ---
 
 <Layout
@@ -34,8 +33,8 @@ for (const post of posts) {
 >
   <div class="page-wrap">
     <nav class="tab-bar" id="tab-bar" role="tablist">
-      <button class="tab" role="tab" data-tab="latest"  aria-selected="true">Latest Devlogs</button>
-      <button class="tab" role="tab" data-tab="project" aria-selected="false">Project Devlogs</button>
+      <button class="tab" role="tab" data-tab="latest"  aria-selected="true">Latest Logs</button>
+      <button class="tab" role="tab" data-tab="project" aria-selected="false">Project Logs</button>
     </nav>
 
     <!-- Latest panel -->
@@ -81,8 +80,8 @@ for (const post of posts) {
       ))}
     </div>
 
-    <!-- Per-project panels (pre-rendered, revealed on demand) -->
-    {projectGroups.map(group => (
+    <!-- Per-project panels — only rendered when the group exceeds the cap -->
+    {projectGroups.filter(g => g.posts.length > PROJECT_CAP).map(group => (
       <div class="panel hidden" id={`panel-proj-${group.id}`} role="tabpanel">
         <div class="devlog-list">
           {group.posts.map((post: CollectionEntry<'devlog'>) => (
@@ -95,75 +94,78 @@ for (const post of posts) {
 </Layout>
 
 <script>
-  const tabBar = document.getElementById('tab-bar')!;
+  function init() {
+    const tabBar = document.getElementById('tab-bar');
+    if (!tabBar) return;
 
-  // Grab Astro's scoped CID attribute name from an existing element so we can
-  // stamp it onto dynamically created nodes and get the scoped styles for free.
-  const cid = [...tabBar.querySelector('.tab')!.attributes]
-    .find(a => a.name.startsWith('data-astro-cid'))?.name ?? null;
+    const cid = [...tabBar.querySelector('.tab')!.attributes]
+      .find(a => a.name.startsWith('data-astro-cid'))?.name ?? null;
 
-  function stamp(el: HTMLElement) {
-    if (cid) el.setAttribute(cid, '');
-    return el;
-  }
-
-  function activate(tabId: string) {
-    tabBar.querySelectorAll<HTMLElement>('[data-tab]').forEach(t => {
-      const active = t.dataset.tab === tabId;
-      t.setAttribute('aria-selected', String(active));
-      t.classList.toggle('active', active);
-    });
-    document.querySelectorAll<HTMLElement>('.panel').forEach(p => {
-      p.classList.toggle('hidden', p.id !== `panel-${tabId}`);
-    });
-    history.replaceState(null, '', `#${tabId}`);
-  }
-
-  function openProjectTab(projectId: string, projectTitle: string) {
-    const tabId = `proj-${projectId}`;
-
-    if (!tabBar.querySelector(`[data-tab="${tabId}"]`)) {
-      // div instead of button so the close button inside is valid HTML
-      const tab = stamp(document.createElement('div'));
-      tab.className = 'tab tab-dynamic';
-      tab.setAttribute('role', 'tab');
-      tab.setAttribute('tabindex', '0');
-      tab.dataset.tab = tabId;
-      tab.setAttribute('aria-selected', 'false');
-
-      const label = stamp(document.createElement('span'));
-      label.textContent = projectTitle;
-
-      const close = stamp(document.createElement('button'));
-      close.className = 'tab-close';
-      close.textContent = '×';
-      close.setAttribute('aria-label', `Close ${projectTitle} tab`);
-      close.addEventListener('click', e => {
-        e.stopPropagation();
-        tab.remove();
-        activate('project');
-      });
-
-      tab.appendChild(label);
-      tab.appendChild(close);
-      tab.addEventListener('click', () => activate(tabId));
-      tab.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(tabId); });
-      tabBar.appendChild(tab);
+    function stamp(el: HTMLElement) {
+      if (cid) el.setAttribute(cid, '');
+      return el;
     }
 
-    activate(tabId);
+    function activate(tabId: string) {
+      tabBar.querySelectorAll<HTMLElement>('[data-tab]').forEach(t => {
+        const active = t.dataset.tab === tabId;
+        t.setAttribute('aria-selected', String(active));
+        t.classList.toggle('active', active);
+      });
+      document.querySelectorAll<HTMLElement>('.panel').forEach(p => {
+        p.classList.toggle('hidden', p.id !== `panel-${tabId}`);
+      });
+      history.replaceState(null, '', `#${tabId}`);
+    }
+
+    function openProjectTab(projectId: string, projectTitle: string) {
+      const tabId = `proj-${projectId}`;
+
+      if (!tabBar.querySelector(`[data-tab="${tabId}"]`)) {
+        const tab = stamp(document.createElement('div'));
+        tab.className = 'tab tab-dynamic';
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('tabindex', '0');
+        tab.dataset.tab = tabId;
+        tab.setAttribute('aria-selected', 'false');
+
+        const label = stamp(document.createElement('span'));
+        label.textContent = projectTitle;
+
+        const close = stamp(document.createElement('button'));
+        close.className = 'tab-close';
+        close.textContent = '×';
+        close.setAttribute('aria-label', `Close ${projectTitle} tab`);
+        close.addEventListener('click', e => {
+          e.stopPropagation();
+          tab.remove();
+          activate('project');
+        });
+
+        tab.appendChild(label);
+        tab.appendChild(close);
+        tab.addEventListener('click', () => activate(tabId));
+        tab.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') activate(tabId); });
+        tabBar.appendChild(tab);
+      }
+
+      activate(tabId);
+    }
+
+    tabBar.querySelectorAll<HTMLButtonElement>('.tab[data-tab="latest"], .tab[data-tab="project"]').forEach(tab => {
+      tab.addEventListener('click', () => activate(tab.dataset.tab!));
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.view-all-btn').forEach(btn => {
+      btn.addEventListener('click', () => openProjectTab(btn.dataset.project!, btn.dataset.projectTitle!));
+    });
+
+    const hash = location.hash.replace('#', '');
+    activate(hash === 'project' ? 'project' : 'latest');
   }
 
-  tabBar.querySelectorAll<HTMLButtonElement>('.tab[data-tab="latest"], .tab[data-tab="project"]').forEach(tab => {
-    tab.addEventListener('click', () => activate(tab.dataset.tab!));
-  });
-
-  document.querySelectorAll<HTMLButtonElement>('.view-all-btn').forEach(btn => {
-    btn.addEventListener('click', () => openProjectTab(btn.dataset.project!, btn.dataset.projectTitle!));
-  });
-
-  const hash = location.hash.replace('#', '');
-  activate(hash === 'project' ? 'project' : 'latest');
+  // Runs on first load and after every View Transitions navigation
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
