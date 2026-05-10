@@ -8,10 +8,12 @@ interface Props {
   title: string;
   description: string;
   bodyClass?: string;
+  socialImage?: string;
 }
 
-const { title, description, bodyClass } = Astro.props;
+const { title, description, bodyClass, socialImage } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const socialImageURL = socialImage ? new URL(socialImage, Astro.site) : undefined;
 ---
 
 <!doctype html>
@@ -33,11 +35,15 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:site_name" content="Seglectic Systems" />
+    {socialImageURL && <meta property="og:image" content={socialImageURL} />}
+    {socialImageURL && <meta property="og:image:width" content="1200" />}
+    {socialImageURL && <meta property="og:image:height" content="630" />}
 
     <!-- Twitter/X Card -->
-    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:card" content={socialImageURL ? 'summary_large_image' : 'summary'} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    {socialImageURL && <meta name="twitter:image" content={socialImageURL} />}
 
     <ClientRouter />
   </head>

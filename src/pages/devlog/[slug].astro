@@ -2,6 +2,7 @@
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import { devlogSlug } from '../../lib/content';
+import { getSocialPreviewUrl } from '../../lib/social-preview';
 
 export async function getStaticPaths() {
   const posts = await getCollection('devlog');
@@ -19,6 +20,7 @@ interface Props {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const socialImage = await getSocialPreviewUrl(post.filePath);
 
 const { title, date, project, tags, summary } = post.data;
 
@@ -32,6 +34,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
 <Layout
   title={`${title} — Devlog — Seglectic Systems`}
   description={summary}
+  socialImage={socialImage}
 >
   <article class="post-wrap">
     <header class="post-header">

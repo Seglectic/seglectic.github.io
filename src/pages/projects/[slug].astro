@@ -3,6 +3,7 @@ import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
 import Layout from '../../layouts/Layout.astro';
 import DevlogCard from '../../components/DevlogCard.astro';
+import { getSocialPreviewUrl } from '../../lib/social-preview';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects');
@@ -23,6 +24,7 @@ const allDevlog = await getCollection('devlog');
 const relatedDevlog = allDevlog
   .filter((post: CollectionEntry<'devlog'>) => post.data.project === project.id && post.data.publish)
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
+const socialImage = await getSocialPreviewUrl(project.filePath);
 
 const { title, tagline, heroImage, logoImage, github, demo, docs } = project.data;
 const isCanopticon = project.id === 'canopticon';
@@ -32,6 +34,7 @@ const isCanopticon = project.id === 'canopticon';
   title={`${title} — Seglectic Systems`}
   description={project.data.summary}
   bodyClass={isCanopticon ? 'canopticon-page' : undefined}
+  socialImage={socialImage}
 >
   {heroImage && (
     <section class:list={[
