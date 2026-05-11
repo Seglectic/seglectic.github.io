@@ -101,6 +101,10 @@ Future automation may create devlog folders directly in the repo or via GitHub A
 - `deploy` means: commit the current worktree on `dev`, push `dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`
 - Prefer this deploy flow over editing or pushing `master` directly during normal work
 
+## Known Bugs
+
+- Projects page tag filtering currently has a reflow animation bug: when filtered cards are restored, especially when the first card in the grid returns, surviving cards can snap or animate to intermediate positions before settling. Revisit the `/projects` card animation logic before adding more polish there.
+
 ## Key Constraints
 
 - Do NOT set `base` in `astro.config.mjs` (served from domain root)

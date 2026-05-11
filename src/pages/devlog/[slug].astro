@@ -134,12 +134,15 @@ const formattedDate = date.toLocaleDateString('en-US', {
   }
 
   .tag {
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.06em;
+    font-family: var(--font-terminal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.015em;
     color: var(--text-dim);
     border: 1px solid var(--border-subtle);
-    padding: 2px 6px;
+    padding: 3px 7px;
+    text-rendering: optimizeSpeed;
   }
 
   .post-body {

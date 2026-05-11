@@ -2,7 +2,6 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import ProjectCard from '../../components/ProjectCard.astro';
-import SectionHeader from '../../components/SectionHeader.astro';
 
 const allProjects = await getCollection('projects');
 
@@ -14,13 +13,46 @@ const projects = allProjects
   title="Projects — Seglectic Systems"
   description="All projects from Seglectic Systems — software, hardware, embedded, and AI experiments."
 >
-  <div class="page-wrap">
-    <SectionHeader title="Projects" />
-    <div class="projects-grid">
+  <div class="page-wrap" data-projects-page>
+    <section
+      class="projects-filter-header"
+      data-projects-filter-header
+      data-filtered="false"
+    >
+      <div class="projects-filter-header__row">
+        <div class="projects-title-band">
+          <div class="projects-title-wrap">
+            <span class="projects-title-marker" aria-hidden="true"></span>
+            <h2 class="projects-title">
+              <span class="projects-title-word">Projects</span>
+            </h2>
+          </div>
+          <div
+            class="projects-active-filters"
+            data-projects-active-filters
+            hidden
+          ></div>
+          <span class="projects-title-rule" aria-hidden="true"></span>
+        </div>
+      </div>
+    </section>
+
+    <div class="projects-grid" data-project-grid>
       {projects.map((project: CollectionEntry<'projects'>) => (
-        <ProjectCard project={project} />
+        <div
+          class="project-card-item"
+          data-project-card
+          data-project-id={project.id}
+          data-tags={project.data.tags.join(',')}
+        >
+          <ProjectCard project={project} interactiveTags={true} />
+        </div>
       ))}
     </div>
+
+    <p class="projects-empty" data-projects-empty hidden>
+      No projects match the selected hashtags.
+    </p>
   </div>
 </Layout>
 
@@ -29,10 +61,500 @@ const projects = allProjects
     padding: var(--space-xl) 0;
   }
 
+  .projects-filter-header {
+    margin-bottom: var(--space-lg);
+  }
+
+  .projects-filter-header__row {
+    display: block;
+    min-height: 2rem;
+  }
+
+  .projects-title-band {
+    display: flex;
+    align-items: flex-end;
+    gap: calc(var(--space-sm) + 0.35rem);
+    width: 100%;
+    position: relative;
+  }
+
+  .projects-title-wrap {
+    position: relative;
+    padding-left: var(--space-sm);
+    padding-bottom: 0.1rem;
+    transition: padding-left 220ms ease;
+  }
+
+  .projects-title {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text);
+  }
+
+  .projects-title-word {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 0.1rem;
+    transition: color 220ms ease;
+  }
+
+  .projects-title-marker {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2px;
+    height: 1rem;
+    background: var(--accent);
+    transform: translateY(-50%);
+    transform-origin: left center;
+    transition:
+      top 220ms ease,
+      bottom 220ms ease,
+      width 220ms ease,
+      height 220ms ease,
+      transform 220ms ease;
+  }
+
+  .projects-title-rule {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.05rem;
+    height: 1px;
+    background: rgba(232, 232, 230, 0.28);
+    opacity: 0;
+    transform: scaleX(0.2);
+    transform-origin: left center;
+    transition: opacity 220ms ease, transform 220ms ease;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .projects-title-wrap,
+  .projects-active-filters {
+    position: relative;
+    z-index: 1;
+  }
+
+  .projects-filter-header[data-filtered='true'] .projects-title-wrap {
+    padding-left: 0;
+  }
+
+  .projects-filter-header[data-filtered='true'] .projects-title-word {
+    color: var(--accent);
+  }
+
+  .projects-filter-header[data-filtered='true'] .projects-title-marker {
+    top: auto;
+    bottom: -0.05rem;
+    width: calc(100% + 0.7ch);
+    height: 2px;
+    transform: none;
+  }
+
+  .projects-filter-header[data-filtered='true'] .projects-title-rule {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  .projects-active-filters {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    flex: 0 1 auto;
+    padding-bottom: 0.32rem;
+    background: transparent;
+  }
+
+  .projects-active-filter {
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    padding: 0;
+    background: transparent;
+    font-family: var(--font-terminal);
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.015em;
+    line-height: 1;
+    text-rendering: optimizeSpeed;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .projects-active-filter:hover {
+    color: var(--accent);
+  }
+
   .projects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--space-md);
     max-width: 100%;
   }
+
+  .project-card-item[hidden] {
+    display: none;
+  }
+
+  .projects-empty {
+    margin: var(--space-md) 0 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 720px) {
+    .projects-title-band {
+      flex-wrap: wrap;
+    }
+  }
 </style>
+
+<script>
+  const normalizeProjectTag = (tag) => tag.trim().toLowerCase();
+
+  const getProjectFilterTagsFromUrl = () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const rawTags = searchParams.get('tags');
+    if (!rawTags) return [];
+
+    return [...new Set(
+      rawTags
+        .split(',')
+        .map(normalizeProjectTag)
+        .filter(Boolean)
+    )].sort();
+  };
+
+  const writeProjectFilterTagsToUrl = (tags) => {
+    const nextUrl = new URL(window.location.href);
+    if (tags.length > 0) {
+      nextUrl.searchParams.set('tags', [...tags].sort().join(','));
+    } else {
+      nextUrl.searchParams.delete('tags');
+    }
+
+    history.pushState({ tags: [...tags] }, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
+  };
+
+  const initProjectsFilters = () => {
+    const page = document.querySelector('[data-projects-page]');
+    if (!(page instanceof HTMLElement)) return;
+    if (page.dataset.filtersBound === 'true') return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scopedAttr = [...page.attributes]
+      .find((attribute) => attribute.name.startsWith('data-astro-cid'))?.name ?? null;
+
+    const header = page.querySelector('[data-projects-filter-header]');
+    const activeFilters = page.querySelector('[data-projects-active-filters]');
+    const emptyState = page.querySelector('[data-projects-empty]');
+    const cards = Array.from(page.querySelectorAll('[data-project-card]'));
+
+    if (!(header instanceof HTMLElement) || !(activeFilters instanceof HTMLElement) || !(emptyState instanceof HTMLElement)) {
+      return;
+    }
+
+    const syncInteractiveTags = (activeTags) => {
+      const activeTagSet = new Set(activeTags);
+      const tagButtons = page.querySelectorAll('[data-project-tag]');
+
+      for (const button of tagButtons) {
+        if (!(button instanceof HTMLButtonElement)) continue;
+        const tag = normalizeProjectTag(button.dataset.projectTag ?? '');
+        const isActive = activeTagSet.has(tag);
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      }
+    };
+
+    const renderActiveFilters = (activeTags) => {
+      activeFilters.innerHTML = '';
+      activeFilters.hidden = activeTags.length === 0;
+
+      for (const tag of activeTags) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'projects-active-filter';
+        button.dataset.projectTag = tag;
+        button.textContent = `#${tag}`;
+        if (scopedAttr) button.setAttribute(scopedAttr, '');
+        activeFilters.appendChild(button);
+      }
+    };
+
+    const clearCardAnimationStyles = (card) => {
+      card.style.removeProperty('opacity');
+      card.style.removeProperty('transform');
+      card.style.removeProperty('filter');
+      card.style.removeProperty('pointer-events');
+    };
+
+    const waitForNextFrame = () => new Promise((resolve) => {
+      window.requestAnimationFrame(() => resolve());
+    });
+
+    const waitForStableLayout = async () => {
+      await waitForNextFrame();
+      await waitForNextFrame();
+    };
+
+    const animateExitCards = async (cardsToHide) => {
+      if (cardsToHide.length === 0) return;
+      if (prefersReducedMotion) {
+        for (const card of cardsToHide) card.hidden = true;
+        return;
+      }
+
+      await Promise.all(
+        cardsToHide.map((card, index) => new Promise((resolve) => {
+          for (const animation of card.getAnimations()) animation.cancel();
+
+          const animation = card.animate(
+            [
+              { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0px)' },
+              { opacity: 0, transform: 'translateY(14px) scale(0.972)', filter: 'blur(0.6px)' },
+            ],
+            {
+              duration: 170,
+              delay: index * 18,
+              easing: 'cubic-bezier(0.42, 0, 1, 1)',
+              fill: 'forwards',
+            }
+          );
+
+          const finish = () => {
+            card.hidden = true;
+            clearCardAnimationStyles(card);
+            resolve();
+          };
+
+          animation.addEventListener('finish', finish, { once: true });
+          animation.addEventListener('cancel', finish, { once: true });
+        }))
+      );
+    };
+
+    const animateLayoutCards = async (cardsToMove, firstRects) => {
+      if (cardsToMove.length === 0) return;
+      if (prefersReducedMotion) return;
+
+      await Promise.all(
+        cardsToMove.map((card, index) => new Promise((resolve) => {
+          for (const animation of card.getAnimations()) animation.cancel();
+
+          const firstRect = firstRects.get(card);
+          if (!firstRect) {
+            clearCardAnimationStyles(card);
+            resolve();
+            return;
+          }
+
+          const lastRect = card.getBoundingClientRect();
+          const deltaX = firstRect.left - lastRect.left;
+          const deltaY = firstRect.top - lastRect.top;
+
+          if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) {
+            clearCardAnimationStyles(card);
+            resolve();
+            return;
+          }
+
+          const animation = card.animate(
+            [
+              { transform: `translate(${deltaX}px, ${deltaY}px)` },
+              { transform: 'translate(0px, 0px)' },
+            ],
+            {
+              duration: 260,
+              delay: index * 18,
+              easing: 'cubic-bezier(0.18, 0.82, 0.22, 1)',
+              fill: 'both',
+            }
+          );
+
+          const finish = () => {
+            clearCardAnimationStyles(card);
+            resolve();
+          };
+
+          animation.addEventListener('finish', finish, { once: true });
+          animation.addEventListener('cancel', finish, { once: true });
+        }))
+      );
+    };
+
+    const animateEnterCards = async (cardsToShow) => {
+      if (cardsToShow.length === 0) return;
+      if (prefersReducedMotion) {
+        for (const card of cardsToShow) {
+          card.hidden = false;
+          clearCardAnimationStyles(card);
+        }
+        return;
+      }
+
+      await Promise.all(
+        cardsToShow.map((card, index) => new Promise((resolve) => {
+          for (const animation of card.getAnimations()) animation.cancel();
+
+          card.style.pointerEvents = '';
+
+          const animation = card.animate(
+            [
+              { opacity: 0, transform: 'translateY(-10px) scale(0.968)', filter: 'blur(0.4px)' },
+              { opacity: 1, transform: 'translateY(0) scale(1)', filter: 'blur(0px)' },
+            ],
+            {
+              duration: 220,
+              delay: index * 22,
+              easing: 'cubic-bezier(0.18, 0.82, 0.22, 1)',
+              fill: 'both',
+            }
+          );
+
+          const finish = () => {
+            clearCardAnimationStyles(card);
+            resolve();
+          };
+
+          animation.addEventListener('finish', finish, { once: true });
+          animation.addEventListener('cancel', finish, { once: true });
+        }))
+      );
+    };
+
+    const applyFilters = async (animateCards = true) => {
+      const activeTags = getProjectFilterTagsFromUrl();
+      const firstRects = new Map();
+      const cardsToHide = [];
+      const cardsToShow = [];
+      const targetVisibleCards = [];
+      const visibleCardsAfterFilter = [];
+      let visibleCount = 0;
+
+      for (const card of cards) {
+        if (!(card instanceof HTMLElement)) continue;
+
+        if (!card.hidden) {
+          firstRects.set(card, card.getBoundingClientRect());
+        }
+
+        const cardTags = (card.dataset.tags ?? '')
+          .split(',')
+          .map(normalizeProjectTag)
+          .filter(Boolean);
+
+        const matches = activeTags.length === 0 || activeTags.every((tag) => cardTags.includes(tag));
+        const isVisible = !card.hidden;
+
+        if (matches) targetVisibleCards.push(card);
+        if (matches && !isVisible) cardsToShow.push(card);
+        if (!matches && isVisible) cardsToHide.push(card);
+        if (matches) visibleCardsAfterFilter.push(card);
+
+        if (matches) visibleCount += 1;
+      }
+
+      header.dataset.filtered = activeTags.length > 0 ? 'true' : 'false';
+      syncInteractiveTags(activeTags);
+      renderActiveFilters(activeTags);
+
+      emptyState.hidden = true;
+
+      if (!animateCards) {
+        for (const card of cardsToHide) card.hidden = true;
+        for (const card of cardsToShow) card.hidden = false;
+      } else {
+        page.dataset.filterAnimating = 'true';
+        await animateExitCards(cardsToHide);
+
+        for (const card of cardsToShow) {
+          card.hidden = false;
+          card.style.opacity = '0';
+          card.style.pointerEvents = 'none';
+        }
+
+        await waitForStableLayout();
+        await waitForNextFrame();
+        const cardsToMove = visibleCardsAfterFilter.filter((card) => firstRects.has(card));
+        await Promise.all([
+          animateLayoutCards(cardsToMove, firstRects),
+          animateEnterCards(cardsToShow),
+        ]);
+
+        page.dataset.filterAnimating = 'false';
+      }
+
+      const targetVisibleSet = new Set(targetVisibleCards);
+      for (const card of cards) {
+        if (!(card instanceof HTMLElement)) continue;
+        card.hidden = !targetVisibleSet.has(card);
+        clearCardAnimationStyles(card);
+      }
+
+      emptyState.hidden = visibleCount !== 0;
+    };
+
+    const toggleTag = async (tag) => {
+      const nextTags = new Set(getProjectFilterTagsFromUrl());
+      if (nextTags.has(tag)) {
+        nextTags.delete(tag);
+      } else {
+        nextTags.add(tag);
+      }
+
+      writeProjectFilterTagsToUrl([...nextTags]);
+      await applyFilters(true);
+    };
+
+    const handleClick = async (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      if (page.dataset.filterAnimating === 'true') return;
+
+      const tagButton = target.closest('[data-project-tag]');
+      if (!(tagButton instanceof HTMLButtonElement)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      await toggleTag(normalizeProjectTag(tagButton.dataset.projectTag ?? ''));
+    };
+
+    const handlePopState = async () => {
+      if (page.dataset.filterAnimating === 'true') return;
+      await applyFilters(true);
+    };
+
+    page.addEventListener('click', handleClick);
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener(
+      'pagehide',
+      () => {
+        page.removeEventListener('click', handleClick);
+        window.removeEventListener('popstate', handlePopState);
+        page.dataset.filtersBound = 'false';
+      },
+      { once: true }
+    );
+
+    page.dataset.filtersBound = 'true';
+    applyFilters(false);
+  };
+
+  initProjectsFilters();
+
+  if (!window.__seglecticProjectsFiltersPageLoadBound) {
+    document.addEventListener('astro:page-load', initProjectsFilters);
+    window.__seglecticProjectsFiltersPageLoadBound = true;
+  }
+</script>

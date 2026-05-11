@@ -12,7 +12,10 @@
     "astro": "astro"
   },
   "devDependencies": {
-    "gray-matter": "^4.0.3"
+    "@iconify-json/simple-icons": "^1.2.81",
+    "@iconify-json/tabler": "^1.2.35",
+    "gray-matter": "^4.0.3",
+    "unplugin-icons": "^23.0.1"
   },
   "dependencies": {
     "@astrojs/mdx": "^5.0.4",

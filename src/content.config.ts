@@ -8,7 +8,7 @@ const projects = defineCollection({
       title: z.string(),
       tagline: z.string(),
       status: z.enum(['active', 'prototype', 'released', 'shelved', 'archived']),
-      category: z.enum(['software', 'hardware', 'embedded', 'ai', 'web', 'tool', 'other']),
+      label: z.string(),
       tags: z.array(z.string()).default([]),
       heroImage: image().optional(),
       logoImage: image().optional(),

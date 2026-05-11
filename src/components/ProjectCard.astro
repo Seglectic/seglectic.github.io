@@ -1,88 +1,229 @@
 ---
-import StatusBadge from './StatusBadge.astro';
+import { Image } from 'astro:assets';
+import StatusIndicator from './StatusIndicator.astro';
 import TagList from './TagList.astro';
+import { getContentPreviewAsset } from '../lib/social-preview';
 
 interface Props {
   project: {
     id: string;
     slug?: string;
+    filePath?: string;
     data: {
       title: string;
       tagline?: string;
-      category?: string;
+      label: string;
       status: string;
       tags?: string[];
     };
   };
+  interactiveTags?: boolean;
 }
 
-const { project } = Astro.props;
-const { title, tagline, category, status, tags = [] } = project.data;
+const { project, interactiveTags = false } = Astro.props;
+const { title, tagline, label, status, tags = [] } = project.data;
 const href = `/${project.id}`;
+const previewImage = getContentPreviewAsset(project.filePath);
+const hasPreview = Boolean(previewImage);
 ---
 
-<a class="card" href={href}>
-  <article>
-    {category && <span class="category">{category}</span>}
-    <h2 class="title">{title}</h2>
-    {tagline && <p class="tagline">{tagline}</p>}
-    <div class="meta">
-      <StatusBadge status={status} />
-      <TagList tags={tags} />
+<article class="card">
+  <a
+    class="card-link"
+    href={href}
+    aria-label={`Open project ${title}`}
+  ></a>
+  <div class="card-status">
+    <StatusIndicator status={status} />
+  </div>
+  <div class="card-content">
+    <div class:list={['card-head', hasPreview && 'card-head--with-preview']}>
+      <div class="card-copy">
+        <span class="label">{label}</span>
+        <h2 class="title">{title}</h2>
+        {tagline && <p class="tagline">{tagline}</p>}
+      </div>
+      {previewImage && (
+        <div class="card-media">
+          {previewImage.kind === 'raster' ? (
+            <Image src={previewImage.source} alt="" loading="lazy" />
+          ) : (
+            <img src={previewImage.source} alt="" loading="lazy" />
+          )}
+        </div>
+      )}
     </div>
-  </article>
-</a>
+    <div class="meta">
+      <div class="meta-tags">
+        <TagList tags={tags} interactive={interactiveTags} linkBase="/projects" />
+      </div>
+    </div>
+  </div>
+</article>
 
 <style>
   .card {
-    display: block;
+    position: relative;
     background: var(--bg-elevated);
     border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    padding: var(--space-md);
-    text-decoration: none;
+    border-radius: 14px;
     color: inherit;
-    transition: border-color 0.2s ease;
+    overflow: clip;
+    transition:
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
-  .card:hover {
+  .card:hover,
+  .card:focus-within {
     border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
   }
 
-  article {
+  .card-link {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 1;
+  }
+
+  .card-link:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .card-status {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.8rem;
+    z-index: 4;
+  }
+
+  .card-content {
+    position: relative;
+    z-index: 2;
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: 0.9rem;
+    padding: 1rem 1rem 1.05rem;
+    pointer-events: none;
   }
 
-  .category {
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
+  .card-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: start;
+    padding-right: 1.5rem;
+  }
+
+  .card-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    min-width: 0;
+  }
+
+  .label {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1rem;
+    max-width: calc(100% - 1.7rem);
+    font-family: var(--font-terminal);
+    font-size: 0.72rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: var(--accent);
   }
 
   .title {
     margin: 0;
-    font-size: 1.1rem;
-    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-family: var(--font-display);
     color: var(--text);
-    line-height: 1.3;
+    line-height: 1.15;
   }
 
   .tagline {
     margin: 0;
     font-size: 0.875rem;
-    color: var(--text-muted);
+    color: color-mix(in srgb, var(--text-muted) 92%, var(--text) 8%);
     line-height: 1.5;
+  }
+
+  .card-media {
+    width: 132px;
+    max-width: 100%;
+    margin-top: 0.1rem;
+    margin-left: auto;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--accent) 20%, var(--border));
+    border-radius: 10px;
+    background:
+      radial-gradient(circle at top left, rgba(212, 83, 26, 0.18), transparent 52%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.12));
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+  }
+
+  .card-media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(0.92) contrast(1.03);
+    transition: transform 0.35s ease, filter 0.35s ease;
+  }
+
+  .card:hover .card-media img,
+  .card:focus-within .card-media img {
+    transform: scale(1.03);
+    filter: saturate(1) contrast(1.08);
   }
 
   .meta {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     flex-wrap: wrap;
     gap: var(--space-md);
-    margin-top: var(--space-xs);
+    margin-top: 0.1rem;
+  }
+
+  .meta-tags {
+    position: relative;
+    z-index: 3;
+    pointer-events: auto;
+  }
+
+  @media (min-width: 680px) {
+    .card-head--with-preview {
+      grid-template-columns: minmax(0, 1fr) 132px;
+      gap: 1rem;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .card-content {
+      padding: 0.95rem 0.95rem 1rem;
+    }
+
+    .card-head {
+      padding-right: 1.35rem;
+    }
+
+    .card-status {
+      top: 0.7rem;
+      right: 0.7rem;
+    }
+  }
+
+  @media (max-width: 679px) {
+    .card-media {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
   }
 </style>

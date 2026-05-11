@@ -1,0 +1,211 @@
+---
+import IconCircle from '~icons/tabler/circle';
+import IconCircleCheckFilled from '~icons/tabler/circle-check-filled';
+import IconCircleDotFilled from '~icons/tabler/circle-dot-filled';
+import IconCircleFilled from '~icons/tabler/circle-filled';
+import IconCircleOff from '~icons/tabler/circle-off';
+
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+
+const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+
+const colorMap: Record<string, string> = {
+  active: 'var(--accent-cyan)',
+  prototype: 'var(--accent-amber)',
+  released: '#6aaa6a',
+  shelved: 'var(--text-dim)',
+  archived: 'var(--text-dim)',
+};
+
+const dotColor = colorMap[status.toLowerCase()] ?? 'var(--text-dim)';
+const statusKey = status.toLowerCase();
+---
+
+<div class="status-indicator" data-status-indicator>
+  <button
+    type="button"
+    class="status-trigger"
+    data-status-trigger
+    data-status-label={statusLabel}
+    data-status-color={dotColor}
+    aria-label={`Project status: ${statusLabel}`}
+  >
+    {statusKey === 'active' && (
+      <IconCircleDotFilled class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+    {statusKey === 'prototype' && (
+      <IconCircleFilled class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+    {statusKey === 'released' && (
+      <IconCircleCheckFilled class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+    {statusKey === 'shelved' && (
+      <IconCircle class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+    {statusKey === 'archived' && (
+      <IconCircleOff class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+    {!['active', 'prototype', 'released', 'shelved', 'archived'].includes(statusKey) && (
+      <IconCircleFilled class="status-icon" style={`--status-color: ${dotColor};`} aria-hidden="true" />
+    )}
+  </button>
+</div>
+
+<style>
+  .status-indicator {
+    position: relative;
+    pointer-events: auto;
+  }
+
+  .status-trigger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.2rem;
+    height: 1.2rem;
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: default;
+  }
+
+  .status-icon,
+  :global(.status-tooltip__dot) {
+    display: block;
+    color: var(--status-color);
+    flex-shrink: 0;
+  }
+
+  .status-icon {
+    width: 0.82rem;
+    height: 0.82rem;
+  }
+
+  :global(.status-tooltip) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.4rem 0.55rem;
+    border: 1px solid color-mix(in srgb, var(--status-color) 35%, var(--border));
+    border-radius: 999px;
+    background:
+      linear-gradient(180deg, rgba(30, 30, 30, 0.98), rgba(22, 22, 22, 0.96));
+    color: var(--text);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+    font-family: var(--font-terminal);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate3d(-9999px, -9999px, 0);
+    transition: opacity 120ms ease;
+    z-index: 30;
+    visibility: hidden;
+  }
+
+  :global(.status-tooltip.is-visible) {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  :global(.status-tooltip__dot) {
+    width: 0.45rem;
+    height: 0.45rem;
+  }
+
+  :global(.status-tooltip__text) {
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const OFFSET_X = 14;
+  const OFFSET_Y = 18;
+
+  const ensureTooltip = () => {
+    let tooltip = document.querySelector('[data-global-status-tooltip]');
+    if (tooltip instanceof HTMLElement) return tooltip;
+
+    tooltip = document.createElement('div');
+    tooltip.className = 'status-tooltip';
+    tooltip.setAttribute('data-global-status-tooltip', '');
+    tooltip.setAttribute('aria-hidden', 'true');
+    tooltip.innerHTML = `
+      <span class="status-tooltip__dot" data-global-status-tooltip-dot></span>
+      <span class="status-tooltip__text" data-global-status-tooltip-text></span>
+    `;
+    document.body.appendChild(tooltip);
+    return tooltip;
+  };
+
+  const positionTooltip = (tooltip, x, y) => {
+    const rect = tooltip.getBoundingClientRect();
+    const maxX = window.innerWidth - rect.width - 10;
+    const maxY = window.innerHeight - rect.height - 10;
+    const nextX = Math.min(Math.max(10, x + OFFSET_X), Math.max(10, maxX));
+    const nextY = Math.min(Math.max(10, y + OFFSET_Y), Math.max(10, maxY));
+    tooltip.style.transform = `translate3d(${nextX}px, ${nextY}px, 0)`;
+  };
+
+  const initStatusIndicators = () => {
+    const indicators = document.querySelectorAll('[data-status-indicator]');
+    const tooltip = ensureTooltip();
+    const tooltipText = tooltip.querySelector('[data-global-status-tooltip-text]');
+    const tooltipDot = tooltip.querySelector('[data-global-status-tooltip-dot]');
+
+    if (!(tooltipText instanceof HTMLElement) || !(tooltipDot instanceof HTMLElement)) return;
+
+    indicators.forEach((indicator) => {
+      if (!(indicator instanceof HTMLElement) || indicator.dataset.bound === 'true') return;
+
+      const trigger = indicator.querySelector('[data-status-trigger]');
+      if (!(trigger instanceof HTMLElement)) return;
+
+      const showTooltip = (x, y) => {
+        const statusLabel = trigger.dataset.statusLabel ?? 'Unknown';
+        const statusColor = trigger.dataset.statusColor ?? 'var(--text-dim)';
+        tooltipText.textContent = `Status: ${statusLabel}`;
+        tooltipDot.style.setProperty('--status-color', statusColor);
+        tooltip.setAttribute('aria-hidden', 'false');
+        tooltip.classList.add('is-visible');
+        positionTooltip(tooltip, x, y);
+      };
+
+      const hideTooltip = () => {
+        tooltip.setAttribute('aria-hidden', 'true');
+        tooltip.classList.remove('is-visible');
+      };
+
+      trigger.addEventListener('mouseenter', (event) => {
+        showTooltip(event.clientX, event.clientY);
+      });
+
+      trigger.addEventListener('mousemove', (event) => {
+        if (!tooltip.classList.contains('is-visible')) return;
+        positionTooltip(tooltip, event.clientX, event.clientY);
+      });
+
+      trigger.addEventListener('mouseleave', hideTooltip);
+
+      trigger.addEventListener('focus', () => {
+        const rect = trigger.getBoundingClientRect();
+        showTooltip(rect.right, rect.bottom);
+      });
+
+      trigger.addEventListener('blur', hideTooltip);
+
+      indicator.dataset.bound = 'true';
+    });
+  };
+
+  initStatusIndicators();
+  document.addEventListener('astro:after-swap', initStatusIndicators);
+</script>

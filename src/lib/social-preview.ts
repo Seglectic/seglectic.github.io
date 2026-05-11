@@ -10,7 +10,11 @@ const previewVectors = import.meta.glob('/src/content/{projects,devlog}/**/previ
   import: 'default',
 }) as Record<string, string>;
 
-function siblingPreviewFor(filePath?: string) {
+export type ContentPreviewAsset =
+  | { kind: 'raster'; source: ImageMetadata }
+  | { kind: 'vector'; source: string };
+
+export function getContentPreviewAsset(filePath?: string): ContentPreviewAsset | undefined {
   if (!filePath) return undefined;
 
   const contentDir = filePath.replace(/\/[^/]+$/, '');
@@ -26,7 +30,7 @@ function siblingPreviewFor(filePath?: string) {
 }
 
 export async function getSocialPreviewUrl(filePath?: string) {
-  const preview = siblingPreviewFor(filePath);
+  const preview = getContentPreviewAsset(filePath);
   if (!preview) return undefined;
 
   if (preview.kind === 'vector') {

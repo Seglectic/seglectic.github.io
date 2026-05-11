@@ -1,16 +1,56 @@
 ---
 interface Props {
   tags: string[];
+  interactive?: boolean;
+  activeTags?: string[];
+  linkBase?: string;
 }
 
-const { tags } = Astro.props;
+const {
+  tags,
+  interactive = false,
+  activeTags = [],
+  linkBase,
+} = Astro.props;
+
+const activeTagSet = new Set(activeTags.map((tag) => tag.toLowerCase()));
+const buildTagHref = (tag: string) => {
+  if (!linkBase) return undefined;
+  const normalizedTag = tag.trim().toLowerCase();
+  return `${linkBase}?tags=${encodeURIComponent(normalizedTag)}`;
+};
 ---
 
 {tags && tags.length > 0 && (
   <ul class="tag-list">
-    {tags.map(tag => (
-      <li class="tag">#{tag}</li>
-    ))}
+    {tags.map((tag) => {
+      const normalizedTag = tag.toLowerCase();
+      const isActive = activeTagSet.has(normalizedTag);
+
+      return (
+        <li>
+          {interactive ? (
+            <button
+              type="button"
+              class:list={['tag', 'tag-button', isActive && 'is-active']}
+              data-project-tag={normalizedTag}
+              aria-pressed={isActive ? 'true' : 'false'}
+            >
+              #{tag}
+            </button>
+          ) : linkBase ? (
+            <a
+              href={buildTagHref(tag)}
+              class="tag tag-link"
+            >
+              #{tag}
+            </a>
+          ) : (
+            <span class="tag">#{tag}</span>
+          )}
+        </li>
+      );
+    })}
   </ul>
 )}
 
@@ -25,9 +65,35 @@ const { tags } = Astro.props;
   }
 
   .tag {
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--font-terminal);
+    font-size: 0.75rem;
+    font-weight: 700;
     color: var(--text-muted);
-    letter-spacing: 0.02em;
+    letter-spacing: 0.015em;
+    line-height: 1;
+    text-rendering: optimizeSpeed;
+  }
+
+  .tag-button {
+    border: none;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+
+  .tag-link {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+    transition: color 0.15s ease;
+  }
+
+  .tag-button:hover,
+  .tag-link:hover,
+  .tag-button.is-active {
+    color: var(--accent);
   }
 </style>
