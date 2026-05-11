@@ -98,7 +98,7 @@ Future automation may create devlog folders directly in the repo or via GitHub A
 
 ## Repo Shortcuts
 
-- `$deploy` means: commit the current worktree on `dev`, push `dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`
+- `deploy` means: commit the current worktree on `dev`, push `dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`
 - Prefer this deploy flow over editing or pushing `master` directly during normal work
 
 ## Key Constraints
