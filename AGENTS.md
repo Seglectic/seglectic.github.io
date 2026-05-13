@@ -98,7 +98,7 @@ Future automation may create devlog folders directly in the repo or via GitHub A
 
 ## Repo Shortcuts
 
-- `deploy` means: commit the current worktree on `dev`, push `dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`
+- `deploy` means: commit the current worktree on `dev`, push `dev` to `origin/dev`, fast-forward or merge those changes into `master`, push `master`, then return the checkout to `dev`. The push to `origin/dev` must happen before merging to `master` — skipping it leaves `origin/dev` out of sync with master.
 - Prefer this deploy flow over editing or pushing `master` directly during normal work
 
 ## Known Bugs
@@ -113,3 +113,15 @@ Future automation may create devlog folders directly in the repo or via GitHub A
 - Astro must remain static/prerendered — no server-only features
 - Avoid adding project-specific styling hooks or one-off classes to shared templates/components when the need is local to a single MDX document
 - For page-specific layout/styling, prefer document-local markup or a dedicated local component; only add shared template styles when the pattern is clearly reusable across multiple project pages
+
+## Projenitor
+
+Run: `npm run projeni`
+Aliases: `npm run proj`, `npm run project`
+
+Projenitor opens a TUI for scaffolding a folder-based project page under:
+`src/content/projects/<slug>/index.mdx`
+
+Images can be dragged into the terminal or pasted as file paths. They are copied as-is into the project folder; Astro handles image optimization at build time.
+
+Tool source lives in `tools/projenitor/`. Entry point is `projenitor.mjs`; UI components use Ink + React with `React.createElement` (no JSX/transpiler); lib modules handle slug generation, path resolution, media copying, project scanning, and file writing.

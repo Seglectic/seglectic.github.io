@@ -9,12 +9,20 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "projeni": "node tools/projenitor/projenitor.mjs",
+    "proj": "npm run projeni",
+    "project": "npm run projeni"
   },
   "devDependencies": {
     "@iconify-json/simple-icons": "^1.2.81",
     "@iconify-json/tabler": "^1.2.35",
     "gray-matter": "^4.0.3",
+    "ink": "^7.0.2",
+    "ink-select-input": "^6.2.0",
+    "ink-text-input": "^6.0.0",
+    "react": "^19.2.6",
+    "sharp": "^0.34.5",
     "unplugin-icons": "^23.0.1"
   },
   "dependencies": {
