@@ -1,11 +1,11 @@
 import { getImage, type ImageMetadata } from 'astro:assets';
 
-const previewImages = import.meta.glob('/src/content/{projects,devlog}/**/preview.{avif,AVIF,bmp,BMP,gif,GIF,jpeg,JPEG,jpg,JPG,png,PNG,tif,TIF,tiff,TIFF,webp,WEBP}', {
+const previewImages = import.meta.glob('/src/content/projects/**/preview.{avif,AVIF,bmp,BMP,gif,GIF,jpeg,JPEG,jpg,JPG,png,PNG,tif,TIF,tiff,TIFF,webp,WEBP}', {
   eager: true,
   import: 'default',
 }) as Record<string, ImageMetadata>;
 
-const previewVectors = import.meta.glob('/src/content/{projects,devlog}/**/preview.{svg,SVG}', {
+const previewVectors = import.meta.glob('/src/content/projects/**/preview.{svg,SVG}', {
   eager: true,
   import: 'default',
 }) as Record<string, string>;

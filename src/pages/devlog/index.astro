@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
 import DevlogCard from '../../components/DevlogCard.astro';
+import { devlogProject } from '../../lib/content';
 
 const PROJECT_CAP = 3;
 
@@ -18,7 +19,7 @@ const projectMap = Object.fromEntries(
 
 const groupMap = new Map<string, { id: string; title: string; posts: typeof posts }>();
 for (const post of posts) {
-  const pid = post.data.project ?? '__none__';
+  const pid = devlogProject(post.id) ?? '__none__';
   if (!groupMap.has(pid)) {
     groupMap.set(pid, { id: pid, title: projectMap[pid] ?? pid, posts: [] });
   }

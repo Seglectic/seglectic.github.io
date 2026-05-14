@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import faviconUrl from '../assets/favicon.svg?url';
 
 interface Props {
   title: string;
@@ -28,7 +29,7 @@ const socialImageURL = socialImage ? new URL(socialImage, Astro.site) : undefine
     <meta name="description" content={description} />
 
     <link rel="canonical" href={canonicalURL} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href={faviconUrl} />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />

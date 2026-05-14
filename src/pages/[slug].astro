@@ -4,6 +4,7 @@ import { Image } from 'astro:assets';
 import HeroFloatingOverlay from '../components/HeroFloatingOverlay.astro';
 import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
+import { devlogProject } from '../lib/content';
 import { getSocialPreviewUrl } from '../lib/social-preview';
 
 export async function getStaticPaths() {
@@ -23,7 +24,7 @@ const { Content } = await render(project);
 
 const allDevlog = await getCollection('devlog');
 const relatedDevlog = allDevlog
-  .filter((post: CollectionEntry<'devlog'>) => post.data.project === project.id && post.data.publish)
+  .filter((post: CollectionEntry<'devlog'>) => devlogProject(post.id) === project.id && post.data.publish)
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
 const socialImage = await getSocialPreviewUrl(project.filePath);
 

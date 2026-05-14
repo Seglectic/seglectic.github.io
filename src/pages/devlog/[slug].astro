@@ -1,7 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
-import { devlogSlug } from '../../lib/content';
+import { devlogProject, devlogSlug } from '../../lib/content';
 import { getSocialPreviewUrl } from '../../lib/social-preview';
 
 export async function getStaticPaths() {
@@ -22,7 +22,8 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 const socialImage = await getSocialPreviewUrl(post.filePath);
 
-const { title, date, project, tags, summary } = post.data;
+const { title, date, tags, summary } = post.data;
+const project = devlogProject(post.id);
 
 const formattedDate = date.toLocaleDateString('en-US', {
   year:     'numeric',

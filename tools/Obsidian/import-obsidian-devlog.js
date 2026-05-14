@@ -17,9 +17,7 @@ import matter from 'gray-matter';
 // Config — override via environment variables
 // ---------------------------------------------------------------------------
 const VAULT_PROJECTS_DIR = process.env.VAULT_PROJECTS || '/path/to/vault/Projects';
-const ASTRO_DEVLOG_DIR   = './src/content/devlog';
 const ASTRO_PROJECTS_DIR = './src/content/projects';
-const PUBLIC_IMAGES_DIR  = './public/images';
 
 // ---------------------------------------------------------------------------
 // Status mapping: Obsidian vault status → Astro site status
@@ -201,10 +199,10 @@ function processDevlog(devlogDir, slug) {
     // Build output frontmatter
     const outTags = filterProjectTags(fm.tags);
 
+    const entrySlug = path.basename(filename, '.md');
     const outFm = {
-      title:   fm.title   ?? path.basename(filename, '.md'),
-      date:    fm.date    ?? undefined,
-      project: slug,                    // injected
+      title: fm.title ?? entrySlug,
+      date: fm.date ?? undefined,
       ...(outTags.length > 0 ? { tags: outTags } : {}),
       ...(fm.summary ? { summary: fm.summary } : {}),
       publish: true,
@@ -216,9 +214,9 @@ function processDevlog(devlogDir, slug) {
     }
 
     // Write .mdx — replace .md extension
-    const outFilename = filename.replace(/\.md$/, '.mdx');
-    const destPath    = path.join(ASTRO_DEVLOG_DIR, outFilename);
-    ensureDir(ASTRO_DEVLOG_DIR);
+    const destDir = path.join(ASTRO_PROJECTS_DIR, slug, 'devlog', entrySlug);
+    const destPath = path.join(destDir, 'index.mdx');
+    ensureDir(destDir);
     fs.writeFileSync(destPath, buildMdx(outFm, body), 'utf8');
     published++;
   }
@@ -262,7 +260,7 @@ function processProject(projectDir) {
 
   // Copy images
   const attachDir = path.join(projectDir, 'attach');
-  const imgDest   = path.join(PUBLIC_IMAGES_DIR, 'projects', slug);
+  const imgDest   = path.join(ASTRO_PROJECTS_DIR, slug);
   const copied    = copyImages(attachDir, imgDest);
   if (copied > 0) {
     console.log(`    ✓ Images: ${copied} file${copied === 1 ? '' : 's'} copied to ${imgDest}`);
@@ -308,8 +306,9 @@ function processProject(projectDir) {
     order:    99,
   };
 
-  const destPath = path.join(ASTRO_PROJECTS_DIR, `${slug}.mdx`);
-  ensureDir(ASTRO_PROJECTS_DIR);
+  const destDir = path.join(ASTRO_PROJECTS_DIR, slug);
+  const destPath = path.join(destDir, 'index.mdx');
+  ensureDir(destDir);
   fs.writeFileSync(destPath, buildMdx(outFm, body), 'utf8');
   console.log(`    ✓ Project: written to ${destPath}`);
 }

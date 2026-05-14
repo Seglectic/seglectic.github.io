@@ -2,7 +2,7 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const projects = defineCollection({
-  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/projects' }),
+  loader: glob({ pattern: '*/index.{md,mdx}', base: './src/content/projects' }),
   schema: ({ image }) =>
     z.object({
       title: z.string(),
@@ -43,8 +43,8 @@ const projects = defineCollection({
 
 const devlog = defineCollection({
   loader: glob({
-    pattern: '**/*.{md,mdx}',
-    base: './src/content/devlog',
+    pattern: '*/devlog/**/index.{md,mdx}',
+    base: './src/content/projects',
     generateId: ({ entry }) =>
       entry
         .replace(/\/index\.(md|mdx)$/, '')
