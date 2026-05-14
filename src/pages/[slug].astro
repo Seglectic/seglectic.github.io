@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
+import HeroFloatingOverlay from '../components/HeroFloatingOverlay.astro';
 import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
 import { getSocialPreviewUrl } from '../lib/social-preview';
@@ -26,37 +27,30 @@ const relatedDevlog = allDevlog
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
 const socialImage = await getSocialPreviewUrl(project.filePath);
 
-const { title, tagline, heroImage, logoImage, github, demo, docs } = project.data;
-const isCanopticon = project.id === 'canopticon';
+const { title, tagline, heroImage, heroOverlay, github, demo, docs } = project.data;
+const isCanopticonHero = heroOverlay?.variant === 'canopticon';
 ---
 
 <Layout
   title={`${title} — Seglectic Systems`}
   description={project.data.summary}
-  bodyClass={isCanopticon ? 'canopticon-page' : undefined}
+  bodyClass={isCanopticonHero ? 'canopticon-page' : undefined}
   socialImage={socialImage}
 >
   {heroImage && (
     <section class:list={[
       'hero-image-wrap',
-      isCanopticon && 'hero-image-wrap--canopticon',
+      isCanopticonHero && 'hero-image-wrap--canopticon',
     ]}>
       <Image src={heroImage} alt={`${title} hero`} class="hero-image" />
-      {logoImage && (
-        <Image
-          src={logoImage}
-          alt={`${title} logo`}
-          class="hero-logo"
-          data-canopticon-logo
-        />
-      )}
+      {heroOverlay && <HeroFloatingOverlay overlay={heroOverlay} projectTitle={title} />}
       <div class="hero-overlay">
         <div class="hero-copy">
           <h1 class:list={[
             'title',
             'hero-reveal',
             'hero-reveal--title',
-            project.id === 'canopticon' && 'title--anta',
+            isCanopticonHero && 'title--anta',
           ]}>{title}</h1>
           <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
         </div>
@@ -66,7 +60,7 @@ const isCanopticon = project.id === 'canopticon';
 
   <article class:list={[
     'project-wrap',
-    isCanopticon && 'project-wrap--wide',
+    isCanopticonHero && 'project-wrap--wide',
   ]} data-reveal>
     <header class="project-header">
       <p class="summary">{project.data.summary}</p>
@@ -168,20 +162,6 @@ const isCanopticon = project.id === 'canopticon';
     -webkit-mask-size: 100% 100%;
     mask-size: 100% 100%;
     transform: none;
-  }
-
-  .hero-logo {
-    position: absolute;
-    left: 50%;
-    top: 43%;
-    width: clamp(110px, 16vw, 168px);
-    height: auto;
-    transform: translate(-50%, -50%);
-    object-fit: contain;
-    pointer-events: none;
-    filter: drop-shadow(0 14px 34px rgba(0, 0, 0, 0.42));
-    will-change: transform;
-    z-index: 2;
   }
 
   .hero-overlay {
@@ -468,6 +448,18 @@ const isCanopticon = project.id === 'canopticon';
     cursor: pointer;
   }
 
+  @keyframes hero-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(26px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   @media (max-width: 720px) {
     .project-wrap {
       padding-top: var(--space-md);
@@ -502,18 +494,6 @@ const isCanopticon = project.id === 'canopticon';
       transform: none;
       animation: none;
       transition: none;
-    }
-  }
-
-  @keyframes hero-fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(26px);
-    }
-
-    to {
-      opacity: 1;
-      transform: translateY(0);
     }
   }
 </style>
@@ -563,33 +543,6 @@ const isCanopticon = project.id === 'canopticon';
     } else {
       for (const target of revealTargets) target.classList.add('is-visible');
     }
-  };
-
-  const initCanopticonLogoBob = () => {
-    const logo = document.querySelector('[data-canopticon-logo]');
-    if (!logo) return;
-
-    const amplitude = 12;
-    const periodMs = 2000;
-    const startedAt = performance.now();
-    let frameId = 0;
-
-    const tick = (now) => {
-      const phase = ((now - startedAt) / periodMs) * Math.PI * 2;
-      const offsetY = Math.sin(phase) * amplitude;
-      logo.style.transform = `translate(-50%, calc(-50% + ${offsetY.toFixed(2)}px))`;
-      frameId = window.requestAnimationFrame(tick);
-    };
-
-    frameId = window.requestAnimationFrame(tick);
-
-    window.addEventListener(
-      'pagehide',
-      () => {
-        window.cancelAnimationFrame(frameId);
-      },
-      { once: true }
-    );
   };
 
   const initHeroScrollEffects = () => {
@@ -761,7 +714,6 @@ const isCanopticon = project.id === 'canopticon';
 
   const initProjectPage = () => {
     initProjectReveals();
-    initCanopticonLogoBob();
     initHeroScrollEffects();
     initProjectLightbox();
   };

@@ -1,0 +1,86 @@
+---
+import { Image, type ImageMetadata } from 'astro:assets';
+
+interface OverlayConfig {
+  image: ImageMetadata;
+  alt?: string;
+  variant?: 'canopticon' | 'custom';
+  size?: string;
+  position?: {
+    x?: string;
+    y?: string;
+  };
+  motion?: {
+    amplitude?: number;
+    periodMs?: number;
+  };
+  shadow?: string;
+}
+
+interface Props {
+  overlay: OverlayConfig;
+  projectTitle: string;
+}
+
+const { overlay, projectTitle } = Astro.props;
+
+const variant = overlay.variant ?? 'custom';
+const styleVars = {
+  '--hero-overlay-x': overlay.position?.x ?? '50%',
+  '--hero-overlay-y': overlay.position?.y ?? '43%',
+  '--hero-overlay-size': overlay.size ?? 'clamp(110px, 16vw, 168px)',
+  '--hero-overlay-amplitude': `${overlay.motion?.amplitude ?? 12}px`,
+  '--hero-overlay-period': `${overlay.motion?.periodMs ?? 2000}ms`,
+  '--hero-overlay-shadow': overlay.shadow ?? 'drop-shadow(0 14px 34px rgba(0, 0, 0, 0.42))',
+};
+---
+
+<Image
+  src={overlay.image}
+  alt={overlay.alt ?? `${projectTitle} overlay`}
+  class:list={[
+    'hero-floating-overlay',
+    variant === 'canopticon' && 'hero-floating-overlay--canopticon',
+  ]}
+  style={styleVars}
+/>
+
+<style>
+  .hero-floating-overlay {
+    position: absolute;
+    left: var(--hero-overlay-x);
+    top: var(--hero-overlay-y);
+    width: var(--hero-overlay-size);
+    height: auto;
+    object-fit: contain;
+    pointer-events: none;
+    filter: var(--hero-overlay-shadow);
+    transform: translate(-50%, -50%);
+    transform-origin: center;
+    animation: hero-overlay-bob var(--hero-overlay-period) ease-in-out infinite;
+    will-change: transform;
+    z-index: 3;
+  }
+
+  .hero-floating-overlay--canopticon {
+    image-rendering: auto;
+  }
+
+  @keyframes hero-overlay-bob {
+    0%,
+    100% {
+      transform: translate(-50%, calc(-50% - var(--hero-overlay-amplitude)));
+    }
+
+    50% {
+      transform: translate(-50%, calc(-50% + var(--hero-overlay-amplitude)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-floating-overlay {
+      animation: none;
+      transform: translate(-50%, -50%);
+    }
+  }
+</style>

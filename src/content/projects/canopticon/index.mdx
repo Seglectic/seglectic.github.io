@@ -5,7 +5,18 @@ status: active
 label: Field Module
 tags: [computer-vision, ai, raspberry-pi]
 heroImage: ./hero.JPEG
-logoImage: ./canopticon-logo.png
+heroOverlay:
+  image: ./canopticon-logo.png
+  alt: Canopticon logo
+  variant: canopticon
+  size: clamp(110px, 16vw, 168px)
+  position:
+    x: 50%
+    y: 43%
+  motion:
+    amplitude: 12
+    periodMs: 2000
+  shadow: drop-shadow(0 14px 34px rgba(0, 0, 0, 0.42))
 summary: A fully portable machine vision tool for estimating canopy cover from photos using sky segmentation.
 github: https://github.com/Seglectic/Canopticon
 featured: true

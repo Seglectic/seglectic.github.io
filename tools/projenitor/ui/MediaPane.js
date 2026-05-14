@@ -12,8 +12,8 @@ const { createElement: h } = React;
 const THUMB_CHAR_ROWS = 9; // terminal rows per thumbnail (= 18 px rows)
 const THUMB_GAP = 2;       // cols between thumbs
 
-const ROLE_COLORS = { hero: T.accent, preview: T.cyan, logo: T.amber, image: T.dim };
-const ROLE_LABELS = { hero: 'HERO', preview: 'PREV', logo: 'LOGO', image: 'img' };
+const ROLE_COLORS = { hero: T.accent, preview: T.cyan, image: T.dim };
+const ROLE_LABELS = { hero: 'HERO', preview: 'PREV', image: 'img' };
 
 function thumbCols(mediaWidth, perRow) {
   return Math.max(16, Math.floor((mediaWidth - THUMB_GAP * (perRow + 1)) / perRow));
@@ -86,7 +86,7 @@ export default function MediaPane({ mediaList, onMediaChange, focused, mouseRow,
     }
 
     if (rolePickerVisible) {
-      const map = { h: 'hero', p: 'preview', l: 'logo', i: 'image' };
+      const map = { h: 'hero', p: 'preview', i: 'image' };
       if (map[input]) { assignRole(map[input]); setRolePickerVisible(false); return; }
       if (key.escape) { setRolePickerVisible(false); return; }
       return;
@@ -189,7 +189,6 @@ export default function MediaPane({ mediaList, onMediaChange, focused, mouseRow,
       h(Text, { color: T.muted }, 'set role:'),
       h(Text, null, h(Text, { color: T.accent, bold: true }, 'h'), h(Text, { color: T.muted }, ' hero')),
       h(Text, null, h(Text, { color: T.cyan,   bold: true }, 'p'), h(Text, { color: T.muted }, ' preview')),
-      h(Text, null, h(Text, { color: T.amber,  bold: true }, 'l'), h(Text, { color: T.muted }, ' logo')),
       h(Text, null, h(Text, { color: T.dim,    bold: true }, 'i'), h(Text, { color: T.muted }, ' image')),
       h(Text, { color: T.dim }, ' Esc cancel'),
     ),

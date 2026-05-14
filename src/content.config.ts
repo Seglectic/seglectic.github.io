@@ -11,7 +11,27 @@ const projects = defineCollection({
       label: z.string(),
       tags: z.array(z.string()).default([]),
       heroImage: image().optional(),
-      logoImage: image().optional(),
+      heroOverlay: z
+        .object({
+          image: image(),
+          alt: z.string().optional(),
+          variant: z.enum(['canopticon', 'custom']).default('custom'),
+          size: z.string().optional(),
+          position: z
+            .object({
+              x: z.string().optional(),
+              y: z.string().optional(),
+            })
+            .optional(),
+          motion: z
+            .object({
+              amplitude: z.number().optional(),
+              periodMs: z.number().optional(),
+            })
+            .optional(),
+          shadow: z.string().optional(),
+        })
+        .optional(),
       summary: z.string(),
       github: z.string().url().optional(),
       demo: z.string().url().optional(),

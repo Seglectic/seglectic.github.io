@@ -28,7 +28,6 @@ function toYaml(obj) {
 
 function buildFrontmatter(fields, mediaList) {
   const hero = mediaList.find(m => m.role === 'hero');
-  const logo = mediaList.find(m => m.role === 'logo');
 
   const fm = {
     title: fields.title,
@@ -37,7 +36,6 @@ function buildFrontmatter(fields, mediaList) {
     label: fields.label,
     tags: fields.tags.length > 0 ? fields.tags : [],
     ...(hero ? { heroImage: `./${fields.slug}-hero${path.extname(hero.src)}` } : {}),
-    ...(logo ? { logoImage: `./${fields.slug}-logo${path.extname(logo.src)}` } : {}),
     summary: fields.summary,
     ...(fields.github ? { github: fields.github } : {}),
     ...(fields.demo ? { demo: fields.demo } : {}),
@@ -99,7 +97,6 @@ export function dryRunReport(fields, mediaList) {
       let baseName;
       if (m.role === 'hero') baseName = `${fields.slug}-hero`;
       else if (m.role === 'preview') baseName = `${fields.slug}-preview`;
-      else if (m.role === 'logo') baseName = `${fields.slug}-logo`;
       else baseName = `${fields.slug}-image-${String(imageIndex++).padStart(2, '0')}`;
       lines.push(`  ${m.src}\n  → ${path.join(outDir, baseName + ext)}`);
     }
@@ -130,7 +127,6 @@ export async function writeProject(fields, mediaList, { dryRun = false } = {}) {
     let baseName;
     if (m.role === 'hero') baseName = `${fields.slug}-hero`;
     else if (m.role === 'preview') baseName = `${fields.slug}-preview`;
-    else if (m.role === 'logo') baseName = `${fields.slug}-logo`;
     else baseName = `${fields.slug}-image-${String(imageIndex++).padStart(2, '0')}`;
 
     const { dest, error } = copyImage(m.src, outDir, baseName);
