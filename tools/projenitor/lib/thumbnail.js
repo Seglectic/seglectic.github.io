@@ -19,6 +19,10 @@ export function kittySupported() {
   );
 }
 
+function shouldUseKitty() {
+  return process.env.PROJENITOR_KITTY === '1' && kittySupported();
+}
+
 async function uploadKitty(filePath, id) {
   // Upload at a size that gives Kitty enough detail to scale from
   const pngBuf = await sharp(filePath)
@@ -53,7 +57,7 @@ export async function generateThumbnail(filePath, { charWidth = 32, charRows = 9
   const ext = path.extname(filePath).slice(1).toLowerCase();
   if (ext === 'svg') return null;
 
-  if (kittySupported()) {
+  if (shouldUseKitty()) {
     try {
       if (!kittyIds.has(filePath)) {
         const id = nextId++;

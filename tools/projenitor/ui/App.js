@@ -13,11 +13,32 @@ const { createElement: h } = React;
 
 const MEDIA_FOCUS = FIELDS.length;
 
+function ExitConfirm({ width }) {
+  const boxWidth = Math.min(48, Math.max(32, width - 8));
+  return h(
+    Box,
+    {
+      width: boxWidth,
+      flexDirection: 'column',
+      borderStyle: 'single',
+      borderColor: T.accent,
+      paddingX: 1,
+      paddingY: 0,
+    },
+    h(Text, { bold: true, color: T.accent }, 'Exit Projenitor?'),
+    h(Text, { color: T.muted }, 'Unsaved edits will be lost.'),
+    h(Box, { marginTop: 1, flexDirection: 'row', gap: 2 },
+      h(Text, { color: T.text }, h(Text, { color: T.accent, bold: true }, 'y'), ' exit'),
+      h(Text, { color: T.text }, h(Text, { color: T.accent, bold: true }, 'n'), ' stay'),
+      h(Text, { color: T.dim }, 'Esc stay'),
+    ),
+  );
+}
 
 function Header({ width, dryRun }) {
   const right = ' seglectic.com ';
-  const badge = dryRun ? ' ⬡ DRY RUN ' : '';
   const title = '  PROJENITOR';
+  const badge = dryRun ? ' dry run ' : '';
   const fillLen = Math.max(0, width - title.length - 2 - right.length - badge.length);
   const fill = '─'.repeat(fillLen);
   const sep  = '─'.repeat(width);
@@ -25,7 +46,7 @@ function Header({ width, dryRun }) {
     h(Box, { flexDirection: 'row' },
       h(Text, { bold: true, color: T.accent }, title),
       h(Text, { color: T.dim }, '  ' + fill),
-      badge && h(Text, { color: T.amber, bold: true }, badge),
+      badge && h(Text, { color: T.dim }, badge),
       h(Text, { color: T.dim }, right),
     ),
     h(Text, { color: T.dim }, sep),
@@ -45,7 +66,7 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
     return () => stdout.off('resize', onResize);
   }, []);
 
-  const formWidth  = Math.max(28, Math.floor(cols * 0.25));
+  const formWidth  = Math.min(Math.max(42, Math.floor(cols * 0.5)), Math.max(42, cols - 26));
   const mediaWidth = cols - formWidth;
 
   const [fields, setFields] = useState({
@@ -58,7 +79,9 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
   const [errors, setErrors]           = useState([]);
   const [dropErrors, setDropErrors]   = useState([]);
   const [saved, setSaved]             = useState(false);
-  const [mouseClickRow, setMouseClickRow] = useState(null);
+  const [mouseClick, setMouseClick] = useState(null);
+  const [mediaMode, setMediaMode] = useState({ addMode: false, rolePickerVisible: false });
+  const [exitConfirmVisible, setExitConfirmVisible] = useState(false);
 
   const formWidthRef = useRef(formWidth);
   useEffect(() => { formWidthRef.current = formWidth; }, [formWidth]);
@@ -80,25 +103,30 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
   useEffect(() => {
     function onMouse({ button, col, row, press }) {
       if (!press || button !== 0) return;
+      if (exitConfirmVisible) return;
       if (col >= formWidthRef.current) {
         setFocusIndex(MEDIA_FOCUS);
-        setMouseClickRow(row);
+        setMouseClick({ row, col: col - formWidthRef.current });
       } else {
-        // Row 0 = header title, row 1 = separator. Fields start at row 2.
-        const fieldIdx = row - 2;
-        if (fieldIdx >= 0 && fieldIdx < FIELDS.length) setFocusIndex(fieldIdx);
+        // Row 0 = header title, row 1 = separator. Clamp any left-pane click
+        // into the form field range so focus always returns to the form.
+        const fieldIdx = Math.max(0, Math.min(FIELDS.length - 1, row - 2));
+        setFocusIndex(fieldIdx);
+        if (row >= 2 && fieldIdx === FIELDS.indexOf('featured')) {
+          setFields(prev => ({ ...prev, featured: !prev.featured }));
+        }
       }
     }
     mouseEmitter.on('mouse', onMouse);
     return () => mouseEmitter.off('mouse', onMouse);
-  }, []);
+  }, [exitConfirmVisible]);
 
   useEffect(() => {
-    if (mouseClickRow !== null) {
-      const t = setTimeout(() => setMouseClickRow(null), 50);
+    if (mouseClick !== null) {
+      const t = setTimeout(() => setMouseClick(null), 50);
       return () => clearTimeout(t);
     }
-  }, [mouseClickRow]);
+  }, [mouseClick]);
 
   const slugConflict = fields.slug && slugExists(fields.slug, projectsDir());
 
@@ -137,6 +165,18 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
   useInput((input, key) => {
     if (saved) return;
 
+    if (exitConfirmVisible) {
+      if (input === 'y' || input === 'Y' || (input === 'c' && key.ctrl)) {
+        exit();
+        return;
+      }
+      if (input === 'n' || input === 'N' || key.escape) {
+        setExitConfirmVisible(false);
+        return;
+      }
+      return;
+    }
+
     // Ctrl+S
     if (input === 's' && key.ctrl) {
       const errs = validate();
@@ -161,12 +201,18 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
       return;
     }
 
-    if (key.escape) { exit(); return; }
+    if (mediaMode.addMode || mediaMode.rolePickerVisible) return;
+    if (key.escape || (input === 'c' && key.ctrl)) {
+      setExitConfirmVisible(true);
+      return;
+    }
 
     // Shift+Tab must be checked before Tab to prevent forward-match short-circuit
     const total = FIELDS.length + 1;
     if (key.shift && key.tab) { setFocusIndex(i => (i - 1 + total) % total); return; }
     if (key.tab)              { setFocusIndex(i => (i + 1) % total); return; }
+    if (key.upArrow)          { setFocusIndex(i => (i - 1 + total) % total); return; }
+    if (key.downArrow)        { setFocusIndex(i => (i + 1) % total); return; }
 
     if (focusIndex === FIELDS.indexOf('featured') && (input === ' ' || key.return)) {
       onFieldChange('featured', !fields.featured);
@@ -186,15 +232,21 @@ export default function App({ existingLabels, existingSlugs, nextOrder, dryRun }
       h(FormPane, {
         fields, onFieldChange,
         focusIndex: mediaPaneFocused ? -1 : focusIndex,
-        existingLabels, slugConflict,
+        slugConflict,
         width: formWidth,
       }),
       h(MediaPane, {
         mediaList, onMediaChange: setMediaList,
         focused: mediaPaneFocused,
-        mouseRow: mediaPaneFocused ? mouseClickRow : null,
+        mouseClick: mediaPaneFocused ? mouseClick : null,
+        onModeChange: setMediaMode,
         width: mediaWidth,
       }),
+    ),
+    exitConfirmVisible && h(
+      Box,
+      { justifyContent: 'center', alignItems: 'center' },
+      h(ExitConfirm, { width: cols }),
     ),
     h(StatusBar, { errors: allErrors, dryRun, saved, width: cols }),
   );

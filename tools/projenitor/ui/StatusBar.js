@@ -29,7 +29,7 @@ export default function StatusBar({ errors, dryRun, saved, width }) {
       gap: 1,
     },
     dryRun && h(Box, { marginRight: 1 },
-      h(Text, { bold: true, color: T.amber }, '⬡ DRY RUN'),
+      h(Text, { bold: true, color: T.amber }, 'DRY RUN'),
     ),
     saved
       ? h(Text, { color: T.cyan, bold: true }, '✓  saved')
@@ -39,6 +39,6 @@ export default function StatusBar({ errors, dryRun, saved, width }) {
     h(Box, { flexGrow: 1 }),
     h(Hint, { k: 'Tab', label: 'focus' }),
     h(Hint, { k: '^S', label: 'save' }),
-    h(Hint, { k: '^C', label: 'quit' }),
+    h(Hint, { k: 'Esc/^C', label: 'exit' }),
   );
 }

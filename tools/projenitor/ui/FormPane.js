@@ -25,7 +25,7 @@ function Row({ label, focused, children, warning }) {
   return h(Box, { flexDirection: 'column' },
     h(Box, { flexDirection: 'row', gap: 1 },
       h(Text, { color: focused ? T.accent : T.dim, bold: focused, width: LABEL_W }, label),
-      children,
+      h(Box, { flexGrow: 1 }, children),
     ),
     warning && h(Text, { color: T.amber }, `${''.padStart(LABEL_W + 1)}⚠ ${warning}`),
   );
@@ -87,7 +87,15 @@ export default function FormPane({ fields, onFieldChange, focusIndex, slugConfli
     }
 
     return h(TextRow, {
-      label: name, value, onChange: v => onFieldChange(name, v), focused, placeholder: '',
+      label: name,
+      value,
+      onChange: v => onFieldChange(name, v),
+      focused,
+      placeholder:
+        name === 'summary' ? 'Short card summary' :
+        name === 'github' || name === 'demo' || name === 'docs' ? 'https://...' :
+        name === 'order' ? '10' :
+        '',
     });
   }
 
