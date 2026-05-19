@@ -25,10 +25,12 @@ npm run preview  # preview built output
 
 ```
 src/
+  assets/
+    fonts/          # bundled local fonts
+    favicon.svg     # bundled site favicon
   components/     # Astro components
   content/
     projects/     # project folders with local MDX + assets
-    devlog/       # devlog folders with local MDX + assets
   layouts/
     Layout.astro  # base HTML shell
   pages/
@@ -36,13 +38,11 @@ src/
     projects/[slug].astro # canonical redirect → /<project-id>
   styles/
     global.css    # design tokens — edit this for theme changes
-public/
-  fonts/          # ABSTRACT.ttf (logo font only)
-  images/
-    projects/     # hero images per project
-    devlog/
-scripts/
-  import-obsidian-devlog.js  # vault import tool
+tools/
+  obsidian/
+    import-obsidian-devlog.js  # vault import tool
+  projenitor/
+    projenitor.mjs             # project scaffold TUI
 ```
 
 ## Design Tokens
@@ -67,18 +67,17 @@ Required frontmatter: `title`, `tagline`, `status`, `category`, `summary`
 
 Optional: `heroImage`, `github`, `demo`, `docs`, `featured`, `order`
 
-### Devlog (`src/content/devlog/<project>/<slug>/index.mdx`)
+### Devlog (`src/content/projects/<project>/devlog/<slug>/index.mdx`)
 
 Required frontmatter: `title`, `date`, `summary`
 
 Set `publish: true` to make a post visible. Posts default to unpublished.
-Use `project: <slug>` to link a post to a project — this must match the project subfolder name.
 Each devlog entry lives in its own folder so notes and local media stay colocated.
 
 Devlog folder naming:
-- Entries live under a project subfolder: `devlog/<project-slug>/<entry-slug>/`
+- Entries live under a project folder: `projects/<project-slug>/devlog/<entry-slug>/`
 - Entry slug format: `YYDDD-MMMDD-hMMA-[title]`
-- Example: `devlog/canopticon/26121-May01-12AM-first-successful-boot-sequence/`
+- Example: `projects/canopticon/devlog/26121-May01-12AM-first-successful-boot-sequence/`
 
 ## Working Preferences
 
@@ -90,7 +89,7 @@ Devlog folder naming:
 ## Obsidian Import
 
 ```sh
-VAULT_PROJECTS=/path/to/vault/Projects node scripts/import-obsidian-devlog.js
+VAULT_PROJECTS=/path/to/vault/Projects node tools/obsidian/import-obsidian-devlog.js
 ```
 
 Only processes folder-based projects. Slugs derive from `project/xxx` tags in frontmatter.
@@ -109,7 +108,6 @@ Future automation may create devlog folders directly in the repo or via GitHub A
 
 - Do NOT set `base` in `astro.config.mjs` (served from domain root)
 - Abstract font is logo-only — do not apply `--font-logo` to anything except `.logo` in SiteHeader
-- `scripts/kcloud.sh` must not be modified
 - Astro must remain static/prerendered — no server-only features
 - Avoid adding project-specific styling hooks or one-off classes to shared templates/components when the need is local to a single MDX document
 - For page-specific layout/styling, prefer document-local markup or a dedicated local component; only add shared template styles when the pattern is clearly reusable across multiple project pages

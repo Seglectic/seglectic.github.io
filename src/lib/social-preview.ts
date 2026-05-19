@@ -1,11 +1,11 @@
 import { getImage, type ImageMetadata } from 'astro:assets';
 
-const previewImages = import.meta.glob('/src/content/projects/**/preview.{avif,AVIF,bmp,BMP,gif,GIF,jpeg,JPEG,jpg,JPG,png,PNG,tif,TIF,tiff,TIFF,webp,WEBP}', {
+const previewImages = import.meta.glob('/src/content/projects/**/*-preview.{avif,AVIF,bmp,BMP,gif,GIF,jpeg,JPEG,jpg,JPG,png,PNG,tif,TIF,tiff,TIFF,webp,WEBP}', {
   eager: true,
   import: 'default',
 }) as Record<string, ImageMetadata>;
 
-const previewVectors = import.meta.glob('/src/content/projects/**/preview.{svg,SVG}', {
+const previewVectors = import.meta.glob('/src/content/projects/**/*-preview.{svg,SVG}', {
   eager: true,
   import: 'default',
 }) as Record<string, string>;
@@ -19,11 +19,14 @@ export function getContentPreviewAsset(filePath?: string): ContentPreviewAsset |
 
   const contentDir = filePath.replace(/\/[^/]+$/, '');
   const normalizedDir = contentDir.startsWith('/') ? contentDir : `/${contentDir}`;
+  const slug = normalizedDir.split('/').filter(Boolean).at(-1);
+  if (!slug) return undefined;
+  const previewPrefix = `${normalizedDir}/${slug}-preview.`;
 
-  const raster = Object.entries(previewImages).find(([path]) => path.startsWith(`${normalizedDir}/preview.`));
+  const raster = Object.entries(previewImages).find(([path]) => path.startsWith(previewPrefix));
   if (raster) return { kind: 'raster' as const, source: raster[1] };
 
-  const vector = Object.entries(previewVectors).find(([path]) => path.startsWith(`${normalizedDir}/preview.`));
+  const vector = Object.entries(previewVectors).find(([path]) => path.startsWith(previewPrefix));
   if (vector) return { kind: 'vector' as const, source: vector[1] };
 
   return undefined;

@@ -10,7 +10,18 @@ const projects = defineCollection({
       status: z.enum(['active', 'prototype', 'released', 'shelved', 'archived']),
       label: z.string(),
       tags: z.array(z.string()).default([]),
-      heroImage: image().optional(),
+      hero: z
+        .discriminatedUnion('type', [
+          z.object({
+            type: z.literal('image'),
+            image: image(),
+          }),
+          z.object({
+            type: z.literal('video'),
+            video: z.string().regex(/\.webm$/i, 'Hero video must be a .webm asset'),
+            poster: image(),
+          }),
+        ]),
       heroOverlay: z
         .object({
           image: image(),

@@ -12,13 +12,15 @@ npm run preview  # preview built output
 
 ## Content
 
-- **Projects** — `src/content/projects/*.mdx`
-- **Devlog** — `src/content/devlog/*.mdx`
+- **Projects** — `src/content/projects/<slug>/index.mdx`
+- **Devlog** — `src/content/projects/<slug>/devlog/<entry-slug>/index.mdx`
+
+Project media and devlog media live alongside their owning `index.mdx` files.
 
 To import from an Obsidian vault:
 
 ```sh
-VAULT_PROJECTS=/path/to/vault/Projects node scripts/import-obsidian-devlog.js
+VAULT_PROJECTS=/path/to/vault/Projects node tools/obsidian/import-obsidian-devlog.js
 ```
 
 ## Deploy

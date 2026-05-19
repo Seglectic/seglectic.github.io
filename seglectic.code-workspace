@@ -21,10 +21,6 @@
       "path": "src/styles"
     },
     {
-      "name": "Static Public Files",
-      "path": "public"
-    },
-    {
       "name": "Tools",
       "path": "tools"
     },
@@ -40,7 +36,7 @@
     "explorer.fileNesting.patterns": {
       "package.json": "package-lock.json",
       "astro.config.mjs": "tsconfig.json, svelte.config.js",
-      ".gitignore": "AGENTS.md, PLAN.md, README.md"
+      ".gitignore": "AGENTS.md, README.md"
     },
     "search.exclude": {
       "**/.astro": true,

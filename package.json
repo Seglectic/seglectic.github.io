@@ -12,7 +12,8 @@
     "astro": "astro",
     "projeni": "node tools/projenitor/projenitor.mjs",
     "proj": "npm run projeni",
-    "project": "npm run projeni"
+    "project": "npm run projeni",
+    "hero-video": "node tools/generate-hero-video.mjs"
   },
   "devDependencies": {
     "@iconify-json/simple-icons": "^1.2.81",

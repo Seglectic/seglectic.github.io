@@ -6,7 +6,7 @@
  * content collections. Flat .md files at the vault projects root are ignored.
  *
  * Usage:
- *   VAULT_PROJECTS=/path/to/vault/Projects node scripts/import-obsidian-devlog.js
+ *   VAULT_PROJECTS=/path/to/vault/Projects node tools/obsidian/import-obsidian-devlog.js
  */
 
 import fs   from 'fs';

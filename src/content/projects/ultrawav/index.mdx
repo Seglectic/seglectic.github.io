@@ -1,0 +1,62 @@
+---
+title: Ultrawav
+tagline: Ultrasonic encoding.
+status: prototype
+label: Web App
+tags: [web, audio, data]
+hero:
+  type: image
+  image: ./ultrawav-hero.png
+summary: Browser-only tool for hiding text or small files inside audio using ultrasonic GGWave encoding.
+github: https://github.com/Seglectic/Ultrawav
+featured: true
+order: 30
+---
+import previewImg from './ultrawav-preview.png'
+import detailImg from './ultrawav-image-01.png'
+
+Ultrawav is a browser-only steganography tool for hiding data inside ordinary audio. Drop in a carrier track, encode text or a small file into the ultrasonic range, then export a new audio file that can be loaded back into Ultrawav and decoded locally.
+
+No backend, no uploads, no accounts.
+
+# Browser-Only Audio Steganography
+
+<div class="media-split">
+  <img
+    src={previewImg.src}
+    alt="Ultrawav interface showing carrier audio controls, payload input, and frequency visualization"
+    data-lightboxable
+  />
+  <div class="media-split__copy">
+    <p>Ultrawav targets the mostly inaudible band above roughly 18 kHz and uses GGWave's ultrasonic protocol to inject framed payload data into a carrier audio buffer.</p>
+    <p>The tool can also scan a loaded file for an existing payload and auto-populate the interface when it finds one, so encode and decode happen in the same workflow.</p>
+  </div>
+</div>
+
+# What It Does
+
+- Embeds text payloads up to 2048 characters near the beginning of the carrier
+- Embeds binary file payloads up to 4 KB as an ultrasonic tail
+- Detects previously embedded payloads from loaded audio
+- Shows live waveform and Fourier views so the carrier and ultrasonic region are visible
+- Exports MP3 when it survives round-trip verification, with WAV fallback when it does not
+
+# How It Works
+
+<div class="media-split">
+  <div class="media-split__copy">
+    <p>Before mixing in the payload, Ultrawav low-pass filters the carrier around 17 kHz to clear room for the encoded data. The payload is framed with metadata such as type, MIME, filename, chunk info, and CRC, then encoded to waveform data at the carrier sample rate.</p>
+    <p>The resulting ultrasonic signal is mixed into the carrier, normalized, and verified after export by decoding the exported file again. If browser MP3 encoding damages the payload, the app falls back to WAV as the authoritative export path.</p>
+  </div>
+  <img
+    src={detailImg.src}
+    alt="Ultrawav detail view with payload panel and spectral visualization"
+    data-lightboxable
+  />
+</div>
+
+# Build Notes
+
+Ultrawav is built with React 19, TypeScript, Vite, the Web Audio API, `@vpalmisano/ggwave`, `fft.js`, and a Three.js / React Three Fiber background. Everything runs locally in the browser, which keeps the project simple but also exposes the main constraint: lossy audio encoding is hostile to ultrasonic data, so verification is part of the product rather than an afterthought.
+
+That tradeoff is the interesting part of the project. Ultrawav is less about "secure" hiding and more about seeing how far browser-native audio tooling can push a weird transmission channel without any server component behind it.

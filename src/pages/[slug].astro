@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import { Image } from 'astro:assets';
+import { posix } from 'node:path';
 import HeroFloatingOverlay from '../components/HeroFloatingOverlay.astro';
 import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
@@ -27,9 +28,31 @@ const relatedDevlog = allDevlog
   .filter((post: CollectionEntry<'devlog'>) => devlogProject(post.id) === project.id && post.data.publish)
   .sort((a: CollectionEntry<'devlog'>, b: CollectionEntry<'devlog'>) => b.data.date.valueOf() - a.data.date.valueOf());
 const socialImage = await getSocialPreviewUrl(project.filePath);
+const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', {
+  eager: true,
+  query: '?url',
+  import: 'default',
+});
 
-const { title, tagline, heroImage, heroOverlay, github, demo, docs } = project.data;
+const { title, tagline, hero, heroOverlay, github, demo, docs } = project.data;
 const isCanopticonHero = heroOverlay?.variant === 'canopticon';
+const resolvedHero =
+  hero.type === 'image'
+    ? { kind: 'image' as const, image: hero.image }
+    : hero.type === 'video'
+      ? {
+          kind: 'video' as const,
+          poster: hero.poster,
+          videoUrl:
+            heroVideoAssets[
+              posix.join('/src/content/projects', project.id, hero.video.replace(/^\.\//, ''))
+            ],
+        }
+      : null;
+
+if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
+  throw new Error(`Missing hero video asset for project "${project.id}": ${hero.video}`);
+}
 ---
 
 <Layout
@@ -38,26 +61,38 @@ const isCanopticonHero = heroOverlay?.variant === 'canopticon';
   bodyClass={isCanopticonHero ? 'canopticon-page' : undefined}
   socialImage={socialImage}
 >
-  {heroImage && (
-    <section class:list={[
-      'hero-image-wrap',
-      isCanopticonHero && 'hero-image-wrap--canopticon',
-    ]}>
-      <Image src={heroImage} alt={`${title} hero`} class="hero-image" />
-      {heroOverlay && <HeroFloatingOverlay overlay={heroOverlay} projectTitle={title} />}
-      <div class="hero-overlay">
-        <div class="hero-copy">
-          <h1 class:list={[
-            'title',
-            'hero-reveal',
-            'hero-reveal--title',
-            isCanopticonHero && 'title--anta',
-          ]}>{title}</h1>
-          <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
-        </div>
+  <section class:list={[
+    'hero-image-wrap',
+    isCanopticonHero && 'hero-image-wrap--canopticon',
+  ]}>
+    {resolvedHero.kind === 'image' ? (
+      <Image src={resolvedHero.image} alt={`${title} hero`} class="hero-image" />
+    ) : (
+      <video
+        class="hero-image hero-video"
+        src={resolvedHero.videoUrl}
+        poster={resolvedHero.poster.src}
+        autoplay
+        muted
+        loop
+        playsinline
+        preload="metadata"
+        aria-hidden="true"
+      />
+    )}
+    {heroOverlay && <HeroFloatingOverlay overlay={heroOverlay} projectTitle={title} />}
+    <div class="hero-overlay">
+      <div class="hero-copy">
+        <h1 class:list={[
+          'title',
+          'hero-reveal',
+          'hero-reveal--title',
+          isCanopticonHero && 'title--anta',
+        ]}>{title}</h1>
+        <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
       </div>
-    </section>
-  )}
+    </div>
+  </section>
 
   <article class:list={[
     'project-wrap',
@@ -149,6 +184,10 @@ const isCanopticonHero = heroOverlay?.variant === 'canopticon';
     filter: saturate(0.95) contrast(1.02);
     transform: scale(calc(1 + (var(--hero-scroll-progress) * 0.06))) translateY(calc(var(--hero-scroll-progress) * 3.5vh));
     will-change: transform;
+  }
+
+  .hero-video {
+    background: var(--bg-surface);
   }
 
   .hero-image-wrap--canopticon {
@@ -496,10 +535,31 @@ const isCanopticonHero = heroOverlay?.variant === 'canopticon';
       animation: none;
       transition: none;
     }
+
+    .hero-video {
+      animation: none;
+    }
   }
 </style>
 
 <script>
+  const syncHeroVideoMotionPreference = () => {
+    const heroVideo = document.querySelector('.hero-video');
+    if (!(heroVideo instanceof HTMLVideoElement)) return;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroVideo.pause();
+      heroVideo.currentTime = 0;
+      heroVideo.removeAttribute('autoplay');
+      return;
+    }
+
+    heroVideo.setAttribute('autoplay', '');
+    heroVideo.play().catch(() => {
+      // Autoplay can be blocked; the poster remains the static fallback.
+    });
+  };
+
   const initProjectReveals = () => {
     const revealTargets = Array.from(document.querySelectorAll('[data-reveal]'));
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -716,6 +776,7 @@ const isCanopticonHero = heroOverlay?.variant === 'canopticon';
   const initProjectPage = () => {
     initProjectReveals();
     initHeroScrollEffects();
+    syncHeroVideoMotionPreference();
     initProjectLightbox();
   };
 
