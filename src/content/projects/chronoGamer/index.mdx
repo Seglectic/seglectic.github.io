@@ -1,0 +1,37 @@
+---
+title: chronoGamer
+tagline: Retro gaming by timeline.
+status: released
+label: Web App
+tags: [web, games, retro, data-viz]
+hero:
+  type: image
+  image: ./chronogamer-hero.png
+summary: Browse 12,000+ retro game releases chronologically. Filter by console, region (NA/JP/PAL), and era to explore the pre-PS2 gaming landscape.
+github: https://github.com/Seglectic/chronoGamer
+demo: https://seglectic.com/chronoGamer/
+featured: true
+order: 20
+---
+
+chronoGamer is a chronological database browser for classic gaming. Rather than sorting by genre or franchise, it organizes 12,000+ game releases by year—showing you what was happening across all platforms during each era of gaming history.
+
+Filter by console (NES, SNES, Genesis, Dreamcast, etc.), region (North America, Japan, PAL territories), and date range to explore specific moments in gaming's evolution. A timeline sidebar lets you jump across decades in a single gesture.
+
+# Exploring Gaming History
+
+The premise is simple: when did specific games release, and what else was happening at that exact moment across different consoles and regions?
+
+This structure reveals patterns invisible in traditional databases. You can see the overlap between the NES and Genesis launch windows, or discover which titles launched in Japan months before their Western releases. The region filters (NA/JP/PAL) make it easy to focus on the markets and release schedules that interest you.
+
+# Why Retro?
+
+The dataset covers the pre-PS2 era—everything up through the Dreamcast's last retail release in 2003. This is a natural boundary: DVD became standard, online play became expected, and the industry shifted from cartridges and regional variants to a more unified global market.
+
+It's a complete historical window. The data is stable. And it's a fascinating era for gaming.
+
+# Tech Notes
+
+chronoGamer was built with vanilla JavaScript, HTML, and CSS—no framework, no build step. The game library is a JSON file of 12,000+ entries, each with a title, release date, console, and region tag.
+
+The UI prioritizes speed and simplicity. Filtering is instant. The timeline rail provides a persistent waypoint view that stays visible as you scroll through the list. Persistent session state (filters, scroll position) means you can leave the app and return exactly where you left off.
