@@ -50,7 +50,7 @@
 
 @font-face {
   font-family: 'ChronoType';
-  src: url('../content/projects/chronoGamer/ChronoType.ttf') format('truetype');
+  src: url('../assets/fonts/ChronoType.ttf') format('truetype');
   font-display: swap;
 }
 

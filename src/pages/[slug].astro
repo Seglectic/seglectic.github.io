@@ -7,6 +7,7 @@ import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
 import ProjectAccess from '../components/ProjectAccess.astro';
 import ProjectLinks from '../components/ProjectLinks.astro';
+import ChronoGamerTitle from '../components/ChronoGamerTitle.astro';
 import { devlogProject } from '../lib/content';
 import { getSocialPreviewUrl } from '../lib/social-preview';
 
@@ -36,7 +37,7 @@ const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', {
   import: 'default',
 });
 
-const { title, tagline, hero, heroOverlay, live, repo, docs } = project.data;
+const { title, tagline, hero, heroOverlay, titleStyle, live, repo, docs } = project.data;
 const isCanopticonHero = heroOverlay?.variant === 'canopticon';
 const resolvedHero =
   hero.type === 'image'
@@ -85,12 +86,16 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     {heroOverlay && <HeroFloatingOverlay overlay={heroOverlay} projectTitle={title} />}
     <div class="hero-overlay">
       <div class="hero-copy">
-        <h1 class:list={[
-          'title',
-          'hero-reveal',
-          'hero-reveal--title',
-          isCanopticonHero && 'title--anta',
-        ]}>{title}</h1>
+        {titleStyle === 'chronoGamer' ? (
+          <ChronoGamerTitle class="hero-reveal hero-reveal--title" />
+        ) : (
+          <h1 class:list={[
+            'title',
+            'hero-reveal',
+            'hero-reveal--title',
+            titleStyle === 'anta' && 'title--anta',
+          ]}>{title}</h1>
+        )}
         <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
       </div>
     </div>

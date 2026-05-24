@@ -44,6 +44,7 @@ const projects = defineCollection({
         })
         .optional(),
       summary: z.string(),
+      titleStyle: z.string().optional(),
       live: z.string().url().optional(),
       repo: z.string().url().optional(),
       docs: z.string().url().optional(),
