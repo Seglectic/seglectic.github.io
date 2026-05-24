@@ -1,0 +1,43 @@
+---
+interface Props {
+  live: string;
+}
+
+const { live } = Astro.props;
+---
+
+{live && (
+  <div class="project-access">
+    <a href={live} class="access-btn" target="_blank" rel="noopener noreferrer">
+      Launch Project
+    </a>
+  </div>
+)}
+
+<style>
+  .project-access {
+    margin: var(--space-lg) 0;
+  }
+
+  .access-btn {
+    display: inline-block;
+    padding: 0.65rem 1.5rem;
+    border: 2px solid var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(212, 83, 26, 0.08);
+    backdrop-filter: blur(12px);
+    transition: all 0.2s;
+    font-weight: 600;
+  }
+
+  .access-btn:hover {
+    border-color: #ff6b35;
+    color: #ff6b35;
+    background: rgba(212, 83, 26, 0.16);
+    transform: translateY(-2px);
+  }
+</style>

@@ -5,6 +5,7 @@ import { posix } from 'node:path';
 import HeroFloatingOverlay from '../components/HeroFloatingOverlay.astro';
 import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
+import ProjectAccess from '../components/ProjectAccess.astro';
 import ProjectLinks from '../components/ProjectLinks.astro';
 import { devlogProject } from '../lib/content';
 import { getSocialPreviewUrl } from '../lib/social-preview';
@@ -101,6 +102,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
   ]} data-reveal>
     <header class="project-header">
       <p class="summary">{project.data.summary}</p>
+      <ProjectAccess live={live} />
     </header>
 
     <div class="project-body" data-reveal>
