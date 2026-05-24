@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'ChronoType';
-  src: url('./ChronoType.ttf') format('truetype');
+  src: url('/src/content/projects/chronoGamer/ChronoType.ttf') format('truetype');
   font-display: swap;
 }
 
