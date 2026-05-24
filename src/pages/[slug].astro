@@ -5,6 +5,7 @@ import { posix } from 'node:path';
 import HeroFloatingOverlay from '../components/HeroFloatingOverlay.astro';
 import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
+import ProjectLinks from '../components/ProjectLinks.astro';
 import { devlogProject } from '../lib/content';
 import { getSocialPreviewUrl } from '../lib/social-preview';
 
@@ -34,7 +35,7 @@ const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', {
   import: 'default',
 });
 
-const { title, tagline, hero, heroOverlay, github, demo, docs } = project.data;
+const { title, tagline, hero, heroOverlay, live, repo, docs } = project.data;
 const isCanopticonHero = heroOverlay?.variant === 'canopticon';
 const resolvedHero =
   hero.type === 'image'
@@ -106,25 +107,9 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
       <Content />
     </div>
 
-    {(github || demo || docs) && (
-      <div class="quick-links quick-links--details" data-reveal>
-        {github && (
-          <a href={github} class="link-btn" target="_blank" rel="noopener noreferrer">
-            GitHub
-          </a>
-        )}
-        {demo && (
-          <a href={demo} class="link-btn" target="_blank" rel="noopener noreferrer">
-            Demo
-          </a>
-        )}
-        {docs && (
-          <a href={docs} class="link-btn" target="_blank" rel="noopener noreferrer">
-            Docs
-          </a>
-        )}
-      </div>
-    )}
+    <div data-reveal>
+      <ProjectLinks live={live} repo={repo} docs={docs} />
+    </div>
 
     {relatedDevlog.length > 0 && (
       <section class="related-devlog" data-reveal>
@@ -151,7 +136,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
 <style>
   .project-wrap {
     padding: clamp(1.25rem, 3vw, 2rem) 0 var(--space-xl);
-    max-width: 800px;
+    max-width: 1000px;
     scroll-margin-top: 104px;
   }
 
@@ -276,35 +261,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     animation-delay: 320ms;
   }
 
-  .quick-links {
-    display: flex;
-    gap: var(--space-sm);
-    flex-wrap: wrap;
-  }
-
-  .quick-links--details {
-    margin-bottom: var(--space-xl);
-  }
-
-  .link-btn {
-    display: inline-block;
-    padding: 0.45rem 0.9rem;
-    border: 1px solid rgba(232, 232, 230, 0.28);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: rgba(243, 241, 235, 0.84);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: rgba(15, 15, 15, 0.18);
-    backdrop-filter: blur(12px);
-    transition: border-color 0.15s, color 0.15s, background 0.15s;
-  }
-
-  .link-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(15, 15, 15, 0.36);
-  }
 
   .summary {
     margin: 0;

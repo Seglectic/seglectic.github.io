@@ -1,0 +1,58 @@
+---
+interface Props {
+  live?: string;
+  repo?: string;
+  docs?: string;
+}
+
+const { live, repo, docs } = Astro.props;
+---
+
+{(live || repo || docs) && (
+  <div class="project-links">
+    {live && (
+      <a href={live} class="link-btn" target="_blank" rel="noopener noreferrer">
+        Live Project
+      </a>
+    )}
+    {repo && (
+      <a href={repo} class="link-btn" target="_blank" rel="noopener noreferrer">
+        Repository
+      </a>
+    )}
+    {docs && (
+      <a href={docs} class="link-btn" target="_blank" rel="noopener noreferrer">
+        Docs
+      </a>
+    )}
+  </div>
+)}
+
+<style>
+  .project-links {
+    display: flex;
+    gap: var(--space-sm);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-xl);
+  }
+
+  .link-btn {
+    display: inline-block;
+    padding: 0.45rem 0.9rem;
+    border: 1px solid rgba(232, 232, 230, 0.28);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: rgba(243, 241, 235, 0.84);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: rgba(15, 15, 15, 0.18);
+    backdrop-filter: blur(12px);
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+  }
+
+  .link-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(15, 15, 15, 0.36);
+  }
+</style>
