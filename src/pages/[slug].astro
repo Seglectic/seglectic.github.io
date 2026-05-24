@@ -34,7 +34,7 @@ const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', {
   import: 'default',
 });
 
-const { title, tagline, hero, heroOverlay, github, demo, docs, heroTitleFont } = project.data;
+const { title, tagline, hero, heroOverlay, github, demo, docs } = project.data;
 const isCanopticonHero = heroOverlay?.variant === 'canopticon';
 const resolvedHero =
   hero.type === 'image'
@@ -88,7 +88,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
           'hero-reveal',
           'hero-reveal--title',
           isCanopticonHero && 'title--anta',
-          heroTitleFont === 'chrono' && 'title--chrono',
         ]}>{title}</h1>
         <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
       </div>
@@ -249,20 +248,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     font-weight: 400;
     letter-spacing: 0.03em;
     text-transform: none;
-  }
-
-  @font-face {
-    font-family: 'ChronoType';
-    src: url('/src/assets/ChronoType.ttf') format('truetype');
-    font-display: swap;
-  }
-
-  .title--chrono {
-    font-family: 'ChronoType', "Segoe UI", "Aptos", "Helvetica Neue", "Arial Nova", sans-serif;
-    font-weight: 400;
-    letter-spacing: 0;
-    text-transform: none;
-    font-size: clamp(2.5rem, 6.5vw, 5.5rem);
   }
 
   .tagline {
