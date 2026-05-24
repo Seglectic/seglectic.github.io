@@ -48,6 +48,12 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'ChronoType';
+  src: url('../content/projects/chronoGamer/ChronoType.ttf') format('truetype');
+  font-display: swap;
+}
+
 :root {
   /* Backgrounds */
   --bg:            #0f0f0f;
