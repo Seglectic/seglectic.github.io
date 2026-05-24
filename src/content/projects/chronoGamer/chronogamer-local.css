@@ -1,0 +1,12 @@
+@font-face {
+  font-family: 'ChronoType';
+  src: url('./ChronoType.ttf') format('truetype');
+  font-display: swap;
+}
+
+/* Apply ChronoType to the project title */
+:global(.hero-copy .title) {
+  font-family: 'ChronoType', "Segoe UI", "Aptos", "Helvetica Neue", "Arial Nova", sans-serif !important;
+  font-weight: 400;
+  letter-spacing: 0 !important;
+}
