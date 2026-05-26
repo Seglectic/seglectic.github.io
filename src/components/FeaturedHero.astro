@@ -1,0 +1,135 @@
+---
+import { Image } from 'astro:assets';
+import ProjectTitle from './ProjectTitle.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const { title, hero, summary, tagline, titleStyle } = project.data;
+const href = `/${project.id}`;
+
+const heroImage = hero.type === 'image' ? hero.image : hero.poster;
+---
+
+<div class="featured-hero">
+  <div class="hero-bg">
+    <Image src={heroImage} alt="" class="hero-img" loading="eager" />
+    <div class="hero-overlay" />
+  </div>
+
+  <div class="hero-content">
+    <ProjectTitle title={title} titleStyle={titleStyle} class="featured-title" />
+    <p class="hero-tagline">{summary || tagline}</p>
+    <a href={href} class="hero-cta">View Project</a>
+  </div>
+</div>
+
+<style>
+  .featured-hero {
+    position: relative;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    height: clamp(420px, 58vh, 680px);
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-xl);
+    --project-title-size: clamp(2.4rem, 6vw, 4.5rem);
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+  }
+
+  .hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: saturate(0.7) brightness(0.55);
+    display: block;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to right,
+      rgba(15, 15, 15, 0.92) 0%,
+      rgba(15, 15, 15, 0.65) 50%,
+      rgba(15, 15, 15, 0.1) 100%
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    padding: var(--space-xl) var(--space-lg);
+    max-width: var(--content-max);
+    margin: 0 auto;
+    gap: var(--space-md);
+  }
+
+  .hero-tagline {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 64ch;
+  }
+
+  .hero-cta {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: var(--space-sm);
+    padding: 0.6rem 1.4rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-terminal);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: var(--radius-md);
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+
+  .hero-cta:hover {
+    background: color-mix(in srgb, var(--accent) 80%, #fff 20%);
+    color: #fff;
+    transform: translateY(-1px);
+  }
+
+  @media (max-width: 640px) {
+    .featured-hero {
+      height: 100svh;
+      max-height: 520px;
+      --project-title-size: clamp(2rem, 10vw, 3rem);
+    }
+
+    .hero-overlay {
+      background: linear-gradient(
+        to top,
+        rgba(15, 15, 15, 0.96) 0%,
+        rgba(15, 15, 15, 0.6) 55%,
+        rgba(15, 15, 15, 0.15) 100%
+      );
+    }
+
+    .hero-content {
+      padding: var(--space-lg) var(--space-md);
+      gap: var(--space-sm);
+    }
+
+    .hero-cta {
+      margin-top: var(--space-md);
+    }
+  }
+</style>

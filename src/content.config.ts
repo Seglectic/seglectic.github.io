@@ -49,6 +49,7 @@ const projects = defineCollection({
       repo: z.string().url().optional(),
       docs: z.string().url().optional(),
       featured: z.boolean().default(false),
+      mainFeature: z.boolean().default(false),
       order: z.number().default(99),
     }),
 });

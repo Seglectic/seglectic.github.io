@@ -1,93 +1,144 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import IconBluesky from '~icons/simple-icons/bluesky';
 ---
 
 <Layout
   title="About — Seglectic Systems"
-  description="Seglectic Systems is a dark, experimental R&D studio building tools and systems at the edge of software and hardware."
+  description="Seglectic Systems is an independent engineering studio building precise, functional tools at the intersection of software and hardware."
 >
   <div class="about-wrap">
     <header class="about-header">
-      <p class="eyebrow">About</p>
-      <h1 class="title">Seglectic Systems</h1>
+      <p class="eyebrow">Seglectic Systems</p>
+      <h1 class="title">Independent R&amp;D</h1>
     </header>
 
     <div class="prose">
-      <p>More soon.</p>
+      <section class="prose-section">
+        <h2 class="prose-label">Seg Sys</h2>
+        <p>
+          Seglectic Systems is a one-person R&D operation. Independent, by design. The work spans software, electronics, and physical fabrication. 3D printing, laser cutting, CNC, modeling and design. Enough range to take an idea from concept to something you can hold.
+        </p>
+      </section>
+      <section class="prose-section">
+        <h2 class="prose-label">Integration Fixation</h2>
+        <p>
+          Compact envelopes & complete solutions. The goal are Systems where the software knows the hardware and both are in harmony; with the whole thing in the palm of your hand.
+        </p>
+      </section>
+      <section class="prose-section">
+        <h2 class="prose-label">Contact</h2>
+        <p>
+          Questions, ideas, or just want to follow the work? <br>
+          Find us on Bluesky.
+        </p>
+        <a
+          href="https://bsky.app/profile/seglectic.com"
+          class="bsky-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Seglectic on Bluesky"
+        >
+          <IconBluesky aria-hidden="true" />
+          <span>@seglectic.com</span>
+        </a>
+      </section>
     </div>
 
-    <div class="links">
-      <a href="https://github.com/Seglectic" class="link-btn" target="_blank" rel="noopener noreferrer">
-        GitHub
-      </a>
-      <a href="/projects" class="link-btn">
-        Projects
-      </a>
-    </div>
+    <blockquote class="standalone-quote">
+      "It's worth overdoing, and it's worth doing right."
+    </blockquote>
   </div>
 </Layout>
 
 <style>
   .about-wrap {
     padding: var(--space-xl) 0;
-    max-width: 680px;
+    max-width: 620px;
   }
 
   .about-header {
-    margin-bottom: var(--space-lg);
+    margin-bottom: var(--space-xl);
   }
 
   .eyebrow {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-family: var(--font-terminal);
+    font-size: 0.72rem;
+    font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--accent);
-    margin: 0 0 var(--space-sm) 0;
+    margin: 0 0 var(--space-md) 0;
   }
 
   .title {
-    font-family: var(--font-mono);
-    font-size: 2rem;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3rem);
     font-weight: 400;
     color: var(--text);
     margin: 0;
-    letter-spacing: -0.02em;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
   }
 
   .prose {
     color: var(--text-muted);
-    line-height: 1.8;
-    margin-bottom: var(--space-lg);
+    line-height: 1.85;
+    font-size: 1rem;
+    margin-bottom: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
   }
 
   .prose p {
-    margin: 0 0 var(--space-md) 0;
+    margin: 0;
   }
 
-  .prose p:last-child {
-    margin-bottom: 0;
-  }
-
-  .links {
+  .prose-section {
     display: flex;
-    gap: var(--space-md);
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--space-sm);
   }
 
-  .link-btn {
-    display: inline-block;
-    padding: var(--space-sm) var(--space-md);
-    border: 1px solid var(--border);
+  .prose-label {
+    font-family: var(--font-terminal);
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin: 0;
+  }
+
+  .standalone-quote {
+    margin: var(--space-xl) 0 0 0;
+    padding: var(--space-lg) 0 0 0;
+    border-top: 1px solid var(--border-subtle);
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-style: normal;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
+
+  .bsky-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    color: var(--text-muted);
     font-family: var(--font-mono);
-    font-size: 0.85rem;
-    color: var(--text);
-    letter-spacing: 0.05em;
-    transition: border-color 0.15s, color 0.15s;
+    font-size: 0.9rem;
+    transition: color 0.15s ease;
   }
 
-  .link-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+  .bsky-link :global(svg) {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+  }
+
+  .bsky-link:hover {
+    color: var(--accent-cyan);
   }
 </style>

@@ -1,7 +1,7 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import Hero from '../components/Hero.astro';
+import FeaturedHero from '../components/FeaturedHero.astro';
 import ProjectCard from '../components/ProjectCard.astro';
 import DevlogCard from '../components/DevlogCard.astro';
 import SectionHeader from '../components/SectionHeader.astro';
@@ -9,8 +9,10 @@ import SectionHeader from '../components/SectionHeader.astro';
 const allProjects = await getCollection('projects');
 const allDevlog = await getCollection('devlog');
 
+const mainFeature = allProjects.find((p: CollectionEntry<'projects'>) => p.data.mainFeature);
+
 const featuredProjects = allProjects
-  .filter((p: CollectionEntry<'projects'>) => p.data.featured)
+  .filter((p: CollectionEntry<'projects'>) => p.data.featured && !p.data.mainFeature)
   .sort((a: CollectionEntry<'projects'>, b: CollectionEntry<'projects'>) => a.data.order - b.data.order);
 
 const recentDevlog = allDevlog
@@ -24,11 +26,7 @@ const activeProjects = allProjects
 ---
 
 <Layout title="Seglectic Systems" description="Prototype R&D">
-  <Hero
-    title=""
-    tagline="Practical systems from eclectic R&D "
-    eyebrow="Engineering, Independent"
-  />
+  {mainFeature && <FeaturedHero project={mainFeature} />}
 
   <section class="section">
     <SectionHeader title="Featured Projects" href="/projects" />

@@ -7,7 +7,8 @@ import Layout from '../layouts/Layout.astro';
 import DevlogCard from '../components/DevlogCard.astro';
 import ProjectAccess from '../components/ProjectAccess.astro';
 import ProjectLinks from '../components/ProjectLinks.astro';
-import ChronoGamerTitle from '../components/ChronoGamerTitle.astro';
+import ProjectTitle from '../components/ProjectTitle.astro';
+import Lightbox from '../components/Lightbox.astro';
 import { devlogProject } from '../lib/content';
 import { getSocialPreviewUrl } from '../lib/social-preview';
 
@@ -86,16 +87,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     {heroOverlay && <HeroFloatingOverlay overlay={heroOverlay} projectTitle={title} />}
     <div class="hero-overlay">
       <div class="hero-copy">
-        {titleStyle === 'chronoGamer' ? (
-          <ChronoGamerTitle class="hero-reveal hero-reveal--title" />
-        ) : (
-          <h1 class:list={[
-            'title',
-            'hero-reveal',
-            'hero-reveal--title',
-            titleStyle === 'anta' && 'title--anta',
-          ]}>{title}</h1>
-        )}
+        <ProjectTitle title={title} titleStyle={titleStyle} class="hero-reveal hero-reveal--title" />
         <p class="tagline hero-reveal hero-reveal--tagline">{tagline}</p>
       </div>
     </div>
@@ -130,14 +122,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     )}
   </article>
 
-  <div class="lightbox" data-lightbox hidden>
-    <button class="lightbox-close" type="button" aria-label="Close image viewer" data-lightbox-close>
-      Close
-    </button>
-    <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Expanded image view">
-      <img class="lightbox-image" alt="" data-lightbox-image />
-    </div>
-  </div>
+  <Lightbox />
 </Layout>
 
 <style>
@@ -221,27 +206,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     will-change: transform, opacity;
   }
 
-  .title {
-    font-family: "Segoe UI", "Aptos", "Helvetica Neue", "Arial Nova", sans-serif;
-    font-size: clamp(2.75rem, 7vw, 6rem);
-    font-weight: 300;
-    color: #fbfbf7;
-    margin: 0;
-    letter-spacing: 0.045em;
-    line-height: 0.92;
-    text-transform: uppercase;
-    max-width: 11ch;
-    text-wrap: balance;
-    text-shadow: 0 0 24px rgba(15, 15, 15, 0.28);
-  }
-
-  .title--anta {
-    font-family: var(--font-display);
-    font-weight: 400;
-    letter-spacing: 0.03em;
-    text-transform: none;
-  }
-
   .tagline {
     font-family: "IBM Plex Mono", "Aptos Mono", "SFMono-Regular", "SF Mono", Consolas, "Liberation Mono", monospace;
     color: rgba(232, 232, 230, 0.78);
@@ -312,10 +276,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     background: var(--bg-surface);
-  }
-
-  .project-body :global([data-lightboxable]) {
-    cursor: zoom-in;
   }
 
   .project-body :global(h1) {
@@ -400,55 +360,6 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     display: flex;
     flex-direction: column;
     gap: var(--space-sm);
-  }
-
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: clamp(1rem, 3vw, 2rem);
-    background: rgba(4, 4, 6, 0.82);
-    backdrop-filter: blur(8px);
-  }
-
-  .lightbox[hidden] {
-    display: none;
-  }
-
-  .lightbox-dialog {
-    max-width: min(92vw, 1400px);
-    max-height: 90vh;
-  }
-
-  .lightbox-image {
-    display: block;
-    max-width: 100%;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
-    background: rgba(10, 10, 12, 0.96);
-  }
-
-  .lightbox-close {
-    position: absolute;
-    top: var(--space-md);
-    right: var(--space-md);
-    border: 1px solid rgba(232, 232, 230, 0.28);
-    background: rgba(15, 15, 15, 0.55);
-    color: var(--text);
-    padding: 0.55rem 0.85rem;
-    border-radius: 999px;
-    font-family: var(--font-mono);
-    font-size: 0.76rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
   }
 
   @keyframes hero-fade-up {
@@ -686,61 +597,10 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     updateHeroState();
   };
 
-  const initProjectLightbox = () => {
-    const lightbox = document.querySelector('[data-lightbox]');
-    const lightboxImage = document.querySelector('[data-lightbox-image]');
-    const closeButton = document.querySelector('[data-lightbox-close]');
-
-    if (!lightbox || !lightboxImage || !closeButton) return;
-    if (lightbox.dataset.bound === 'true') return;
-
-    const closeLightbox = () => {
-      lightbox.hidden = true;
-      lightboxImage.removeAttribute('src');
-      lightboxImage.alt = '';
-      document.body.style.removeProperty('overflow');
-    };
-
-    const openLightbox = (sourceImage) => {
-      const source = sourceImage.getAttribute('src');
-      if (!source) return;
-
-      lightboxImage.src = source;
-      lightboxImage.alt = sourceImage.getAttribute('alt') ?? '';
-      lightbox.hidden = false;
-      document.body.style.overflow = 'hidden';
-    };
-
-    document.addEventListener('click', (event) => {
-      const trigger = event.target.closest('[data-lightboxable]');
-      if (trigger instanceof HTMLImageElement) {
-        openLightbox(trigger);
-        return;
-      }
-
-      if (
-        event.target === lightbox ||
-        event.target === closeButton ||
-        event.target.closest('[data-lightbox-close]')
-      ) {
-        closeLightbox();
-      }
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !lightbox.hidden) {
-        closeLightbox();
-      }
-    });
-
-    lightbox.dataset.bound = 'true';
-  };
-
   const initProjectPage = () => {
     initProjectReveals();
     initHeroScrollEffects();
     syncHeroVideoMotionPreference();
-    initProjectLightbox();
   };
 
   initProjectPage();

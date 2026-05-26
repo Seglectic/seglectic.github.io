@@ -1,17 +1,27 @@
 ---
 import IconGithub from '~icons/simple-icons/github';
+import IconBluesky from '~icons/simple-icons/bluesky';
 ---
 
 <footer>
   <div class="footer-inner">
     <a
+      href="https://bsky.app/profile/seglectic.com"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="footer-link"
+      aria-label="Seglectic on Bluesky"
+    >
+      <IconBluesky class="footer-icon" aria-hidden="true" />
+    </a>
+    <a
       href="https://github.com/Seglectic"
       target="_blank"
       rel="noopener noreferrer"
-      class="gh-link"
+      class="footer-link"
       aria-label="Seglectic on GitHub"
     >
-      <IconGithub class="gh-icon" aria-hidden="true" />
+      <IconGithub class="footer-icon" aria-hidden="true" />
     </a>
   </div>
 </footer>
@@ -30,35 +40,29 @@ import IconGithub from '~icons/simple-icons/github';
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    font-family: var(--font-sans);
-    font-size: 0.8rem;
-    line-height: 1.2;
-    color: var(--text-muted);
+    gap: var(--space-md);
   }
 
-  .gh-link {
+  .footer-link {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    text-decoration: none;
-    letter-spacing: 0.01em;
     transition: color 0.15s ease;
   }
 
-  .gh-icon {
+  .footer-icon {
     width: 1.05rem;
     height: 1.05rem;
   }
 
-  .gh-link:hover {
+  .footer-link:hover {
     color: var(--accent);
   }
 
   @media (max-width: 720px) {
     .footer-inner {
       padding: 0.7rem 0.9rem 0.8rem;
-      font-size: 0.76rem;
     }
   }
 </style>

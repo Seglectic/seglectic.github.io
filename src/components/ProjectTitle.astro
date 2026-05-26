@@ -1,0 +1,44 @@
+---
+import ChronoGamerTitle from './ChronoGamerTitle.astro';
+
+interface Props {
+  title: string;
+  titleStyle?: string;
+  class?: string;
+}
+
+const { title, titleStyle, class: className } = Astro.props;
+---
+
+{titleStyle === 'chronoGamer' ? (
+  <ChronoGamerTitle class={className} />
+) : (
+  <h1 class:list={[
+    'project-title',
+    titleStyle === 'anta' && 'project-title--anta',
+    className,
+  ]}>{title}</h1>
+)}
+
+<style>
+  .project-title {
+    font-family: "Segoe UI", "Aptos", "Helvetica Neue", "Arial Nova", sans-serif;
+    font-size: var(--project-title-size, clamp(2.75rem, 7vw, 6rem));
+    font-weight: 300;
+    color: #fbfbf7;
+    margin: 0;
+    letter-spacing: 0.045em;
+    line-height: 0.92;
+    text-transform: uppercase;
+    max-width: 11ch;
+    text-wrap: balance;
+    text-shadow: 0 0 24px rgba(15, 15, 15, 0.28);
+  }
+
+  .project-title--anta {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: none;
+  }
+</style>
