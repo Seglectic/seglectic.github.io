@@ -380,12 +380,12 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     }
 
     .hero-image-wrap {
-      min-height: 100svh;
+      min-height: calc(100svh - var(--header-h, 88px));
     }
 
     .hero-image {
-      min-height: 100svh;
-      height: 100svh;
+      min-height: calc(100svh - var(--header-h, 88px));
+      height: calc(100svh - var(--header-h, 88px));
     }
 
     .hero-copy {
@@ -606,7 +606,15 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     updateHeroState();
   };
 
+  const syncHeaderHeight = () => {
+    const header = document.querySelector('header');
+    if (header) {
+      document.documentElement.style.setProperty('--header-h', `${header.offsetHeight}px`);
+    }
+  };
+
   const initProjectPage = () => {
+    syncHeaderHeight();
     initProjectReveals();
     initHeroScrollEffects();
     syncHeroVideoMotionPreference();
