@@ -13,7 +13,8 @@
     "projeni": "node tools/projenitor/projenitor.mjs",
     "proj": "npm run projeni",
     "project": "npm run projeni",
-    "hero-video": "node tools/generate-hero-video.mjs"
+    "hero-video": "node tools/generate-hero-video.mjs",
+    "seglog": "node tools/obsidian/seglog.js"
   },
   "devDependencies": {
     "@iconify-json/simple-icons": "^1.2.81",
