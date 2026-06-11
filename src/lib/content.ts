@@ -7,5 +7,5 @@ export function devlogProject(id: string): string | undefined {
   const clean = id.replace(/\/index$/, '');
   const [project, scope] = clean.split('/');
   if (!project || scope !== 'devlog') return undefined;
-  return project;
+  return project.toLowerCase();
 }
