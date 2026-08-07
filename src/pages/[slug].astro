@@ -379,6 +379,15 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
       padding-top: var(--space-md);
     }
 
+    .hero-image-wrap {
+      min-height: calc(100svh - var(--header-h, 88px));
+    }
+
+    .hero-image {
+      min-height: calc(100svh - var(--header-h, 88px));
+      height: calc(100svh - var(--header-h, 88px));
+    }
+
     .hero-copy {
       padding-left: var(--space-md);
       padding-right: var(--space-md);
@@ -597,7 +606,15 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     updateHeroState();
   };
 
+  const syncHeaderHeight = () => {
+    const header = document.querySelector('header');
+    if (header) {
+      document.documentElement.style.setProperty('--header-h', `${header.offsetHeight}px`);
+    }
+  };
+
   const initProjectPage = () => {
+    syncHeaderHeight();
     initProjectReveals();
     initHeroScrollEffects();
     syncHeroVideoMotionPreference();
