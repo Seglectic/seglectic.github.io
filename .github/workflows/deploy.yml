@@ -1,3 +1,9 @@
+# ╭──────────────────────────────╮
+# │  Seglectic Pages Deployment  │
+# │  Builds the Astro portfolio  │
+# │  and hosted project apps.    │
+# ╰──────────────────────────────╯
+
 name: Deploy to GitHub Pages
 
 on:
@@ -19,6 +25,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: Seglectic/EverTheme-Pro
+          path: .evertheme-pro
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: .evertheme-pro/package-lock.json
+
+      - run: npm ci
+        working-directory: .evertheme-pro
+
+      - run: npm run build
+        working-directory: .evertheme-pro
+        env:
+          EVERTHEME_BASE_PATH: /evertheme/
+
+      - run: |
+          mkdir -p public/evertheme
+          cp -R .evertheme-pro/dist/. public/evertheme/
 
       - uses: withastro/action@v3
         with:
