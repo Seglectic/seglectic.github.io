@@ -1,0 +1,12 @@
+/* HinGen page theme: the same build-plate grid the generator draws under the hinge. */
+body {
+  background-color: #15171a;
+  background-image:
+    linear-gradient(to right, #2c3036 1px, transparent 1px),
+    linear-gradient(to bottom, #2c3036 1px, transparent 1px),
+    linear-gradient(to right, #1f2226 1px, transparent 1px),
+    linear-gradient(to bottom, #1f2226 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: center top;
+  background-attachment: fixed;
+}
