@@ -17,10 +17,15 @@ order: 40
 ---
 import uiImg from './hingen-ui.png'
 import holesImg from './hingen-holes.png'
+import toyMesh from './hinge-toy.bin?url'
+import HingeToy from './HingeToy.astro'
+import './hingen-local.css'
 
 HinGen is a hinge generator that runs in the browser. Pick a leaf size, thickness, knuckle count and clearance, lay out the screw holes, and download an STL that prints in one piece with a working pin.
 
 No backend, no uploads, no CAD install.
+
+<HingeToy src={toyMesh} />
 
 <img src={uiImg.src} alt="HinGen interface with hinge settings on the left and a 3D hinge opened to 87 degrees on the right" data-lightboxable />
 

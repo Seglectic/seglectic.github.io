@@ -1,0 +1,199 @@
+---
+// Slim interactive hinge for the HinGen page: drag a leaf to fold it, like in the generator.
+// Mesh is pre-built by HinGen (indexed binary, see hinge-toy.bin) so no geometry engine loads here.
+interface Props {
+  src: string;
+}
+const { src } = Astro.props;
+---
+
+<figure class="hinge-toy" data-src={src}>
+  <canvas aria-label="Interactive hinge model. Drag a leaf to fold it."></canvas>
+  <figcaption>Drag a leaf to fold it</figcaption>
+</figure>
+
+<style>
+  .hinge-toy {
+    margin: var(--space-md) 0 var(--space-lg);
+  }
+
+  .hinge-toy canvas {
+    display: block;
+    width: 100%;
+    aspect-ratio: 3.4 / 1;
+    touch-action: none;
+  }
+
+  .hinge-toy figcaption {
+    margin-top: 0.25rem;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--text-muted, #8a8a8a);
+  }
+</style>
+
+<script>
+  import {
+    BufferAttribute, BufferGeometry, DirectionalLight, Group, HemisphereLight, MathUtils, Mesh,
+    MeshStandardMaterial, PerspectiveCamera, Plane, Raycaster, Scene, Vector2, Vector3, WebGLRenderer,
+  } from 'three';
+
+  const MIN_TOTAL = -90, MAX_TOTAL = 180;
+
+  async function init(fig: HTMLElement) {
+    const canvas = fig.querySelector('canvas')!;
+    const buf = await (await fetch(fig.dataset.src!)).arrayBuffer();
+    // header: vertex/index counts for the pin leaf (F) and plain leaf (M)
+    const [nvF, niF, nvM, niM] = new Uint32Array(buf, 0, 4);
+    let o = 16;
+    const posF = new Float32Array(buf, o, nvF * 3); o += nvF * 12;
+    const posM = new Float32Array(buf, o, nvM * 3); o += nvM * 12;
+    const idxF = new Uint16Array(buf, o, niF); o += niF * 2;
+    const idxM = new Uint16Array(buf, o, niM);
+
+    const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    const scene = new Scene();
+    scene.add(new HemisphereLight(0xfff4e0, 0x202428, 1.6));
+    const sun = new DirectionalLight(0xffffff, 2.2); sun.position.set(-60, -80, 140); scene.add(sun);
+    const rim = new DirectionalLight(0x9fc4ff, 0.8); rim.position.set(90, 100, 40); scene.add(rim);
+
+    // Each leaf hangs off a pivot on the pin axis (world Y).
+    const leaf = (pos: Float32Array, idx: Uint16Array, color: number, sign: number) => {
+      const geo = new BufferGeometry();
+      geo.setAttribute('position', new BufferAttribute(pos, 3));
+      geo.setIndex(new BufferAttribute(idx, 1));
+      const mat = new MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.05, flatShading: true });
+      const pivot = new Group();
+      const mesh = new Mesh(geo, mat);
+      pivot.add(mesh);
+      scene.add(pivot);
+      const L = { pivot, mesh, mat, sign, angle: 0 };
+      mesh.userData.leaf = L;
+      return L;
+    };
+    const F = leaf(posF, idxF, 0xf2a33a, 1);
+    const M = leaf(posM, idxM, 0xe0952f, -1);
+    const leaves = [F, M];
+
+    // Camera looks down at the hinge with the pin running across the strip; plain leaf nearest.
+    const camera = new PerspectiveCamera(28, 3.4, 1, 2000);
+    camera.up.set(1, 0, 0);
+    const tilt = MathUtils.degToRad(38);
+    const target = new Vector3(4, 0, 0);
+    function frame() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const hfov = 2 * Math.atan(Math.tan(MathUtils.degToRad(camera.fov / 2)) * camera.aspect);
+      const dist = Math.max(108 / 2 / Math.tan(hfov / 2), 48 / 2 / Math.tan(MathUtils.degToRad(camera.fov / 2)));
+      camera.position.set(target.x - dist * Math.sin(tilt), 0, dist * Math.cos(tilt));
+      camera.lookAt(target);
+      camera.updateProjectionMatrix();
+      draw();
+    }
+
+    function pose() {
+      F.pivot.rotation.y = -MathUtils.degToRad(F.angle);
+      M.pivot.rotation.y = MathUtils.degToRad(M.angle);
+    }
+    let queued = false;
+    function draw() {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(() => { queued = false; pose(); renderer.render(scene, camera); });
+    }
+
+    // --- hover + drag, same idea as the generator ---
+    const ray = new Raycaster(), ndc = new Vector2(), hit = new Vector3();
+    const plane = new Plane(new Vector3(0, 1, 0), 0);
+    let hovered: typeof F | null = null;
+    let drag: { L: typeof F; last: number | null; lastY: number } | null = null;
+    let interacted = false;
+
+    function pick(e: PointerEvent) {
+      const r = canvas.getBoundingClientRect();
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(ndc, camera);
+      return ray.intersectObjects([F.mesh, M.mesh], false)[0] || null;
+    }
+    function setHover(L: typeof F | null) {
+      if (hovered === L) return;
+      if (hovered) hovered.mat.emissive.setHex(0x000000);
+      hovered = L;
+      if (L) L.mat.emissive.setHex(0x5a3200);
+      canvas.style.cursor = drag ? 'grabbing' : L ? 'grab' : '';
+      draw();
+    }
+    function angleAt(e: PointerEvent, L: typeof F) {
+      pick(e);
+      if (!ray.ray.intersectPlane(plane, hit)) return null;
+      return MathUtils.radToDeg(Math.atan2(hit.z, L.sign * hit.x));
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      const h = pick(e);
+      if (!h) return;
+      interacted = true;
+      const L = h.object.userData.leaf;
+      plane.constant = -h.point.y;
+      drag = { L, last: angleAt(e, L), lastY: e.clientY };
+      canvas.setPointerCapture(e.pointerId);
+      setHover(L);
+      canvas.style.cursor = 'grabbing';
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!drag) { setHover(pick(e)?.object.userData.leaf ?? null); return; }
+      const { L } = drag;
+      const other = L === F ? M : F;
+      const a = angleAt(e, L);
+      let d = a == null || drag.last == null ? (drag.lastY - e.clientY) * 0.5 : a - drag.last;
+      if (d > 180) d -= 360;
+      if (d < -180) d += 360;
+      drag.last = a; drag.lastY = e.clientY;
+      L.angle = MathUtils.clamp(L.angle + d, MIN_TOTAL - other.angle, MAX_TOTAL - other.angle);
+      draw();
+    });
+    const end = () => { if (!drag) return; drag = null; canvas.style.cursor = hovered ? 'grab' : ''; };
+    canvas.addEventListener('pointerup', end);
+    canvas.addEventListener('pointercancel', end);
+    canvas.addEventListener('pointerleave', () => { if (!drag) setHover(null); });
+
+    const ro = new ResizeObserver(frame);
+    ro.observe(canvas);
+    frame();
+    // Free the WebGL context when the client router swaps this page out.
+    document.addEventListener('astro:before-swap', () => {
+      ro.disconnect();
+      renderer.dispose();
+      for (const L of leaves) { L.mesh.geometry.dispose(); L.mat.dispose(); }
+    }, { once: true });
+
+    // One gentle fold-and-return when it scrolls into view, to hint that it moves.
+    const io = new IntersectionObserver(entries => {
+      if (!entries.some(en => en.isIntersecting)) return;
+      io.disconnect();
+      const t0 = performance.now(), dur = 1800;
+      const step = (now: number) => {
+        if (interacted) return;
+        const t = Math.min(1, (now - t0) / dur);
+        M.angle = 55 * Math.sin(Math.PI * t) ** 2;
+        draw();
+        if (t < 1) requestAnimationFrame(step);
+      };
+      setTimeout(() => requestAnimationFrame(step), 400);
+    }, { threshold: 0.6 });
+    io.observe(canvas);
+  }
+
+  // astro:page-load fires on first load and after every client-router navigation.
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('.hinge-toy:not([data-ready])').forEach(fig => {
+      fig.dataset.ready = '';
+      init(fig).catch(err => console.error('hinge toy', err));
+    });
+  });
+</script>
