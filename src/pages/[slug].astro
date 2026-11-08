@@ -152,7 +152,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     margin-bottom: 0;
     overflow: hidden;
     min-height: 100vh;
-    background: var(--bg-surface);
+    background: transparent;
     --hero-scroll-progress: 0;
   }
 
@@ -165,10 +165,14 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     filter: saturate(0.95) contrast(1.02);
     transform: scale(calc(1 + (var(--hero-scroll-progress) * 0.06))) translateY(calc(var(--hero-scroll-progress) * 3.5vh));
     will-change: transform;
-  }
-
-  .hero-video {
-    background: var(--bg-surface);
+    /* Fade out to the page background instead of ending on an edge. Fully transparent by 92%:
+       the scroll scale/drift can push up to ~6% of the image past the bottom of the wrap. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0, 0, 0, 0.85) 66%, rgba(0, 0, 0, 0.55) 76%, rgba(0, 0, 0, 0.25) 84%, rgba(0, 0, 0, 0.07) 89%, transparent 92%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 55%, rgba(0, 0, 0, 0.85) 66%, rgba(0, 0, 0, 0.55) 76%, rgba(0, 0, 0, 0.25) 84%, rgba(0, 0, 0, 0.07) 89%, transparent 92%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
   }
 
   .hero-image-wrap--canopticon {
@@ -192,7 +196,7 @@ if (resolvedHero?.kind === 'video' && !resolvedHero.videoUrl) {
     align-items: flex-end;
     z-index: 2;
     background:
-      linear-gradient(180deg, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.06) 38%, rgba(15, 15, 15, 0.28) 58%, rgba(15, 15, 15, 0.6) 74%, rgba(15, 15, 15, 0.86) 88%, rgba(15, 15, 15, 0.96) 100%);
+      linear-gradient(180deg, rgba(15, 15, 15, 0) 0%, rgba(15, 15, 15, 0.06) 38%, rgba(15, 15, 15, 0.28) 58%, rgba(15, 15, 15, 0.55) 72%, rgba(15, 15, 15, 0.5) 84%, rgba(15, 15, 15, 0.2) 94%, rgba(15, 15, 15, 0) 100%);
   }
 
   .hero-image-wrap--canopticon .hero-overlay {

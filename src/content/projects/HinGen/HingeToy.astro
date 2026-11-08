@@ -20,7 +20,9 @@ const { src } = Astro.props;
   .hinge-toy canvas {
     display: block;
     width: 100%;
-    aspect-ratio: 3.4 / 1;
+    max-width: 760px;
+    margin: 0 auto;
+    aspect-ratio: 2.4 / 1;
     touch-action: none;
   }
 
@@ -57,8 +59,8 @@ const { src } = Astro.props;
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     const scene = new Scene();
     scene.add(new HemisphereLight(0xfff4e0, 0x202428, 1.6));
-    const sun = new DirectionalLight(0xffffff, 2.2); sun.position.set(-60, -80, 140); scene.add(sun);
-    const rim = new DirectionalLight(0x9fc4ff, 0.8); rim.position.set(90, 100, 40); scene.add(rim);
+    const sun = new DirectionalLight(0xffffff, 2.2); sun.position.set(80, -60, 140); scene.add(sun);
+    const rim = new DirectionalLight(0x9fc4ff, 0.8); rim.position.set(-90, 100, 40); scene.add(rim);
 
     // Each leaf hangs off a pivot on the pin axis (world Y).
     const leaf = (pos: Float32Array, idx: Uint16Array, color: number, sign: number) => {
@@ -78,18 +80,21 @@ const { src } = Astro.props;
     const M = leaf(posM, idxM, 0xe0952f, -1);
     const leaves = [F, M];
 
-    // Camera looks down at the hinge with the pin running across the strip; plain leaf nearest.
-    const camera = new PerspectiveCamera(28, 3.4, 1, 2000);
-    camera.up.set(1, 0, 0);
-    const tilt = MathUtils.degToRad(38);
-    const target = new Vector3(4, 0, 0);
+    // Isometric-style view: 45-ish° around, ~32° up, long lens so it reads nearly orthographic.
+    const camera = new PerspectiveCamera(20, 2.4, 1, 4000);
+    camera.up.set(0, 0, 1);
+    const az = MathUtils.degToRad(-50), el = MathUtils.degToRad(32);
+    const dir = new Vector3(Math.cos(el) * Math.cos(az), Math.cos(el) * Math.sin(az), Math.sin(el));
+    const target = new Vector3(0, 0, 5);
+    const fitR = 18;   // mm: the hinge plus headroom for a folded leaf
     function frame() {
       const w = canvas.clientWidth, h = canvas.clientHeight;
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
-      const hfov = 2 * Math.atan(Math.tan(MathUtils.degToRad(camera.fov / 2)) * camera.aspect);
-      const dist = Math.max(108 / 2 / Math.tan(hfov / 2), 48 / 2 / Math.tan(MathUtils.degToRad(camera.fov / 2)));
-      camera.position.set(target.x - dist * Math.sin(tilt), 0, dist * Math.cos(tilt));
+      const vfov = MathUtils.degToRad(camera.fov);
+      const hfov = 2 * Math.atan(Math.tan(vfov / 2) * camera.aspect);
+      const dist = fitR / Math.sin(Math.min(vfov, hfov) / 2);
+      camera.position.copy(target).addScaledVector(dir, dist);
       camera.lookAt(target);
       camera.updateProjectionMatrix();
       draw();
