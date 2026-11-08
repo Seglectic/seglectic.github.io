@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import { posix } from 'node:path';
 import ProjectTitle from './ProjectTitle.astro';
 import type { CollectionEntry } from 'astro:content';
 
@@ -12,11 +13,24 @@ const { title, hero, summary, tagline, titleStyle } = project.data;
 const href = `/${project.id}`;
 
 const heroImage = hero.type === 'image' ? hero.image : hero.poster;
+
+// Video heroes play here too (poster shows until it loads). Resolve from the entry's real folder.
+const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', { eager: true, query: '?url', import: 'default' });
+const heroDir = project.filePath
+  ? posix.dirname(`/${project.filePath.replace(/^\.?\//, '')}`)
+  : posix.join('/src/content/projects', project.id);
+const heroVideo = hero.type === 'video'
+  ? (heroVideoAssets[posix.join(heroDir, hero.video.replace(/^\.\//, ''))] as string | undefined)
+  : undefined;
 ---
 
 <div class="featured-hero">
   <div class="hero-bg">
-    <Image src={heroImage} alt="" class="hero-img" loading="eager" />
+    {heroVideo ? (
+      <video class="hero-img" src={heroVideo} poster={heroImage.src} autoplay muted loop playsinline preload="metadata" aria-hidden="true" />
+    ) : (
+      <Image src={heroImage} alt="" class="hero-img" loading="eager" />
+    )}
     <div class="hero-overlay" />
   </div>
 
