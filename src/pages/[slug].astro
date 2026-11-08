@@ -39,6 +39,10 @@ const heroVideoAssets = import.meta.glob('/src/content/projects/**/*.webm', {
 });
 
 const { title, tagline, hero, heroOverlay, titleStyle, live, repo, docs } = project.data;
+// Resolve hero media from the entry's actual folder; project.id is lowercased, folder names may not be.
+const heroDir = project.filePath
+  ? posix.dirname(`/${project.filePath.replace(/^\.?\//, '')}`)
+  : posix.join('/src/content/projects', project.id);
 const isCanopticonHero = heroOverlay?.variant === 'canopticon';
 const resolvedHero =
   hero.type === 'image'
@@ -49,7 +53,7 @@ const resolvedHero =
           poster: hero.poster,
           videoUrl:
             heroVideoAssets[
-              posix.join('/src/content/projects', project.id, hero.video.replace(/^\.\//, ''))
+              posix.join(heroDir, hero.video.replace(/^\.\//, ''))
             ],
         }
       : null;
