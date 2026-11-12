@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@astrojs/mdx": "^7.0.5",
-    "@astrojs/svelte": "^9.0.1",
+    "@astrojs/svelte": "^9.1.2",
     "@google/model-viewer": "^4.2.0",
     "astro": "^7.2.0",
     "svelte": "^5.55.5",
